@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Heatmap from '#lib/components/Heatmap.svelte';
+	import Flame from '#lib/components/Flame.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { PRAYERS } from '#lib/prayer.ts';
 	import { clock, toast, tracker } from '#lib/state/app.svelte.ts';
@@ -41,8 +42,11 @@
 
 <section class="card big rise" class:lit={streak > 0}>
 	<div class="main">
-		<span class="flame" aria-hidden="true"><Icon name="flame" size={56} stroke={1.5} /></span>
-		<div class="n num disp">{streak}</div>
+		<!-- Api dan angka satu kelompok yang rapat; jarak ke teks tetap lega. -->
+		<div class="count">
+			<span class="flame"><Flame size={50} lit={streak > 0} /></span>
+			<div class="n num disp">{streak}</div>
+		</div>
 		<div class="grow">
 			<div class="t">hari berturut-turut</div>
 			<div class="s">
@@ -104,25 +108,20 @@
 		flex: 1;
 		min-width: 0;
 	}
-	/* Api tanpa kotak: setinggi dan sewarna angka streak, bergoyang pelan saat streak berjalan. */
-	.flame {
-		display: grid;
-		place-items: center;
+	.count {
+		display: flex;
+		align-items: center;
+		gap: 1px;
 		flex: none;
-		margin-right: -6px;
-		color: var(--navy);
-		opacity: 0.35;
-		transition: opacity 0.4s;
 	}
-	.lit .flame {
-		opacity: 1;
+	/* Api setinggi dan sewarna angka streak, bergoyang pelan saat streak berjalan. */
+	.flame {
+		color: var(--navy);
+		margin-top: -4px;
 	}
 	.lit .flame :global(svg) {
 		transform-origin: 50% 90%;
 		animation: flicker 2.4s ease-in-out infinite;
-	}
-	.flame :global(svg path:last-child) {
-		fill: var(--navy-soft);
 	}
 	@keyframes flicker {
 		0%,

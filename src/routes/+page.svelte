@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Flame from '#lib/components/Flame.svelte';
 	import Hero from '#lib/components/Hero.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import TodayPrayers from '#lib/components/TodayPrayers.svelte';
@@ -37,7 +38,7 @@
 
 <div class="sec-h">
 	<h2>Catatan salat</h2>
-	<a class="streak press" href="/tracker"><Icon name="flame" size={15} /><span class="num">{streak}</span> hari istiqamah</a>
+	<a class="streak press" href="/tracker"><Flame size={15} lit={streak > 0} /><span class="num">{streak}</span> hari istiqamah</a>
 </div>
 <TodayPrayers {now} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />
 
