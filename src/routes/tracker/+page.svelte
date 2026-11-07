@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Heatmap from '#lib/components/Heatmap.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { PRAYERS } from '#lib/prayer.ts';
 	import { clock, toast, tracker } from '#lib/state/app.svelte.ts';
 	import { bestStreak, consistency, currentStreak, heatmap, toggleUdzur } from '#lib/tracker.ts';
@@ -16,10 +17,12 @@
 	const empty = $derived(Object.keys(tracker.value.logs).length === 0);
 	const udzurOn = $derived(tracker.value.udzurSince !== null);
 
-	// Bar persentase tumbuh dari nol saat halaman dibuka.
+	// Konsistensi per salat disembunyikan secara bawaan; bar tumbuh dari nol saat dibuka.
+	let showRates = $state(false);
 	let grown = $state(false);
 	$effect(() => {
-		if (rates) requestAnimationFrame(() => (grown = true));
+		if (showRates && rates) requestAnimationFrame(() => requestAnimationFrame(() => (grown = true)));
+		else grown = false;
 	});
 
 	function udzur() {
@@ -36,17 +39,23 @@
 	<h1>Istiqamah kamu</h1>
 </header>
 
-<section class="card big rise">
-	<div class="n num disp">{streak}</div>
-	<div>
-		<div class="t">hari berturut-turut</div>
-		<div class="s">
-			{#if empty}
-				Catat salat di Beranda. Hari dengan lima waktu lengkap menambah streak.
-			{:else}
-				Lima waktu tercatat setiap hari. Rekor terbaik <b class="num">{best}</b> hari.
-			{/if}
+<section class="card big rise" class:lit={streak > 0}>
+	<div class="main">
+		<span class="flame" aria-hidden="true"><Icon name="flame" size={56} stroke={1.5} /></span>
+		<div class="n num disp">{streak}</div>
+		<div class="grow">
+			<div class="t">hari berturut-turut</div>
+			<div class="s">
+				{empty ? 'Catat salat di Beranda. Hari dengan lima waktu lengkap menambah streak.' : 'Lima waktu tercatat setiap hari.'}
+			</div>
 		</div>
+	</div>
+	<div class="best">
+		<span class="medal" aria-hidden="true"><Icon name="trophy" size={16} /></span>
+		<span class="bl">Rekor terbaik</span>
+		<span class="badge num" class:record={best > 0 && streak >= best}>
+			{best} hari{best > 0 && streak >= best ? ' · sedang berjalan' : ''}
+		</span>
 	</div>
 </section>
 
@@ -57,17 +66,22 @@
 	{/if}
 </section>
 
-<div class="sec-h"><h2>Konsistensi per salat</h2><span class="label">30 hari</span></div>
-<section class="card bars">
-	{#each PRAYERS as p (p.key)}
-		{@const v = rates?.[p.key] ?? null}
-		<div class="b">
-			<span>{p.name}</span>
-			<span class="t"><span style:width="{grown && v !== null ? v : 0}%"></span></span>
-			<span class="num v">{v === null ? '-' : `${v}%`}</span>
-		</div>
-	{/each}
-</section>
+<button class="sec-h fold" aria-expanded={showRates} aria-controls="rates" onclick={() => (showRates = !showRates)}>
+	<h2>Konsistensi per salat</h2>
+	<span class="label">30 hari <span class="chev"><Icon name="chevron" size={14} stroke={2.2} /></span></span>
+</button>
+{#if showRates}
+	<section class="card bars" id="rates">
+		{#each PRAYERS as p (p.key)}
+			{@const v = rates?.[p.key] ?? null}
+			<div class="b">
+				<span>{p.name}</span>
+				<span class="t"><span style:width="{grown && v !== null ? v : 0}%"></span></span>
+				<span class="num v">{v === null ? '-' : `${v}%`}</span>
+			</div>
+		{/each}
+	</section>
+{/if}
 
 <section class="card udz">
 	<div class="txt">
@@ -79,17 +93,92 @@
 
 <style>
 	.big {
+		padding: 18px 18px 14px;
+	}
+	.main {
 		display: flex;
 		align-items: center;
-		gap: 16px;
-		padding: 20px;
+		gap: 14px;
+	}
+	.grow {
+		flex: 1;
+		min-width: 0;
+	}
+	/* Api tanpa kotak: setinggi dan sewarna angka streak, bergoyang pelan saat streak berjalan. */
+	.flame {
+		display: grid;
+		place-items: center;
+		flex: none;
+		margin-right: -6px;
+		color: var(--navy);
+		opacity: 0.35;
+		transition: opacity 0.4s;
+	}
+	.lit .flame {
+		opacity: 1;
+	}
+	.lit .flame :global(svg) {
+		transform-origin: 50% 90%;
+		animation: flicker 2.4s ease-in-out infinite;
+	}
+	.flame :global(svg path:last-child) {
+		fill: var(--navy-soft);
+	}
+	@keyframes flicker {
+		0%,
+		100% {
+			transform: scale(1) rotate(0deg);
+		}
+		30% {
+			transform: scale(1.06, 0.97) rotate(-2deg);
+		}
+		60% {
+			transform: scale(0.97, 1.04) rotate(1.5deg);
+		}
 	}
 	.big .n {
 		font-weight: 400;
-		font-size: 64px;
+		font-size: 58px;
 		line-height: 0.9;
 		color: var(--navy);
 		min-width: 0.6em;
+	}
+	.best {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 14px;
+		padding-top: 12px;
+		border-top: 1px dashed var(--line);
+	}
+	.medal {
+		width: 30px;
+		height: 30px;
+		flex: none;
+		border-radius: 10px;
+		display: grid;
+		place-items: center;
+		background: #fbf0d9;
+		color: #b07d24;
+	}
+	.bl {
+		flex: 1;
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--ink2);
+	}
+	.badge {
+		font-size: 12px;
+		font-weight: 800;
+		padding: 5px 11px;
+		border-radius: 999px;
+		background: var(--navy-soft);
+		color: var(--navy);
+		white-space: nowrap;
+	}
+	.badge.record {
+		background: #fbf0d9;
+		color: #8a5f14;
 	}
 	.t {
 		font-weight: 800;
@@ -105,8 +194,25 @@
 		padding: 16px 14px 14px;
 		overflow: hidden;
 	}
+	.fold {
+		width: calc(100% - 4px);
+		text-align: left;
+	}
+	.fold .label {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+	}
+	.chev {
+		display: inline-grid;
+		transition: transform 0.3s var(--ease);
+	}
+	.fold[aria-expanded='true'] .chev {
+		transform: rotate(90deg);
+	}
 	.bars {
 		padding: 10px 16px;
+		animation: rise 0.3s var(--ease) both;
 	}
 	.b {
 		display: grid;

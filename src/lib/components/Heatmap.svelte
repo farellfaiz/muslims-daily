@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { formatLong, formatMonthShort } from '#lib/date.ts';
+	import { PRAYERS } from '#lib/prayer.ts';
 	import type { HeatCell } from '#lib/tracker.ts';
+	import Icon from './Icon.svelte';
 
 	let { cols }: { cols: HeatCell[][] } = $props();
-	let picked = $state<HeatCell | null>(null);
+
+	// Kotak terpilih (bawaan: hari ini). Dicari ulang dari `cols` supaya ikut berubah saat catatan diperbarui.
+	let pickedKey = $state<string | null>(null);
+	const cells = $derived(cols.flat().filter((c) => !c.future));
+	const picked = $derived(cells.find((c) => c.key === pickedKey) ?? cells.at(-1) ?? null);
 
 	// Label bulan muncul di kolom pertama tiap bulan baru.
 	const months = $derived(
@@ -33,7 +39,7 @@
 					style:animation-delay="{w * 18}ms"
 					title={title(c)}
 					aria-label={title(c)}
-					onclick={() => (picked = c)}
+					onclick={() => (pickedKey = c.key)}
 				></button>
 			{/if}
 		{/each}
@@ -43,18 +49,27 @@
 	<div class="legend">Sedikit <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i> Lengkap</div>
 	<div class="legend"><i class="lh"></i> Udzur</div>
 </div>
-<div class="tip" aria-live="polite">
-	{#if picked}
-		<b>{formatLong(picked.date)}</b><br />
-		{#if picked.udzur}
-			Mode udzur aktif, tidak dihitung.
-		{:else}
-			{picked.value === 5 ? 'Lima waktu lengkap.' : `${picked.value} dari 5 salat tercatat.`}
-		{/if}
-	{:else}
-		Ketuk satu kotak untuk melihat catatan hari itu.
-	{/if}
-</div>
+{#if picked}
+	<div class="tip" aria-live="polite">
+		<div class="th">
+			<b>{formatLong(picked.date)}</b>
+			{#if picked.udzur}
+				<span class="pill udz">Udzur</span>
+			{:else}
+				<span class="pill num" class:full={picked.value === 5}>{picked.value}/5</span>
+			{/if}
+		</div>
+		<div class="five" class:muted={picked.udzur}>
+			{#each PRAYERS as p (p.key)}
+				{@const done = !!picked.log[p.key]}
+				<span class="pr" class:done>
+					<span class="dot"><Icon name={done ? 'check' : 'x'} size={13} stroke={done ? 2.8 : 2} /></span>
+					<span class="pn">{p.name}</span>
+				</span>
+			{/each}
+		</div>
+	</div>
+{/if}
 
 <style>
 	.months {
@@ -128,11 +143,72 @@
 	}
 	.tip {
 		margin-top: 12px;
-		padding: 10px 12px;
-		border-radius: 12px;
+		padding: 12px;
+		border-radius: 14px;
 		background: var(--sunk);
 		font-size: 12.5px;
-		min-height: 42px;
-		line-height: 1.5;
+	}
+	.th {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		margin-bottom: 10px;
+	}
+	.pill {
+		font-size: 11px;
+		font-weight: 800;
+		padding: 3px 9px;
+		border-radius: 999px;
+		background: var(--card);
+		color: var(--ink2);
+	}
+	.pill.full {
+		background: var(--navy);
+		color: #fff;
+	}
+	.pill.udz {
+		background: var(--peach-soft);
+		color: var(--peach-ink);
+	}
+	/* Lima indikator salat: bulatan centang navy bila sudah, silang tipis bila belum. */
+	.five {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 4px;
+	}
+	.five.muted {
+		opacity: 0.45;
+	}
+	.pr {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 5px;
+	}
+	.pr .dot {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: var(--card);
+		border: 1.5px dashed var(--line-strong);
+		color: var(--ink3);
+		transition: all 0.25s var(--ease);
+	}
+	.pr.done .dot {
+		background: var(--navy);
+		border: 1.5px solid var(--navy);
+		color: #fff;
+		animation: pop 0.3s var(--ease);
+	}
+	.pn {
+		font-size: 10.5px;
+		font-weight: 700;
+		color: var(--ink3);
+	}
+	.pr.done .pn {
+		color: var(--ink);
 	}
 </style>

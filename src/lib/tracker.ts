@@ -73,6 +73,7 @@ export interface HeatCell {
 	key: string;
 	date: Date;
 	value: number; // 0 sampai 5
+	log: DayLog;
 	udzur: boolean;
 	future: boolean;
 }
@@ -92,6 +93,7 @@ export function heatmap(d: TrackerData, today: Date, weeks: number): HeatCell[][
 				key,
 				date,
 				value: prayedCount(d.logs[key]),
+				log: d.logs[key] ?? {},
 				udzur: isUdzur(d, key, todayKey),
 				future: key > todayKey
 			});
