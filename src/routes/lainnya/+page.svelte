@@ -49,7 +49,6 @@
 	const SOON = [
 		["Al-Qur'an", 'Mushaf lengkap dengan terjemahan per kata'],
 		['Dzikir pagi dan petang', 'Penghitung dan pengingat'],
-		['Kiblat', 'Kompas dengan kalibrasi'],
 		['Notifikasi adzan', 'Pengingat waktu salat']
 	];
 </script>

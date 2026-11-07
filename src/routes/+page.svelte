@@ -47,7 +47,7 @@
 	<a href="/doa" class="press"><span class="ico"><Icon name="bookmark" /></span>Doa</a>
 	<a href="/lainnya" class="press"><span class="ico"><Icon name="beads" /></span>Dzikir</a>
 	<a href="/lainnya" class="press"><span class="ico"><Icon name="book" /></span>Al-Qur'an</a>
-	<a href="/lainnya" class="press"><span class="ico"><Icon name="compass" /></span>Kiblat</a>
+	<a href="/kiblat" class="press"><span class="ico"><Icon name="compass" /></span>Kiblat</a>
 </nav>
 
 <div class="sec-h"><h2>Doa pilihan</h2><a href="/doa" class="label more">Lihat semua</a></div>
