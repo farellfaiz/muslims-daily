@@ -1,0 +1,37 @@
+{
+  "name": "muslims-daily",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PWA pendamping ibadah harian: jadwal salat, tracker salat, dan kumpulan doa. Ringan, cepat, bisa offline.",
+  "author": "Farell Faiz Firmansyah",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^4.0.1",
+    "@sveltejs/kit": "^3.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@vite-pwa/sveltekit": "^2.0.0",
+    "magicast": "^0.5.5",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.8",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource/amiri": "^5.3.0",
+    "adhan": "^4.4.6"
+  },
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  }
+}

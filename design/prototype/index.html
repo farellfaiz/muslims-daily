@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FAF6F1">
+<link rel="icon" href="assets/icon.webp">
+<link rel="apple-touch-icon" href="assets/icon.webp">
+<title>Muslims Daily · Prototipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,300..600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/*
+  Prototipe desain Muslims Daily (mode terang).
+  Tujuannya menguji bahasa visual sebelum masuk SvelteKit, jadi semua sengaja
+  dijadikan satu file. Isi doa di sini contoh tampilan, belum diverifikasi.
+*/
+:root{
+  --paper:#FAF6F1;      /* latar halaman: kertas hangat */
+  --card:#FFFFFF;       /* kartu */
+  --sunk:#EDF3F9;       /* area cekung, input */
+  --ink:#22384F;        /* teks utama: navy dari ikon, sedikit lebih gelap */
+  --ink2:#5D6E80;       /* teks pendukung, tetap satu keluarga dengan ink */
+  --ink3:#93A1AF;
+  --line:rgba(34,56,79,.09);
+  --emerald:#33506F;
+  --emerald-2:#5079A1;
+  --emerald-soft:#E1ECF7;
+  --gold:#E59B78;       /* peach matahari dari ikon, aksen saja */
+  --gold-soft:#FCE9DF;
+  --rose:#B4545A;
+  --rose-soft:#F6E3DF;
+  --r-lg:26px; --r-md:18px; --r-sm:12px;
+  --shadow:0 1px 0 rgba(34,56,79,.04), 0 10px 30px -18px rgba(34,56,79,.35);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --f-disp:'Fraunces', Georgia, serif;
+  --f-body:'Plus Jakarta Sans', system-ui, sans-serif;
+  --f-ar:'Amiri', 'Noto Naskh Arabic', serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:var(--f-body); color:var(--ink); background:#D3E4F3;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+  display:flex; justify-content:center;
+}
+/* Latar desktop: pola bintang delapan tipis, hanya di luar "HP" */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23A9C3DC' stroke-width='.8'%3E%3Crect x='20' y='20' width='24' height='24'/%3E%3Crect x='20' y='20' width='24' height='24' transform='rotate(45 32 32)'/%3E%3C/g%3E%3C/svg%3E");
+}
+.app{
+  position:relative; width:100%; max-width:430px; min-height:100vh; background:var(--paper);
+  padding-bottom:96px; overflow-x:hidden;
+}
+@media (min-width:520px){
+  body{padding:28px 0}
+  .app{min-height:880px; border-radius:40px; box-shadow:0 30px 80px -30px rgba(40,30,10,.45), 0 0 0 10px #22384F; overflow:hidden}
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.screen{display:none; padding:0 18px; animation:in .45s var(--ease) both}
+.screen.on{display:block}
+.screen.push{animation:push .45s var(--ease) both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes push{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.label{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.disp{font-family:var(--f-disp);font-optical-sizing:auto;letter-spacing:-.02em}
+.num{font-variant-numeric:tabular-nums}
+.ar{font-family:var(--f-ar);direction:rtl;text-align:right;line-height:2.05}
+.card{background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow);border:1px solid var(--line)}
+.press{transition:transform .18s var(--ease)}
+.press:active{transform:scale(.97)}
+
+/* ===== Header ===== */
+.top{display:flex;justify-content:space-between;align-items:flex-start;padding:22px 2px 16px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:var(--emerald);display:grid;place-items:center;color:#FAF6F1}
+.loc{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-size:12px;font-weight:700}
+
+/* ===== Hero: lengkung bawang dari ikon aplikasi =====
+   Ikon = pintu lengkung navy, matahari peach, bukit krem. Hero memakai bentuk yang sama
+   supaya ikon dan aplikasi terasa satu keluarga. Langit di dalam pintu berubah per waktu salat,
+   matahari bergerak menyusuri busur dan "tenggelam" di balik bukit saat maghrib. */
+.arch{
+  --ogee:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V52C0 33 13 23 29 15C39 10 46 6 50 0C54 6 61 10 71 15C87 23 100 33 100 52V100Z'/%3E%3C/svg%3E");
+  position:relative; height:400px; background:var(--emerald);
+  -webkit-mask:var(--ogee) 0 0/100% 100% no-repeat; mask:var(--ogee) 0 0/100% 100% no-repeat;
+  border-radius:0 0 26px 26px;
+}
+.win{
+  position:absolute; inset:34px 26px 0 26px; overflow:hidden;
+  background:var(--sky); transition:background 1.2s var(--ease); color:var(--sky-ink,#fff);
+  -webkit-mask:var(--ogee) 0 0/100% 100% no-repeat; mask:var(--ogee) 0 0/100% 100% no-repeat;
+}
+.win svg.path{position:absolute;left:0;right:0;top:70px;width:100%;height:190px;overflow:visible}
+.stars{position:absolute;inset:0;opacity:var(--stars,0);transition:opacity 1.2s}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+.sun{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#EDA07D;box-shadow:0 0 0 12px rgba(237,160,125,.18);transition:left 1.2s var(--ease),top 1.2s var(--ease),background 1.2s}
+.sun.moon{background:#F1EEE6;box-shadow:0 0 0 10px rgba(241,238,230,.12), inset -10px -4px 0 #D9D4C6}
+.hill{position:absolute;left:0;right:0;bottom:0;width:100%;height:150px}
+.hero-txt{position:absolute;right:20px;bottom:18px;text-align:right;color:var(--ink)}
+.hero-txt .now{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#A2563A}
+.hero-txt .cd{font-family:var(--f-disp);font-weight:400;font-size:46px;line-height:1;margin:4px 0 3px;letter-spacing:-.02em}
+.hero-txt .sub{font-size:12.5px;color:var(--ink2);font-weight:600}
+.skypick{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:11px;font-weight:700;color:var(--ink3)}
+.skypick button{width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);transition:transform .2s var(--ease)}
+.skypick button.on{transform:scale(1.15);box-shadow:0 0 0 2px var(--emerald)}
+
+/* ===== Tracker hari ini ===== */
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin:26px 2px 10px}
+.sec-h h2{margin:0;font-family:var(--f-disp);font-weight:500;font-size:21px;letter-spacing:-.02em}
+.streak-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:var(--gold-soft);color:#A2563A;font-size:12px;font-weight:800}
+.prayers{padding:6px}
+.pr{display:flex;align-items:center;gap:12px;padding:10px 10px;border-radius:14px;transition:background .25s}
+.pr + .pr{border-top:1px dashed var(--line)}
+.pr.next{background:var(--emerald-soft)}
+.pr .nm{font-weight:700;font-size:14.5px}
+.pr .tm{font-size:12px;color:var(--ink2)}
+.pr .st{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tag{font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
+.tag.ontime{background:var(--emerald-soft);color:var(--emerald)}
+.tag.late{background:var(--gold-soft);color:#A2563A}
+.tag.miss{background:var(--rose-soft);color:var(--rose)}
+.chk{position:relative;width:34px;height:34px;border-radius:50%;border:1.6px solid rgba(34,56,79,.22);display:grid;place-items:center;transition:all .3s var(--ease)}
+.chk svg{width:16px;height:16px;stroke:#fff;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .35s .05s var(--ease)}
+.chk.ontime{background:var(--emerald);border-color:var(--emerald)}
+.chk.late{background:var(--gold);border-color:var(--gold)}
+.chk.miss{background:var(--rose);border-color:var(--rose)}
+.chk.ontime svg,.chk.late svg{stroke-dashoffset:0}
+.chk.miss svg.x{stroke-dashoffset:0}
+.burst{position:absolute;inset:0;pointer-events:none}
+.burst i{position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;background:var(--gold);transform:rotate(45deg);animation:bst .6s var(--ease) forwards}
+@keyframes bst{to{transform:translate(var(--x),var(--y)) rotate(45deg) scale(.2);opacity:0}}
+.choose{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 10px;max-height:0;overflow:hidden;transition:max-height .35s var(--ease),padding .35s}
+.choose.open{max-height:60px;padding:4px 10px 10px}
+.choose button{height:36px;border-radius:10px;font-size:12px;font-weight:700;background:var(--sunk)}
+.choose button[data-s=ontime]{color:var(--emerald)} .choose button[data-s=late]{color:#A2563A} .choose button[data-s=miss]{color:var(--rose)}
+
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px}
+.quick a{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--ink2);text-decoration:none}
+.quick .ico{width:100%;aspect-ratio:1;border-radius:20px;display:grid;place-items:center;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--line);color:var(--emerald)}
+
+/* Doa pilihan */
+.feature{position:relative;overflow:hidden;padding:18px}
+.feature::before{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;opacity:.6;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23E59B78' stroke-width='.8'%3E%3Crect x='25' y='25' width='50' height='50'/%3E%3Crect x='25' y='25' width='50' height='50' transform='rotate(45 50 50)'/%3E%3Ccircle cx='50' cy='50' r='16'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+
+/* ===== Tracker screen ===== */
+.big-streak{display:flex;align-items:center;gap:16px;padding:20px}
+.big-streak .n{font-family:var(--f-disp);font-weight:400;font-size:64px;line-height:.9;color:var(--emerald)}
+.seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:3px}
+.seg button{padding:7px 12px;border-radius:9px;font-size:12px;font-weight:700;color:var(--ink2)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.heat-wrap{padding:16px 14px 14px;overflow:hidden}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,1fr);gap:3px}
+.heat i{width:100%;aspect-ratio:1;border-radius:3px;background:#E9EEF3;opacity:0;animation:pop .4s var(--ease) forwards;cursor:pointer}
+.heat i:hover{outline:1.5px solid var(--ink);outline-offset:1px}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+.l0{background:#E9EEF3!important}.l1{background:#CFE0F0!important}.l2{background:#A6C4E0!important}.l3{background:#7399BE!important}.l4{background:#4D7097!important}.l5{background:#2B4664!important}
+.lh{background:repeating-linear-gradient(45deg,#F3D3C2 0 3px,#F4EAD6 3px 6px)!important}
+.months{display:grid;grid-auto-flow:column;font-size:10px;color:var(--ink3);font-weight:700;margin-bottom:6px}
+.legend{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--ink2);font-weight:600}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--sunk);font-size:12.5px;min-height:42px}
+.bars .b{display:grid;grid-template-columns:62px 1fr 40px;align-items:center;gap:10px;font-size:12.5px;font-weight:700;padding:7px 0}
+.bars .t{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.bars .t span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--emerald-2),var(--emerald));width:0;transition:width 1s var(--ease)}
+.switch{width:46px;height:28px;border-radius:99px;background:var(--sunk);position:relative;transition:background .25s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .25s var(--ease)}
+.switch.on{background:var(--gold)} .switch.on::after{transform:translateX(18px)}
+
+/* ===== Doa list ===== */
+.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--line)}
+.search input{flex:1;border:0;background:none;font:inherit;font-size:14px;color:var(--ink);outline:none}
+.chips{display:flex;gap:7px;overflow-x:auto;margin:12px -18px 0;padding:2px 18px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:34px;padding:0 14px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--ink2);background:transparent;border:1px solid rgba(34,56,79,.14);transition:all .25s var(--ease)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin:14px 2px 10px}
+.toolbar select{font:inherit;font-size:12px;font-weight:700;color:var(--ink);background:var(--sunk);border:0;border-radius:10px;height:34px;padding:0 10px}
+.vt{display:inline-flex;background:var(--sunk);border-radius:11px;padding:3px}
+.vt button{width:34px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink2)}
+.vt button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.star{position:relative;width:34px;height:34px;flex:none;display:grid;place-items:center;font-size:11.5px;font-weight:800;color:var(--emerald)}
+.star svg{position:absolute;inset:0}
+.dcard{padding:16px 16px 14px;margin-bottom:12px;cursor:pointer;animation:in .4s var(--ease) both;transition:transform .25s var(--ease), box-shadow .25s}
+.dcard:hover{transform:translateY(-2px)}
+.dcard .t{font-family:var(--f-disp);font-weight:500;font-size:18px;letter-spacing:-.01em;margin:0}
+.dcard .ar{font-size:22px;margin:10px 0 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink2);font-weight:600}
+.dot{width:3px;height:3px;border-radius:50%;background:var(--ink3)}
+.src-warn{color:#A2563A}
+.drow{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;animation:in .35s var(--ease) both}
+.drow .t{font-weight:700;font-size:14.5px;margin:0}
+.fav{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--ink3);transition:transform .25s var(--ease),color .25s}
+.fav.on{color:var(--rose)} .fav.on svg{fill:var(--rose)}
+.fav:active{transform:scale(1.25)}
+.empty{text-align:center;padding:40px 10px;color:var(--ink2);font-size:13.5px}
+
+/* ===== Doa detail ===== */
+.dhead{position:sticky;top:0;z-index:5;margin:0 -18px;padding:14px 18px 10px;background:rgba(250,246,241,.92);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+.dhead.scrolled{border-color:var(--line)}
+.back{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--line)}
+.dtitle{font-family:var(--f-disp);font-weight:500;font-size:30px;line-height:1.1;letter-spacing:-.025em;margin:14px 0 8px}
+.opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.opt{height:32px;padding:0 12px;border-radius:999px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;color:var(--ink2);border:1px solid rgba(34,56,79,.14);transition:all .25s var(--ease)}
+.opt.on{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.opt .bx{width:12px;height:12px;border-radius:4px;border:1.5px solid currentColor;display:grid;place-items:center}
+.opt.on .bx::after{content:"";width:6px;height:6px;border-radius:2px;background:currentColor}
+.fs{margin-left:auto;display:inline-flex;align-items:center;background:var(--sunk);border-radius:999px;height:32px}
+.fs button{width:34px;height:32px;font-weight:800;font-size:12px}
+.reading{padding:22px 18px;margin-top:16px;position:relative;overflow:hidden}
+.reading .ar{font-size:var(--arsize,30px);margin:0;color:var(--ink)}
+.block{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);animation:in .35s var(--ease) both}
+.lat{font-style:italic;color:var(--emerald);font-size:15px;line-height:1.75;margin:6px 0 0}
+.tr{font-size:15px;line-height:1.75;margin:6px 0 0}
+.words{display:flex;flex-wrap:wrap;direction:rtl;gap:8px}
+.w{direction:ltr;text-align:center;padding:10px 10px 9px;border-radius:14px;background:var(--paper);border:1px solid var(--line);min-width:72px;flex:1 1 auto;max-width:100%;cursor:pointer;transition:all .25s var(--ease);animation:pop .35s var(--ease) both}
+.w:hover{border-color:var(--emerald-2)}
+.w.on{background:var(--emerald-soft);border-color:var(--emerald)}
+.w .wa{font-family:var(--f-ar);font-size:calc(var(--arsize,30px) * .8);line-height:1.6;direction:rtl}
+.w .wl{font-size:11.5px;font-style:italic;color:var(--emerald);margin-top:2px}
+.w .wt{font-size:11.5px;color:var(--ink2);margin-top:3px;font-weight:600;line-height:1.35}
+.source{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin-top:12px}
+.source.warn{background:#FDF1EA;border-color:#F3D3C2}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.actions button{height:52px;border-radius:16px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);font-size:11.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink2)}
+.done-btn{width:100%;height:54px;margin-top:12px;border-radius:18px;background:var(--emerald);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 14px 30px -14px rgba(51,80,111,.8)}
+.done-btn.ok{background:var(--gold)}
+
+/* ===== Nav bawah ===== */
+.nav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:calc(min(430px,100%) - 28px);height:66px;border-radius:24px;background:rgba(34,56,79,.94);backdrop-filter:blur(14px);display:grid;grid-template-columns:repeat(4,1fr);padding:6px;z-index:20;box-shadow:0 18px 40px -16px rgba(34,56,79,.7)}
+@media (min-width:520px){.nav{position:absolute;bottom:18px}}
+.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:18px;font-size:10.5px;font-weight:700;color:rgba(250,246,241,.55);transition:all .3s var(--ease)}
+.nav button.on{color:var(--ink);background:var(--paper)}
+.nav svg{width:20px;height:20px}
+.toast{position:fixed;left:50%;bottom:100px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-size:13px;font-weight:600;transition:all .35s var(--ease);z-index:30;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.proto{margin:20px 2px 0;font-size:11px;color:var(--ink3);text-align:center;line-height:1.5}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- ================= BERANDA ================= -->
+<section class="screen on" id="s-home">
+  <div class="top">
+    <div style="display:flex;gap:12px;align-items:center">
+    <img src="assets/icon.webp" alt="" width="44" height="44" style="border-radius:13px;box-shadow:var(--shadow)">
+    <div>
+      <div class="label" id="hijri">Memuat tanggal</div>
+      <div class="disp" style="font-size:22px;font-weight:500;margin-top:2px" id="greg">Hari ini</div>
+    </div></div>
+    <span class="loc"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Jakarta</span>
+  </div>
+
+  <div class="arch" id="arch"><div class="win" id="win">
+    <div class="stars" id="stars"></div>
+    <svg class="path" viewBox="0 0 360 190" preserveAspectRatio="none">
+      <path id="arc" d="M18 182 Q180 -40 342 182" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="3 5"/>
+      <g id="arcDots"></g>
+    </svg>
+    <div class="sun" id="sun"></div>
+    <svg class="hill" viewBox="0 0 360 150" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 150V128C55 62 150 26 240 24C292 23 330 33 360 46V150Z" fill="#FDF3EA"/>
+    </svg>
+    <div class="hero-txt">
+      <div class="now" id="nowLbl">Menuju Ashar</div>
+      <div class="cd num" id="cd">00:00:00</div>
+      <div class="sub" id="nextAt">Pukul 14.58 WIB</div>
+    </div>
+  </div></div>
+  <div class="skypick" id="skypick"></div>
+
+  <div class="sec-h">
+    <h2>Salat hari ini</h2>
+    <span class="streak-chip" id="streakChip"><svg class="i" style="width:14px;height:14px" viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="num">12</span> hari istiqamah</span>
+  </div>
+  <div class="card prayers" id="todayList"></div>
+
+  <div class="sec-h"><h2>Menu</h2></div>
+  <div class="quick">
+    <a href="#/doa" class="press"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M7 4h10a1 1 0 0 1 1 1v15l-6-3.5L6 20V5a1 1 0 0 1 1-1z"/></svg></span>Doa</a>
+    <a href="#/lainnya" class="press"><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.3"/><circle cx="12" cy="20" r="1.3"/><circle cx="4" cy="12" r="1.3"/><circle cx="20" cy="12" r="1.3"/></svg></span>Dzikir</a>
+    <a href="#/lainnya" class="press"><span class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg></span>Al-Qur'an</a>
+    <a href="#/lainnya" class="press"><span class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>Kiblat</a>
+  </div>
+
+  <div class="sec-h"><h2>Doa pilihan</h2><a href="#/doa" class="label" style="text-decoration:none;color:var(--emerald)">Lihat semua</a></div>
+  <div class="card feature press" id="featured" style="cursor:pointer"></div>
+  <p class="proto">Prototipe desain. Jadwal salat contoh untuk Jakarta, isi doa belum diverifikasi.</p>
+</section>
+
+<!-- ================= TRACKER ================= -->
+<section class="screen" id="s-tracker">
+  <div class="top"><div><div class="label">Tracker salat</div><div class="disp" style="font-size:28px;font-weight:500;margin-top:4px">Istiqamah kamu</div></div></div>
+
+  <div class="card big-streak">
+    <div class="n num" id="bigStreak">12</div>
+    <div>
+      <div style="font-weight:800;font-size:15px">hari berturut-turut</div>
+      <div style="font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.5">Lima waktu tercatat setiap hari. Rekor terbaik <b class="num" id="bestStreak">31</b> hari.</div>
+    </div>
+  </div>
+
+  <div class="sec-h"><h2>Jejak 6 bulan</h2>
+    <div class="seg" id="heatMode"><button class="on" data-m="all">Semua</button><button data-m="ontime">Tepat waktu</button></div>
+  </div>
+  <div class="card heat-wrap">
+    <div class="months" id="months"></div>
+    <div class="heat" id="heat"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="legend">Sedikit <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i> Lengkap</div>
+      <div class="legend"><i class="lh"></i> Udzur</div>
+    </div>
+    <div class="tip" id="tip">Ketuk satu kotak untuk melihat catatan hari itu.</div>
+  </div>
+
+  <div class="sec-h"><h2>Tepat waktu per salat</h2><span class="label">30 hari</span></div>
+  <div class="card bars" style="padding:10px 16px" id="bars"></div>
+
+  <div class="card" style="display:flex;align-items:center;gap:14px;padding:16px;margin-top:12px">
+    <div style="flex:1">
+      <div style="font-weight:800;font-size:14px">Mode udzur</div>
+      <div style="font-size:12.5px;color:var(--ink2);margin-top:2px;line-height:1.45">Jeda pencatatan saat haid atau nifas. Streak tidak putus.</div>
+    </div>
+    <button class="switch" id="udzur" aria-label="Mode udzur"></button>
+  </div>
+</section>
+
+<!-- ================= DAFTAR DOA ================= -->
+<section class="screen" id="s-doa">
+  <div class="top"><div><div class="label">Kumpulan doa</div><div class="disp" style="font-size:28px;font-weight:500;margin-top:4px">Doa harian</div></div></div>
+  <label class="search">
+    <svg class="i" viewBox="0 0 24 24" style="color:var(--ink3)"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+    <input id="q" placeholder="Cari doa: dhuha, rezeki, tidur" autocomplete="off">
+  </label>
+  <div class="chips" id="chips"></div>
+  <div class="toolbar">
+    <select id="sort" aria-label="Urutkan">
+      <option value="kat">Urut kategori</option>
+      <option value="az">Urut A sampai Z</option>
+      <option value="short">Terpendek dulu</option>
+      <option value="long">Terpanjang dulu</option>
+    </select>
+    <div class="vt" id="vt">
+      <button data-v="card" class="on" aria-label="Tampilan kartu"><svg class="i" style="width:17px;height:17px" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="7" rx="2"/><rect x="4" y="13" width="16" height="7" rx="2"/></svg></button>
+      <button data-v="list" aria-label="Tampilan daftar"><svg class="i" style="width:17px;height:17px" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".8"/><circle cx="4.5" cy="12" r=".8"/><circle cx="4.5" cy="18" r=".8"/></svg></button>
+    </div>
+  </div>
+  <div class="label" id="count" style="margin:0 2px 10px"></div>
+  <div id="list"></div>
+</section>
+
+<!-- ================= DETAIL DOA ================= -->
+<section class="screen" id="s-detail">
+  <div class="dhead" id="dhead">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="back press" id="back" aria-label="Kembali"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="label" id="dcat" style="flex:1"></div>
+      <button class="fav" id="dfav" aria-label="Favorit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+    </div>
+    <div class="opts">
+      <button class="opt on" data-o="lat"><span class="bx"></span>Latin</button>
+      <button class="opt on" data-o="tr"><span class="bx"></span>Terjemahan</button>
+      <button class="opt" data-o="wbw"><span class="bx"></span>Per kata</button>
+      <span class="fs"><button id="fsMinus" aria-label="Perkecil">A−</button><button id="fsPlus" aria-label="Perbesar" style="font-size:15px">A+</button></span>
+    </div>
+  </div>
+  <h1 class="dtitle" id="dtitle"></h1>
+  <div class="meta" id="dmeta"></div>
+  <div class="card reading" id="reading"></div>
+  <div class="card source" id="dsource"></div>
+  <div class="actions">
+    <button class="press" id="aCopy"><svg class="i" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Salin</button>
+    <button class="press" id="aShare"><svg class="i" viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg>Bagikan</button>
+    <button class="press" id="aColl"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Koleksi</button>
+  </div>
+  <button class="done-btn press" id="aDone"><svg class="i" viewBox="0 0 24 24" style="stroke-width:2.4"><path d="M5 12.5l4.5 4.5L19 7"/></svg><span>Tandai sudah dibaca</span></button>
+  <div style="height:20px"></div>
+</section>
+
+<!-- ================= LAINNYA ================= -->
+<section class="screen" id="s-lainnya">
+  <div class="top"><div><div class="label">Segera hadir</div><div class="disp" style="font-size:28px;font-weight:500;margin-top:4px">Fitur berikutnya</div></div></div>
+  <div class="card" style="padding:6px 16px" id="soon"></div>
+</section>
+
+<nav class="nav" id="nav">
+  <button data-r="beranda" class="on"><svg class="i" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5V19a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/></svg>Beranda</button>
+  <button data-r="tracker"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>Tracker</button>
+  <button data-r="doa"><svg class="i" viewBox="0 0 24 24"><path d="M7 4h10a1 1 0 0 1 1 1v15l-6-3.5L6 20V5a1 1 0 0 1 1-1z"/></svg>Doa</button>
+  <button data-r="lainnya"><svg class="i" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg>Lainnya</button>
+</nav>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ---------- util ---------- */
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('md:'+k); return v ? JSON.parse(v) : d }catch(e){ return d } },
+  set(k, v){ try{ localStorage.setItem('md:'+k, JSON.stringify(v)) }catch(e){} }
+};
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1800) }
+const pad = n => String(n).padStart(2,'0');
+const STAR = '<svg viewBox="0 0 34 34"><g fill="none" stroke="#E59B78" stroke-width="1"><rect x="8" y="8" width="18" height="18" rx="1.5"/><rect x="8" y="8" width="18" height="18" rx="1.5" transform="rotate(45 17 17)"/></g></svg>';
+
+/* ---------- tanggal ---------- */
+const now0 = new Date();
+$('#greg').textContent = new Intl.DateTimeFormat('id-ID',{weekday:'long',day:'numeric',month:'long'}).format(now0);
+try{
+  $('#hijri').textContent = new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(now0);
+}catch(e){ $('#hijri').textContent = 'Kalender Hijriah' }
+
+/* ---------- jadwal (contoh Jakarta, nanti dihitung adhan.js) ---------- */
+const PR = [
+  {k:'subuh',  n:'Subuh',  t:'04.02'},
+  {k:'dzuhur', n:'Dzuhur', t:'11.39'},
+  {k:'ashar',  n:'Ashar',  t:'14.58'},
+  {k:'maghrib',n:'Maghrib',t:'17.50'},
+  {k:'isya',   n:'Isya',   t:'19.02'},
+];
+const SUNRISE = 5*60+22;
+const toMin = t => { const [h,m]=t.split('.'); return +h*60 + +m };
+
+/* Langit tiap waktu. Gradien bukan dekorasi: ia memberi tahu "sekarang jam berapa" tanpa membaca angka. */
+const SKY = {
+  subuh:  {g:'linear-gradient(180deg,#34426E 0%,#7F7BA6 52%,#F1B497 100%)', stars:.7, ink:'#fff'},
+  dhuha:  {g:'linear-gradient(180deg,#A7CAEA 0%,#CFE2F3 55%,#F7E4D6 100%)', stars:0, ink:'#33506F'},
+  dzuhur: {g:'linear-gradient(180deg,#93BFE8 0%,#C3DBF1 60%,#E2EEF8 100%)', stars:0, ink:'#33506F'},
+  ashar:  {g:'linear-gradient(180deg,#A9C7E3 0%,#E2CDB8 62%,#F3D2B4 100%)', stars:0, ink:'#33506F'},
+  maghrib:{g:'linear-gradient(180deg,#4E5287 0%,#B87C93 52%,#F2A07C 100%)', stars:.35, ink:'#fff'},
+  isya:   {g:'linear-gradient(180deg,#17253F 0%,#26395E 60%,#3B5582 100%)', stars:1, ink:'#fff'},
+};
+function phaseAt(min){
+  if(min < toMin(PR[0].t)) return 'isya';
+  if(min < SUNRISE) return 'subuh';
+  if(min < toMin(PR[1].t)) return 'dhuha';
+  if(min < toMin(PR[2].t)) return 'dzuhur';
+  if(min < toMin(PR[3].t)) return 'ashar';
+  if(min < toMin(PR[4].t)) return 'maghrib';
+  return 'isya';
+}
+// bintang
+(function(){ let h=''; for(let i=0;i<34;i++){ h+=`<i style="left:${(i*37)%100}%;top:${(i*53)%62}%;animation-delay:${(i%7)*.4}s;opacity:${.4+(i%5)/8}"></i>` } $('#stars').innerHTML=h })();
+
+let skyOverride = null;
+const pick = $('#skypick');
+pick.innerHTML = '<span>Pratinjau langit</span>' + Object.keys(SKY).map(k=>`<button data-k="${k}" style="background:${SKY[k].g}" aria-label="Langit ${k}" title="${k}"></button>`).join('');
+pick.onclick = e => { const b=e.target.closest('button'); if(!b) return; skyOverride = skyOverride===b.dataset.k ? null : b.dataset.k; tick() };
+
+// titik waktu salat di lengkung
+function arcPoint(f){ const x0=18,x1=342,cx=180,cy=-40,y0=182; const x=(1-f)*(1-f)*x0+2*(1-f)*f*cx+f*f*x1; const y=(1-f)*(1-f)*y0+2*(1-f)*f*cy+f*f*y0; return [x,y] }
+const DAY0 = toMin(PR[0].t)-30, DAY1 = toMin(PR[4].t)+30;
+$('#arcDots').innerHTML = PR.map(p=>{ const f=(toMin(p.t)-DAY0)/(DAY1-DAY0); const [x,y]=arcPoint(f); return `<circle cx="${x}" cy="${y}" r="3" fill="currentColor" fill-opacity=".8"/><text x="${x}" y="${y-9}" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor" fill-opacity=".75" font-family="Plus Jakarta Sans">${p.n}</text>` }).join('');
+
+function tick(){
+  const d=new Date(), min=d.getHours()*60+d.getMinutes()+d.getSeconds()/60;
+  let i=PR.findIndex(p=>toMin(p.t)>min); const wrap=i<0; if(wrap) i=0;
+  const target=toMin(PR[i].t)+(wrap?1440:0); let left=Math.max(0,Math.round((target-min)*60));
+  $('#cd').textContent = `${pad(Math.floor(left/3600))}:${pad(Math.floor(left%3600/60))}:${pad(left%60)}`;
+  $('#nowLbl').textContent = 'Menuju ' + PR[i].n;
+  $('#nextAt').textContent = 'Pukul ' + PR[i].t + ' WIB';
+  const ph = skyOverride || phaseAt(min);
+  const win=$('#win'); win.style.setProperty('--sky', SKY[ph].g); win.style.setProperty('--stars', SKY[ph].stars); win.style.setProperty('--sky-ink', SKY[ph].ink);
+  [...pick.children].forEach(b=>b.classList.toggle('on', b.dataset.k===ph));
+  // posisi "matahari/bulan" sepanjang lengkung
+  let f = skyOverride ? ({subuh:.06,dhuha:.22,dzuhur:.45,ashar:.66,maghrib:.84,isya:.3})[ph] : (min-DAY0)/(DAY1-DAY0);
+  f=Math.min(1,Math.max(0,f)); if(SKY[ph].stars>.6 && !skyOverride) f=.3; /* malam: bulan diam di langit kiri */ const [x,y]=arcPoint(f);
+  // matahari = elemen HTML agar tetap bulat walau SVG busur direntang
+  const sun=$('#sun'); sun.style.left=(x/360*100)+'%'; sun.style.top=(70+y)+'px';
+  sun.classList.toggle('moon', SKY[ph].stars>.6);
+  if(nextIdx!==i){ nextIdx=i; renderToday() }
+}
+let nextIdx=-1;
+
+/* ---------- tracker hari ini ---------- */
+let today = store.get('today', {subuh:'ontime', dzuhur:'ontime'});
+const STAT = {ontime:'Tepat waktu', late:'Terlambat', miss:'Terlewat'};
+let openRow = null;
+function renderToday(){
+  $('#todayList').innerHTML = PR.map((p,idx)=>{
+    const s=today[p.k];
+    return `<div class="pr ${idx===nextIdx && !s ? 'next':''}" data-k="${p.k}">
+      <div><div class="nm">${p.n}</div><div class="tm num">${p.t} WIB</div></div>
+      <div class="st">${s?`<span class="tag ${s}">${STAT[s]}</span>`:''}
+        <button class="chk ${s||''}" aria-label="Catat ${p.n}">
+          ${s==='miss'?'<svg class="x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>':'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>'}
+          <span class="burst"></span></button>
+      </div></div>
+      <div class="choose ${openRow===p.k?'open':''}" data-for="${p.k}">
+        <button data-s="ontime">Tepat waktu</button><button data-s="late">Terlambat</button><button data-s="miss">Terlewat</button>
+      </div>`}).join('');
+  updateStreak();
+}
+$('#todayList').onclick = e => {
+  const c=e.target.closest('.choose button');
+  if(c){ const k=c.parentElement.dataset.for; today[k]=c.dataset.s; openRow=null; store.set('today',today); renderToday();
+    if(c.dataset.s!=='miss') burst(k); return }
+  const row=e.target.closest('.pr'); if(!row) return;
+  const k=row.dataset.k;
+  if(e.target.closest('.chk') && !today[k]){ today[k]='ontime'; store.set('today',today); openRow=null; renderToday(); burst(k); return }
+  openRow = openRow===k ? null : k; renderToday();
+};
+function burst(k){
+  const b=document.querySelector(`.pr[data-k="${k}"] .burst`); if(!b) return;
+  b.innerHTML = Array.from({length:8},(_,i)=>{ const a=i*Math.PI/4; return `<i style="--x:${Math.cos(a)*26}px;--y:${Math.sin(a)*26}px"></i>` }).join('');
+  if(PR.every(p=>today[p.k] && today[p.k]!=='miss')) setTimeout(()=>toast('Lima waktu lengkap hari ini. Streak bertambah.'),400);
+}
+const BASE_STREAK = 12;
+function updateStreak(){
+  const full = PR.every(p=>today[p.k] && today[p.k]!=='miss');
+  const n = BASE_STREAK + (full?1:0);
+  $('#streakChip .num').textContent = n; $('#bigStreak').textContent = n;
+}
+
+/* ---------- heatmap ala kontribusi ---------- */
+// Data contoh deterministik supaya tampilan stabil tiap dibuka.
+function rng(seed){ return ()=> (seed = (seed*16807)%2147483647) / 2147483647 }
+const R = rng(7);
+const WEEKS = 26, days=[];
+const end = new Date(); end.setHours(0,0,0,0);
+const start = new Date(end); start.setDate(end.getDate() - (WEEKS*7 - 1) - ((end.getDay()+6)%7 - 6 + 7)%7);
+for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+  const age=(end-d)/864e5; const r=R();
+  let done = age<12 ? 5 : r<.55?5 : r<.75?4 : r<.88?3 : r<.95?2 : r<.98?1:0;
+  let ontime = Math.max(0, done - (R()<.4?1:0) - (R()<.15?1:0));
+  const udzur = age>40 && age<47;
+  days.push({date:new Date(d), done, ontime, udzur});
+}
+let heatMode='all';
+function renderHeat(){
+  const lead = (days[0].date.getDay()+6)%7; // Senin = baris pertama
+  let html = '<i style="visibility:hidden"></i>'.repeat(lead);
+  days.forEach((d,i)=>{ const v = heatMode==='all'?d.done:d.ontime;
+    html += `<i class="${d.udzur?'lh':'l'+v}" data-i="${i}" style="animation-delay:${Math.floor((i+lead)/7)*18}ms"></i>` });
+  const heat=$('#heat'); heat.innerHTML=html;
+  const cols = Math.ceil((days.length+lead)/7);
+  heat.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  // label bulan
+  let m=''; let last=-1;
+  for(let c=0;c<cols;c++){ const di=c*7-lead; const d=days[Math.max(0,di)]; const mo=d.date.getMonth();
+    m += `<span>${mo!==last && di>=0 ? new Intl.DateTimeFormat('id-ID',{month:'short'}).format(d.date):''}</span>`; if(di>=0) last=mo }
+  $('#months').innerHTML=m; $('#months').style.gridTemplateColumns=`repeat(${cols},1fr)`;
+}
+$('#heat').onclick = e => { const c=e.target.closest('[data-i]'); if(!c) return; const d=days[+c.dataset.i];
+  const tgl = new Intl.DateTimeFormat('id-ID',{weekday:'long',day:'numeric',month:'long'}).format(d.date);
+  $('#tip').innerHTML = d.udzur ? `<b>${tgl}</b><br>Mode udzur aktif, tidak dihitung.` : `<b>${tgl}</b><br>${d.done} dari 5 salat tercatat, ${d.ontime} tepat waktu.` };
+$('#heatMode').onclick = e => { const b=e.target.closest('button'); if(!b) return; heatMode=b.dataset.m;
+  [...$('#heatMode').children].forEach(x=>x.classList.toggle('on',x===b)); renderHeat() };
+function renderBars(){
+  const v={Subuh:71,Dzuhur:93,Ashar:88,Maghrib:97,Isya:84};
+  $('#bars').innerHTML = Object.entries(v).map(([k,p])=>`<div class="b"><span>${k}</span><span class="t"><span data-w="${p}"></span></span><span class="num" style="text-align:right">${p}%</span></div>`).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#bars [data-w]').forEach(s=>s.style.width=s.dataset.w+'%')));
+}
+let udzur = store.get('udzur', false);
+$('#udzur').classList.toggle('on', udzur);
+$('#udzur').onclick = () => { udzur=!udzur; store.set('udzur',udzur); $('#udzur').classList.toggle('on',udzur); toast(udzur?'Mode udzur aktif. Streak dijeda.':'Mode udzur nonaktif.') };
+
+/* ---------- data doa (CONTOH, wajib diverifikasi sebelum rilis) ---------- */
+const DOA = [
+ {id:1,t:'Doa setelah salat fardu',k:'Salat',s:'HR. Muslim',
+  w:[['اللَّهُمَّ','Allāhumma','Ya Allah'],['أَنْتَ','anta','Engkau'],['السَّلَامُ','as-salām','Maha Pemberi keselamatan'],['وَمِنْكَ','wa minka','dan dari-Mu'],['السَّلَامُ','as-salām','keselamatan'],['تَبَارَكْتَ','tabārakta','Mahaberkah Engkau'],['يَا','yā','wahai'],['ذَا الْجَلَالِ','dzal-jalāli','Pemilik keagungan'],['وَالْإِكْرَامِ','wal-ikrām','dan kemuliaan']],
+  tr:'Ya Allah, Engkaulah As-Salām dan dari-Mu keselamatan. Mahaberkah Engkau, wahai Pemilik keagungan dan kemuliaan.'},
+ {id:2,t:'Doa setelah salat duha',k:'Salat',s:'Amalan ulama, tidak ditemukan dalam kitab hadis',warn:1,
+  ar:'اللَّهُمَّ إِنَّ الضُّحَاءَ ضُحَاؤُكَ وَالْبَهَاءَ بَهَاؤُكَ وَالْجَمَالَ جَمَالُكَ',
+  lat:'Allāhumma innaḍ-ḍuḥā\'a ḍuḥā\'uka wal-bahā\'a bahā\'uka wal-jamāla jamāluka',
+  tr:'Ya Allah, sesungguhnya waktu duha adalah waktu-Mu, keagungan adalah keagungan-Mu, dan keindahan adalah keindahan-Mu. (awal doa)'},
+ {id:3,t:'Sayyidul istighfar',k:'Waktu',s:'HR. Bukhari',note:'Dibaca pagi dan petang.',
+  w:[['اللَّهُمَّ أَنْتَ رَبِّي','Allāhumma anta rabbī','Ya Allah, Engkau Tuhanku'],['لَا إِلَهَ إِلَّا أَنْتَ','lā ilāha illā anta','tiada tuhan selain Engkau'],['خَلَقْتَنِي','khalaqtanī','Engkau menciptakanku'],['وَأَنَا عَبْدُكَ','wa ana \'abduka','dan aku hamba-Mu'],['وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ','wa ana \'alā \'ahdika wa wa\'dika','aku di atas perjanjian dan janji-Mu'],['مَا اسْتَطَعْتُ','mastaṭa\'tu','semampuku'],['أَعُوذُ بِكَ','a\'ūdzu bika','aku berlindung kepada-Mu'],['مِنْ شَرِّ مَا صَنَعْتُ','min syarri mā ṣana\'tu','dari keburukan perbuatanku'],['أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ','abū\'u laka bini\'matika \'alayya','aku mengakui nikmat-Mu kepadaku'],['وَأَبُوءُ بِذَنْبِي','wa abū\'u bidzanbī','dan aku mengakui dosaku'],['فَاغْفِرْ لِي','faghfir lī','maka ampunilah aku'],['فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ','fa innahū lā yaghfirudz-dzunūba','sungguh tiada yang mengampuni dosa'],['إِلَّا أَنْتَ','illā anta','selain Engkau']],
+  tr:'Ya Allah, Engkau Tuhanku, tiada tuhan selain Engkau. Engkau menciptakanku dan aku hamba-Mu. Aku di atas perjanjian dan janji-Mu semampuku. Aku berlindung kepada-Mu dari keburukan perbuatanku. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, maka ampunilah aku. Sungguh tiada yang mengampuni dosa selain Engkau.'},
+ {id:4,t:'Doa dimudahkan urusan',k:'Kebutuhan',s:'QS. Taha: 25 sampai 26',
+  w:[['رَبِّ','Rabbi','Ya Tuhanku'],['اشْرَحْ','isyraḥ','lapangkanlah'],['لِي','lī','untukku'],['صَدْرِي','ṣadrī','dadaku'],['وَيَسِّرْ','wa yassir','dan mudahkanlah'],['لِي','lī','untukku'],['أَمْرِي','amrī','urusanku']],
+  tr:'Ya Tuhanku, lapangkanlah dadaku, dan mudahkanlah untukku urusanku.'},
+ {id:5,t:'Doa tambahan ilmu',k:'Kebutuhan',s:'QS. Taha: 114',
+  w:[['رَبِّ','Rabbi','Ya Tuhanku'],['زِدْنِي','zidnī','tambahkanlah kepadaku'],['عِلْمًا','\'ilmā','ilmu']],
+  tr:'Ya Tuhanku, tambahkanlah ilmu kepadaku.'},
+ {id:6,t:'Doa kebaikan dunia dan akhirat',k:'Kebutuhan',s:'QS. Al-Baqarah: 201',
+  w:[['رَبَّنَا','Rabbanā','Ya Tuhan kami'],['آتِنَا','ātinā','berilah kami'],['فِي الدُّنْيَا','fid-dunyā','di dunia'],['حَسَنَةً','ḥasanah','kebaikan'],['وَفِي الْآخِرَةِ','wa fil-ākhirati','dan di akhirat'],['حَسَنَةً','ḥasanah','kebaikan'],['وَقِنَا','wa qinā','dan lindungilah kami'],['عَذَابَ','\'adzāba','dari azab'],['النَّارِ','an-nār','neraka']],
+  tr:'Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari azab neraka.'},
+ {id:7,t:'Doa memohon kesembuhan',k:'Kebutuhan',s:'HR. Bukhari dan Muslim',
+  w:[['اللَّهُمَّ','Allāhumma','Ya Allah'],['رَبَّ النَّاسِ','rabban-nās','Tuhan manusia'],['أَذْهِبِ','adzhibi','hilangkanlah'],['الْبَأْسَ','al-ba\'s','penyakit ini'],['اشْفِ','isyfi','sembuhkanlah'],['أَنْتَ الشَّافِي','antasy-syāfī','Engkaulah Yang Maha Menyembuhkan'],['لَا شِفَاءَ','lā syifā\'a','tiada kesembuhan'],['إِلَّا شِفَاؤُكَ','illā syifā\'uka','selain kesembuhan-Mu']],
+  tr:'Ya Allah, Tuhan manusia, hilangkanlah penyakit ini. Sembuhkanlah, Engkaulah Yang Maha Menyembuhkan, tiada kesembuhan selain kesembuhan-Mu.'},
+ {id:8,t:'Doa sebelum tidur',k:'Waktu',s:'HR. Bukhari',
+  w:[['بِاسْمِكَ','Bismika','Dengan nama-Mu'],['اللَّهُمَّ','Allāhumma','ya Allah'],['أَمُوتُ','amūtu','aku mati'],['وَأَحْيَا','wa aḥyā','dan aku hidup']],
+  tr:'Dengan nama-Mu ya Allah, aku mati dan aku hidup.'},
+ {id:9,t:'Doa keluar rumah',k:'Aktivitas',s:'HR. Abu Dawud dan Tirmidzi',
+  w:[['بِسْمِ اللهِ','Bismillāhi','Dengan nama Allah'],['تَوَكَّلْتُ','tawakkaltu','aku bertawakal'],['عَلَى اللهِ','\'alallāh','kepada Allah'],['لَا حَوْلَ','lā ḥaula','tiada daya'],['وَلَا قُوَّةَ','wa lā quwwata','dan tiada kekuatan'],['إِلَّا بِاللهِ','illā billāh','kecuali dengan Allah']],
+  tr:'Dengan nama Allah, aku bertawakal kepada Allah. Tiada daya dan kekuatan kecuali dengan pertolongan Allah.'},
+];
+DOA.forEach(d=>{ if(d.w){ d.ar=d.w.map(x=>x[0]).join(' '); d.lat=d.w.map(x=>x[1]).join(' ') } d.n=d.ar.split(/\s+/).length });
+const CATS=['Semua','Salat','Kebutuhan','Waktu','Aktivitas','Favorit'];
+let st = store.get('doaView', {v:'card', s:'kat'}); st.k='Semua'; st.q='';
+let favs = new Set(store.get('favs',[4]));
+let read = new Set(store.get('read',[]));
+let opt = store.get('opt',{lat:true,tr:true,wbw:false,size:30});
+
+const norm = x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/dh|dl|dz/g,'d').replace(/sy/g,'s').replace(/[^a-z0-9 ]/g,'');
+function filtered(){
+  let r = DOA.filter(d => st.k==='Semua' || (st.k==='Favorit' ? favs.has(d.id) : d.k===st.k));
+  if(st.q){ const q=norm(st.q); r=r.filter(d=>norm([d.t,d.k,d.tr,d.lat,d.s].join(' ')).includes(q)) }
+  const by = {az:(a,b)=>a.t.localeCompare(b.t,'id'), short:(a,b)=>a.n-b.n, long:(a,b)=>b.n-a.n, kat:(a,b)=>CATS.indexOf(a.k)-CATS.indexOf(b.k)};
+  return r.sort(by[st.s]);
+}
+const heart = d => `<button class="fav ${favs.has(d.id)?'on':''}" data-f="${d.id}" aria-label="Favorit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>`;
+function renderChips(){ $('#chips').innerHTML = CATS.map(c=>`<button class="chip ${st.k===c?'on':''}" data-c="${c}">${c}${c==='Favorit'?` · ${favs.size}`:''}</button>`).join('') }
+function renderList(){
+  const r=filtered(); $('#count').textContent = r.length + ' doa';
+  if(!r.length){ $('#list').innerHTML = `<div class="empty">Belum ada doa yang cocok.<br>Coba kata lain atau pilih kategori Semua.</div>`; return }
+  $('#list').innerHTML = st.v==='card'
+   ? r.map((d,i)=>`<article class="card dcard" data-o="${d.id}" style="animation-delay:${i*45}ms">
+       <div style="display:flex;align-items:center;gap:10px"><span class="star">${STAR}<span style="position:relative">${d.id}</span></span><span class="label" style="flex:1">${d.k}</span>${heart(d)}</div>
+       <p class="ar">${d.ar}</p>
+       <h3 class="t">${d.t}</h3>
+       <div class="meta" style="margin-top:6px"><span class="${d.warn?'src-warn':''}">${d.s}</span><span class="dot"></span><span class="num">${d.n} kata</span>${read.has(d.id)?'<span class="dot"></span><span style="color:var(--emerald)">Dibaca</span>':''}</div>
+     </article>`).join('')
+   : `<div class="card" style="padding:4px 12px">${r.map((d,i)=>`<div class="drow" data-o="${d.id}" style="animation-delay:${i*30}ms;${i===r.length-1?'border:0':''}">
+       <span class="star">${STAR}<span style="position:relative">${d.id}</span></span>
+       <div style="flex:1;min-width:0"><p class="t">${d.t}</p><div class="meta"><span>${d.k}</span><span class="dot"></span><span class="${d.warn?'src-warn':''}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.s}</span></div></div>
+       ${heart(d)}</div>`).join('')}</div>`;
+}
+function vt(fn){ document.startViewTransition ? document.startViewTransition(fn) : fn() }
+$('#chips').onclick = e => { const b=e.target.closest('[data-c]'); if(!b) return; st.k=b.dataset.c; renderChips(); vt(renderList) };
+$('#q').oninput = e => { st.q=e.target.value; renderList() };
+$('#sort').value = st.s;
+$('#sort').onchange = e => { st.s=e.target.value; store.set('doaView',{v:st.v,s:st.s}); vt(renderList) };
+$('#vt').onclick = e => { const b=e.target.closest('[data-v]'); if(!b) return; st.v=b.dataset.v; store.set('doaView',{v:st.v,s:st.s});
+  [...$('#vt').children].forEach(x=>x.classList.toggle('on',x===b)); vt(renderList) };
+[...$('#vt').children].forEach(x=>x.classList.toggle('on',x.dataset.v===st.v));
+$('#list').onclick = e => {
+  const f=e.target.closest('[data-f]'); if(f){ toggleFav(+f.dataset.f); renderList(); renderChips(); return }
+  const o=e.target.closest('[data-o]'); if(o) location.hash = '#/doa/'+o.dataset.o;
+};
+function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); store.set('favs',[...favs]); toast(favs.has(id)?'Disimpan ke favorit':'Dihapus dari favorit') }
+
+/* ---------- detail doa (layar penuh, bukan pop-up) ---------- */
+let cur=null;
+function renderDetail(id){
+  cur = DOA.find(d=>d.id===id); if(!cur){ location.hash='#/doa'; return }
+  $('#dcat').textContent = cur.k;
+  $('#dtitle').textContent = cur.t;
+  $('#dmeta').innerHTML = `<span class="num">${cur.n} kata</span><span class="dot"></span><span>${cur.s.split(',')[0]}</span>`;
+  $('#dfav').classList.toggle('on', favs.has(cur.id));
+  document.querySelectorAll('.opt').forEach(b=>b.classList.toggle('on', !!opt[b.dataset.o]));
+  renderReading();
+  $('#dsource').className = 'card source' + (cur.warn?' warn':'');
+  $('#dsource').innerHTML = `<svg class="i" viewBox="0 0 24 24" style="color:${cur.warn?'#A2563A':'var(--emerald)'};flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+    <div><div class="label">Sumber</div><div style="font-size:14px;font-weight:700;margin-top:3px;${cur.warn?'color:#A2563A':''}">${cur.s}</div>
+    ${cur.note?`<div style="font-size:12.5px;color:var(--ink2);margin-top:3px">${cur.note}</div>`:''}
+    ${cur.warn?`<div style="font-size:12.5px;color:#A2563A;margin-top:4px;line-height:1.5">Boleh diamalkan sebagai doa umum, tapi tidak disandarkan kepada Nabi ﷺ.</div>`:''}</div>`;
+  const dn=$('#aDone'); dn.classList.toggle('ok', read.has(cur.id)); dn.querySelector('span').textContent = read.has(cur.id)?'Sudah dibaca hari ini':'Tandai sudah dibaca';
+  window.scrollTo(0,0);
+}
+function renderReading(){
+  const el=$('#reading'); el.style.setProperty('--arsize', opt.size+'px');
+  if(opt.wbw){
+    el.innerHTML = cur.w
+      ? `<div class="label" style="margin-bottom:12px">Per kata · ketuk untuk menandai</div><div class="words">${cur.w.map((x,i)=>`<div class="w" style="animation-delay:${i*35}ms"><div class="wa">${x[0]}</div>${opt.lat?`<div class="wl">${x[1]}</div>`:''}${opt.tr?`<div class="wt">${x[2]}</div>`:''}</div>`).join('')}</div>`
+      : `<p class="ar">${cur.ar}</p><div class="block"><div class="label">Per kata</div><p class="tr" style="color:var(--ink2)">Terjemahan per kata untuk doa ini belum tersedia.</p></div>`;
+    if(cur.w && opt.tr) el.innerHTML += `<div class="block"><div class="label">Terjemahan utuh</div><p class="tr">${cur.tr}</p></div>`;
+  } else {
+    el.innerHTML = `<p class="ar">${cur.ar}</p>`
+      + (opt.lat?`<div class="block"><div class="label">Transliterasi</div><p class="lat">${cur.lat}</p></div>`:'')
+      + (opt.tr?`<div class="block" style="animation-delay:60ms"><div class="label">Terjemahan</div><p class="tr">${cur.tr}</p></div>`:'');
+  }
+}
+$('#reading').onclick = e => { const w=e.target.closest('.w'); if(w) w.classList.toggle('on') };
+document.querySelector('.opts').onclick = e => { const b=e.target.closest('.opt'); if(!b) return; opt[b.dataset.o]=!opt[b.dataset.o]; b.classList.toggle('on',opt[b.dataset.o]); store.set('opt',opt); vt(renderReading) };
+$('#fsMinus').onclick = () => { opt.size=Math.max(22,opt.size-3); store.set('opt',opt); renderReading() };
+$('#fsPlus').onclick = () => { opt.size=Math.min(46,opt.size+3); store.set('opt',opt); renderReading() };
+$('#dfav').onclick = () => { toggleFav(cur.id); $('#dfav').classList.toggle('on',favs.has(cur.id)) };
+$('#back').onclick = () => history.length>1 ? history.back() : (location.hash='#/doa');
+$('#aCopy').onclick = async () => { const txt=`${cur.t}\n\n${cur.ar}\n\n${cur.lat}\n\n"${cur.tr}"\n(${cur.s})`; try{ await navigator.clipboard.writeText(txt); toast('Doa disalin') }catch(e){ toast('Tidak bisa menyalin di browser ini') } };
+$('#aShare').onclick = async () => { if(navigator.share){ try{ await navigator.share({title:cur.t,text:`${cur.ar}\n\n${cur.tr}\n(${cur.s})`}) }catch(e){} } else toast('Bagikan tersedia di HP') };
+$('#aColl').onclick = () => toast('Koleksi pribadi hadir di versi aplikasi');
+$('#aDone').onclick = () => { read.has(cur.id)?read.delete(cur.id):read.add(cur.id); store.set('read',[...read]); renderDetail(cur.id); if(read.has(cur.id)) toast('Alhamdulillah, tercatat') };
+window.addEventListener('scroll', () => $('#dhead').classList.toggle('scrolled', scrollY>10), {passive:true});
+
+/* ---------- doa pilihan di beranda ---------- */
+function renderFeatured(){
+  const d = DOA[3];
+  $('#featured').innerHTML = `<div class="label" style="position:relative">${d.k}</div>
+    <p class="ar" style="font-size:26px;margin:8px 0 4px;position:relative">${d.ar}</p>
+    <div class="disp" style="font-size:17px;font-weight:500;position:relative">${d.t}</div>
+    <div style="font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.55;position:relative">${d.tr}</div>`;
+  $('#featured').onclick = () => location.hash = '#/doa/'+d.id;
+}
+
+$('#soon').innerHTML = [['Al-Qur\'an','Mushaf lengkap dengan terjemahan per kata'],['Dzikir pagi dan petang','Penghitung dan pengingat'],['Kiblat','Kompas dengan kalibrasi'],['Notifikasi adzan','Fase 2, butuh Web Push'],['Pengaturan','Metode hitung, mazhab, lokasi']]
+  .map((x,i,a)=>`<div style="display:flex;gap:12px;align-items:center;padding:13px 0;${i<a.length-1?'border-bottom:1px solid var(--line)':''}"><span class="star">${STAR}<span style="position:relative">${i+1}</span></span><div><div style="font-weight:700;font-size:14.5px">${x[0]}</div><div style="font-size:12.5px;color:var(--ink2)">${x[1]}</div></div></div>`).join('');
+
+/* ---------- router ---------- */
+function route(){
+  const h = location.hash.replace('#/','') || 'beranda';
+  const [base, id] = h.split('/');
+  const map = {beranda:'s-home', tracker:'s-tracker', doa: id?'s-detail':'s-doa', lainnya:'s-lainnya'};
+  const target = map[base] || 's-home';
+  document.querySelectorAll('.screen').forEach(s=>{ s.classList.remove('on','push') });
+  const el = document.getElementById(target); el.classList.add('on'); if(target==='s-detail') el.classList.add('push');
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.r===base));
+  if(target==='s-detail') renderDetail(+id);
+  if(target==='s-doa'){ renderChips(); renderList() }
+  if(target==='s-tracker'){ renderHeat(); renderBars() }
+  if(target!=='s-detail') window.scrollTo(0,0);
+}
+$('#nav').onclick = e => { const b=e.target.closest('[data-r]'); if(b) location.hash = '#/'+b.dataset.r };
+window.addEventListener('hashchange', route);
+
+renderFeatured(); tick(); setInterval(tick,1000); route();
+</script>
+</body>
+</html>
