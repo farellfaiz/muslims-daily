@@ -1,4 +1,4 @@
-import { METHODS, PRAYERS, type MadhabKey, type MethodKey, type PrayerKey } from './prayer.ts';
+import { ADJUST_LIMIT, IMSAK_MINUTES, METHODS, PRAYERS, type Adjust, type MadhabKey, type MethodKey, type PrayerKey } from './prayer.ts';
 import type { DayLog, TrackerData } from './tracker.ts';
 
 /**
@@ -23,6 +23,8 @@ export interface BackupSettings {
 	lng: number;
 	method: MethodKey;
 	madhab: MadhabKey;
+	adjust: Adjust;
+	imsak: number;
 }
 
 export interface BackupReading {
@@ -105,7 +107,16 @@ function cleanSettings(raw: unknown): BackupSettings | null {
 	if (!isNum(lat) || !isNum(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
 	if (typeof method !== 'string' || !METHOD_KEYS.has(method)) return null;
 	if (madhab !== 'syafii' && madhab !== 'hanafi') return null;
-	return { place, label: label.slice(0, 80), lat, lng, method: method as MethodKey, madhab };
+	const adjust: Adjust = {};
+	if (isObj(raw.adjust)) {
+		for (const [k, v] of Object.entries(raw.adjust)) {
+			if (PRAYER_KEYS.has(k) && isNum(v) && v !== 0) {
+				adjust[k as PrayerKey] = Math.max(-ADJUST_LIMIT, Math.min(ADJUST_LIMIT, Math.round(v)));
+			}
+		}
+	}
+	const imsak = isNum(raw.imsak) && raw.imsak >= 0 && raw.imsak <= 30 ? Math.round(raw.imsak) : IMSAK_MINUTES;
+	return { place, label: label.slice(0, 80), lat, lng, method: method as MethodKey, madhab, adjust, imsak };
 }
 
 function cleanDoa(raw: unknown): BackupDoa | null {

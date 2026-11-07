@@ -49,8 +49,26 @@ function params(method: MethodKey, madhab: MadhabKey): CalculationParameters {
 
 export type DayTimes = Record<PrayerKey | 'terbit', Date>;
 
-export function timesFor(date: Date, lat: number, lng: number, method: MethodKey, madhab: MadhabKey): DayTimes {
-	const t = new PrayerTimes(new Coordinates(lat, lng), date, params(method, madhab));
+/** Koreksi manual dalam menit per salat (+ = lebih lambat), mis. supaya sama dengan jadwal masjid setempat. */
+export type Adjust = Partial<Record<PrayerKey, number>>;
+export const ADJUST_LIMIT = 30;
+
+export function timesFor(
+	date: Date,
+	lat: number,
+	lng: number,
+	method: MethodKey,
+	madhab: MadhabKey,
+	adjust: Adjust = {}
+): DayTimes {
+	const p = params(method, madhab);
+	const map = { subuh: 'fajr', dzuhur: 'dhuhr', ashar: 'asr', maghrib: 'maghrib', isya: 'isha' } as const;
+	for (const [k, v] of Object.entries(adjust) as [PrayerKey, number][]) {
+		if (!v) continue;
+		const m = Math.max(-ADJUST_LIMIT, Math.min(ADJUST_LIMIT, Math.round(v)));
+		p.adjustments[map[k]] += m;
+	}
+	const t = new PrayerTimes(new Coordinates(lat, lng), date, p);
 	return { subuh: t.fajr, terbit: t.sunrise, dzuhur: t.dhuhr, ashar: t.asr, maghrib: t.maghrib, isya: t.isha };
 }
 
@@ -93,8 +111,9 @@ export interface HeroArc {
 	maghrib?: Date;
 }
 
-/** Jarak imsak sebelum Subuh, mengikuti kebiasaan jadwal imsakiyah di Indonesia. */
+/** Jarak imsak sebelum Subuh, mengikuti kebiasaan jadwal imsakiyah di Indonesia (bisa diatur pengguna). */
 export const IMSAK_MINUTES = 10;
+export const IMSAK_OPTIONS = [5, 10, 15] as const;
 
 /**
  * Busur di hero punya dua mode:
@@ -104,7 +123,13 @@ export const IMSAK_MINUTES = 10;
  * Malam dihitung dari Maghrib sampai Subuh (pendapat jumhur), lalu dibagi tiga.
  * Sepertiga terakhir adalah waktu terbaik qiyamul lail, dan sahur sebaiknya diakhirkan menjelang imsak.
  */
-export function heroArc(now: Date, yesterday: DayTimes, today: DayTimes, tomorrow: DayTimes): HeroArc {
+export function heroArc(
+	now: Date,
+	yesterday: DayTimes,
+	today: DayTimes,
+	tomorrow: DayTimes,
+	imsakMinutes: number = IMSAK_MINUTES
+): HeroArc {
 	if (now >= today.subuh && now < today.isya) {
 		return {
 			mode: 'day',
@@ -128,7 +153,7 @@ export function heroArc(now: Date, yesterday: DayTimes, today: DayTimes, tomorro
 	const night = +dawn - +evening.maghrib;
 	const midnight = new Date(+evening.maghrib + night / 2);
 	const thirdFrom = new Date(+dawn - night / 3);
-	const imsak = new Date(+dawn - IMSAK_MINUTES * 60e3);
+	const imsak = new Date(+dawn - imsakMinutes * 60e3);
 	return {
 		mode: 'night',
 		start: evening.isya,

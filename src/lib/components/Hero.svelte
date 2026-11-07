@@ -34,6 +34,7 @@
 	import { countdown, formatTime, tzLabel } from '#lib/date.ts';
 	import { heroArc, nextPrayer, skyPhase, type DayTimes } from '#lib/prayer.ts';
 	import Icon from './Icon.svelte';
+	import { settings } from '#lib/state/app.svelte.ts';
 
 	let {
 		now,
@@ -43,7 +44,7 @@
 	}: { now: Date | null; yesterday: DayTimes | null; today: DayTimes | null; tomorrow: DayTimes | null } = $props();
 
 	const ready = $derived(!!(now && yesterday && today && tomorrow));
-	const arc = $derived(ready ? heroArc(now!, yesterday!, today!, tomorrow!) : null);
+	const arc = $derived(ready ? heroArc(now!, yesterday!, today!, tomorrow!, settings.value.imsak) : null);
 	const frac = (d: Date) => (arc ? (+d - +arc.start) / (+arc.end - +arc.start) : 0.5);
 
 	const points = $derived(arc ? arc.points.map((p) => ({ ...p, pt: arcPoint(frac(p.at)) })) : []);

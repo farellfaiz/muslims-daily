@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AdjustCard from '#lib/components/AdjustCard.svelte';
 	import BackupCard from '#lib/components/BackupCard.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
@@ -94,6 +95,8 @@
 	</div>
 	<p class="hint">Pilihan Syafi'i juga sesuai untuk Maliki dan Hanbali. Hanafi membuat Ashar lebih lambat.</p>
 </section>
+
+<AdjustCard />
 
 <BackupCard />
 

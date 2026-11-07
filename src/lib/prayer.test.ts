@@ -76,3 +76,32 @@ describe('busur hero siang dan malam', () => {
 	});
 });
 
+describe('koreksi manual', () => {
+	const date = new Date(Date.UTC(2026, 10, 7, 5));
+	const base = timesFor(date, DEFAULT_CITY.lat, DEFAULT_CITY.lng, 'kemenag', 'syafii');
+
+	it('menggeser hanya salat yang dikoreksi', () => {
+		const t = timesFor(date, DEFAULT_CITY.lat, DEFAULT_CITY.lng, 'kemenag', 'syafii', { maghrib: 3, subuh: -2 });
+		expect((+t.maghrib - +base.maghrib) / 60e3).toBe(3);
+		expect((+t.subuh - +base.subuh) / 60e3).toBe(-2);
+		expect(+t.dzuhur).toBe(+base.dzuhur);
+		expect(+t.terbit).toBe(+base.terbit);
+	});
+
+	it('koreksi dibatasi 30 menit', () => {
+		const t = timesFor(date, DEFAULT_CITY.lat, DEFAULT_CITY.lng, 'kemenag', 'syafii', { isya: 90 });
+		expect((+t.isya - +base.isya) / 60e3).toBe(30);
+	});
+});
+
+describe('imsak', () => {
+	it('mengikuti pengaturan menit sebelum Subuh', () => {
+		const date = new Date(Date.UTC(2026, 10, 7, 5));
+		const y = timesFor(new Date(Date.UTC(2026, 10, 6, 5)), DEFAULT_CITY.lat, DEFAULT_CITY.lng, 'kemenag', 'syafii');
+		const t = timesFor(date, DEFAULT_CITY.lat, DEFAULT_CITY.lng, 'kemenag', 'syafii');
+		const tm = timesFor(new Date(Date.UTC(2026, 10, 8, 5)), DEFAULT_CITY.lat, DEFAULT_CITY.lng, 'kemenag', 'syafii');
+		const before = new Date(+t.subuh - 60 * 60e3);
+		expect((+t.subuh - +heroArc(before, y, t, tm, 15).imsak!) / 60e3).toBe(15);
+		expect((+t.subuh - +heroArc(before, y, t, tm).imsak!) / 60e3).toBe(10);
+	});
+});

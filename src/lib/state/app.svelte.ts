@@ -1,6 +1,6 @@
 import { DEFAULT_CITY } from '#lib/cities.ts';
 import { addDays } from '#lib/date.ts';
-import { timesFor, type DayTimes, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
+import { IMSAK_MINUTES, timesFor, type Adjust, type DayTimes, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
 import { emptyTracker, type TrackerData } from '#lib/tracker.ts';
 import { Persisted } from './persisted.svelte.ts';
 
@@ -12,6 +12,10 @@ export interface Settings {
 	lng: number;
 	method: MethodKey;
 	madhab: MadhabKey;
+	/** koreksi manual per salat, dalam menit */
+	adjust: Adjust;
+	/** menit imsak sebelum Subuh */
+	imsak: number;
 }
 
 export interface DoaPrefs {
@@ -36,7 +40,9 @@ export const settings = new Persisted<Settings>('settings', {
 	lat: DEFAULT_CITY.lat,
 	lng: DEFAULT_CITY.lng,
 	method: 'kemenag',
-	madhab: 'syafii'
+	madhab: 'syafii',
+	adjust: {},
+	imsak: IMSAK_MINUTES
 });
 
 export const tracker = new Persisted<TrackerData>('tracker', emptyTracker());
@@ -81,18 +87,23 @@ class Clock {
 }
 export const clock = new Clock();
 
+/** Jadwal satu hari memakai pengaturan pengguna (lokasi, metode, mazhab, koreksi manual). */
+export function timesForDay(date: Date, s: Settings = settings.value): DayTimes {
+	return timesFor(date, s.lat, s.lng, s.method, s.madhab, s.adjust);
+}
+
 /** Jadwal kemarin, hari ini, dan besok, dihitung ulang hanya saat tanggal atau pengaturan berubah. */
 let cacheKey = '';
 let cache: { yesterday: DayTimes; today: DayTimes; tomorrow: DayTimes } | null = null;
 export function schedule(now: Date) {
 	const s = settings.value;
-	const key = `${now.toDateString()}|${s.lat}|${s.lng}|${s.method}|${s.madhab}`;
+	const key = `${now.toDateString()}|${s.lat}|${s.lng}|${s.method}|${s.madhab}|${JSON.stringify(s.adjust)}`;
 	if (key !== cacheKey || !cache) {
 		cacheKey = key;
 		cache = {
-			yesterday: timesFor(addDays(now, -1), s.lat, s.lng, s.method, s.madhab),
-			today: timesFor(now, s.lat, s.lng, s.method, s.madhab),
-			tomorrow: timesFor(addDays(now, 1), s.lat, s.lng, s.method, s.madhab)
+			yesterday: timesForDay(addDays(now, -1), s),
+			today: timesForDay(now, s),
+			tomorrow: timesForDay(addDays(now, 1), s)
 		};
 	}
 	return cache;

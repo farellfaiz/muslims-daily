@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { addDays, dateKey, formatTime, tzLabel } from '#lib/date.ts';
-	import { PRAYERS, nextPrayer, timesFor, type DayTimes, type PrayerKey } from '#lib/prayer.ts';
-	import { settings, tracker, toast } from '#lib/state/app.svelte.ts';
+	import { PRAYERS, nextPrayer, type DayTimes, type PrayerKey } from '#lib/prayer.ts';
+	import { settings, timesForDay, tracker, toast } from '#lib/state/app.svelte.ts';
 	import { isComplete, isUdzur, togglePrayer } from '#lib/tracker.ts';
 	import Icon from './Icon.svelte';
 
@@ -24,8 +24,7 @@
 	// Jadwal hari yang dipilih. Hari ini memakai jadwal yang sudah dihitung beranda.
 	const times = $derived.by(() => {
 		if (offset === 0 || !day) return today;
-		const s = settings.value;
-		return timesFor(day, s.lat, s.lng, s.method, s.madhab);
+		return timesForDay(day, settings.value);
 	});
 
 	const fmtDay = new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });

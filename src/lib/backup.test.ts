@@ -3,7 +3,7 @@ import { BackupError, backupFileName, makeBackup, mergeTracker, parseBackup, tra
 import { emptyTracker, type TrackerData } from './tracker.ts';
 
 const now = new Date(2026, 10, 8, 9, 30);
-const settings = { place: 'jakarta', label: 'Jakarta', lat: -6.2, lng: 106.8, method: 'kemenag' as const, madhab: 'syafii' as const };
+const settings = { place: 'jakarta', label: 'Jakarta', lat: -6.2, lng: 106.8, method: 'kemenag' as const, madhab: 'syafii' as const, adjust: { maghrib: 2 }, imsak: 10 };
 const reading = { lat: true, tr: true, wbw: false, size: 30 };
 const doa = { view: 'card' as const, sort: 'kat' as const, favs: [1, 3] };
 const tracker: TrackerData = {
@@ -62,6 +62,15 @@ describe('impor', () => {
 		expect(p.tracker.udzurDays).toEqual(['2026-10-01']);
 		expect(p.settings).toBeNull();
 		expect(p.reading?.size).toBe(46);
+	});
+
+	it('cadangan lama tanpa koreksi jadwal tetap terbaca dengan nilai bawaan', () => {
+		const raw = JSON.parse(roundTrip());
+		delete raw.settings.adjust;
+		delete raw.settings.imsak;
+		const p = parseBackup(JSON.stringify(raw));
+		expect(p.settings?.adjust).toEqual({});
+		expect(p.settings?.imsak).toBe(10);
 	});
 });
 
