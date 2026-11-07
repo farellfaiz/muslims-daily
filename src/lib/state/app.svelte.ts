@@ -51,6 +51,9 @@ export const doaPrefs = new Persisted<DoaPrefs>('doa', {
 
 export const reading = new Persisted<ReadingPrefs>('reading', { lat: true, tr: true, wbw: false, size: 30 });
 
+/** Kapan terakhir pengguna menyimpan file cadangan (ISO). Kosong = belum pernah. */
+export const backupMeta = new Persisted<{ lastAt: string }>('backup', { lastAt: '' });
+
 /**
  * Jam bersama untuk seluruh aplikasi. Null saat prerender (server tidak tahu jam pengguna),
  * lalu terisi begitu halaman hidup di browser. Berdetak tiap detik hanya saat tab terlihat.

@@ -79,6 +79,10 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 
 ### 4.6 Lainnya (Selesai)
 - Pengaturan lokasi, metode hitung, dan mazhab.
+- **Cadangan data**: ringkasan (hari tercatat, jumlah salat, doa favorit) dan kapan terakhir dicadangkan; penanda peach bila sudah ada catatan tapi belum pernah dicadangkan.
+  - *Simpan* mengunduh `muslims-daily-cadangan-YYYY-MM-DD.json` berisi pengaturan, catatan salat, favorit, dan preferensi baca. Tidak ada server.
+  - *Pulihkan* membaca file itu, menampilkan ringkasan isinya, lalu menunggu konfirmasi. Catatan salat, hari udzur, dan favorit **digabung** (tidak ada centang yang hilang); lokasi, metode, dan preferensi baca diganti isi cadangan.
+  - File rusak atau dari aplikasi lain ditolak dengan pesan jelas; bagian yang rusak dibuang tanpa menggagalkan sisanya.
 - Daftar fitur yang akan datang dan informasi tentang aplikasi.
 
 ### 4.7 PWA (Selesai)
@@ -101,6 +105,7 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 | Konsistensi per salat | Bisa dibuka-tutup, tertutup bawaan | Selalu tampil | Mengurangi kepadatan halaman |
 | Notifikasi adzan | Ditunda | Masuk MVP | PWA butuh server Web Push; iOS hanya jalan bila sudah dipasang |
 | Gaya CSS | Token CSS + style per komponen | Tailwind | Lebih ringan dan cukup untuk desain ini |
+| Pulihkan cadangan | Gabung catatan salat | Timpa seluruh data | Memulihkan di HP yang sudah dipakai tidak boleh menghapus centang baru |
 
 ## 6. Desain
 
@@ -121,7 +126,7 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 ## 8. Teknis singkat
 
 - SvelteKit 3 + Svelte 5, `adapter-static`, `@vite-pwa/sveltekit`, `adhan`, Fontsource.
-- Data pengguna di `localStorage` dengan kunci `md:settings`, `md:tracker`, `md:doa`, `md:reading`.
+- Data pengguna di `localStorage` dengan kunci `md:settings`, `md:tracker`, `md:doa`, `md:reading`, `md:backup` (waktu cadangan terakhir).
 - Logika jadwal, busur hero, dan tracker berupa fungsi murni yang diuji dengan Vitest.
 - Anggaran performa: JavaScript di bawah 100 KB gzip (saat ini sekitar 67 KB), skor Lighthouse 95 ke atas, jalan penuh offline setelah kunjungan pertama.
 
@@ -130,7 +135,7 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 | Risiko | Dampak | Mitigasi |
 | --- | --- | --- |
 | Konten doa keliru | Tinggi, menyangkut ibadah | Label draf, aturan konten, verifikasi sebelum rilis publik |
-| Data hilang saat browser dibersihkan | Riwayat streak hilang | Fitur ekspor dan impor data (roadmap) |
+| Data hilang saat browser dibersihkan | Riwayat streak hilang | Cadangan ke file JSON di halaman Lainnya, dengan penanda bila belum pernah dicadangkan |
 | Notifikasi adzan terbatas di PWA | Pengguna tidak diingatkan | Fase 2 dengan Web Push; jelaskan batasan di iOS |
 | Selisih jadwal dengan masjid setempat | Kepercayaan pengguna turun | Pilihan metode dan mazhab; ke depan penyesuaian manual per salat |
 | Versi lama tersimpan service worker | Pengguna melihat versi lama sekali | Pembaruan otomatis; muat ulang berikutnya sudah versi baru |
@@ -140,7 +145,6 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 **Berikutnya (prioritas)**
 1. Verifikasi dan perbanyak konten doa dari rujukan terbuka.
 2. Deploy ke hosting statis (Vercel atau Cloudflare Pages) dengan domain.
-3. Ekspor dan impor data tracker (cadangan).
 
 **Fitur**
 - Dzikir pagi dan petang (memakai mesin yang sama dengan doa, plus penghitung).

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackupCard from '#lib/components/BackupCard.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { CITIES } from '#lib/cities.ts';
@@ -93,6 +94,8 @@
 	</div>
 	<p class="hint">Pilihan Syafi'i juga sesuai untuk Maliki dan Hanbali. Hanafi membuat Ashar lebih lambat.</p>
 </section>
+
+<BackupCard />
 
 <div class="sec-h"><h2>Segera hadir</h2></div>
 <section class="card soon">

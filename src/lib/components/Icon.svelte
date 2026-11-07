@@ -19,6 +19,8 @@
 		chevron: '<path d="M9 5l7 7-7 7"/>',
 		copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
 		share: '<path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/>',
+		download: '<path d="M12 4v11M8 11l4 4 4-4"/><path d="M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4"/>',
+		restore: '<path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6"/><path d="M4 4v4.6h4.6"/><path d="M12 8v4l2.8 1.8"/>',
 		plus: '<path d="M12 5v14M5 12h14"/>',
 		check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
 		x: '<path d="M7 7l10 10M17 7L7 17"/>',
