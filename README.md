@@ -11,6 +11,8 @@
 
 ---
 
+> Tujuan produk, keputusan desain, dan roadmap ada di **[docs/PRD.md](docs/PRD.md)**.
+
 ## Fitur
 
 - **Jadwal salat** dihitung langsung di perangkat (library [adhan](https://github.com/batoulapps/adhan-js)), tanpa API dan tanpa internet. Metode Kemenag RI (Subuh 20°, Isya 18°, ihtiyat 2 menit), MUIS, MWL, atau Umm al-Qura, plus pilihan mazhab untuk waktu Ashar.
