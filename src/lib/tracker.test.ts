@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { addDays, dateKey } from './date.ts';
 import {
 	bestStreak,
+	canCheck,
 	consistency,
 	currentStreak,
 	emptyTracker,
@@ -92,5 +93,27 @@ describe('pencatatan', () => {
 		const r = consistency(withDays([[0, full], [1, noSubuh]]), today);
 		expect(r.subuh).toBe(50);
 		expect(r.isya).toBe(100);
+	});
+});
+
+describe('kunci centang sebelum waktu salat', () => {
+	const ashar = new Date(2026, 10, 7, 14, 57);
+
+	it('belum masuk waktu: dikunci', () => {
+		expect(canCheck(ashar, new Date(2026, 10, 7, 14, 56))).toBe(false);
+	});
+
+	it('sudah masuk atau lewat: bisa dicentang', () => {
+		expect(canCheck(ashar, new Date(2026, 10, 7, 14, 57))).toBe(true);
+		expect(canCheck(ashar, new Date(2026, 10, 8, 9, 0))).toBe(true);
+	});
+
+	it('centang yang sudah ada tetap bisa dibatalkan', () => {
+		expect(canCheck(ashar, new Date(2026, 10, 7, 10, 0), true)).toBe(true);
+	});
+
+	it('jam belum siap: dikunci', () => {
+		expect(canCheck(ashar, null)).toBe(false);
+		expect(canCheck(null, new Date())).toBe(false);
 	});
 });

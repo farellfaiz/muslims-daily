@@ -148,3 +148,14 @@ export function togglePrayer(d: TrackerData, key: string, prayer: PrayerKey): Tr
 	else delete logs[key];
 	return { ...d, logs };
 }
+
+/**
+ * Salat boleh dicentang begitu waktunya masuk. Salat yang belum masuk waktunya dikunci,
+ * sedangkan yang sudah lewat (hari ini maupun hari-hari sebelumnya) tetap bisa dicentang kapan saja.
+ * Centang yang sudah ada selalu bisa dibatalkan.
+ */
+export function canCheck(prayerAt: Date | null | undefined, now: Date | null, alreadyChecked = false): boolean {
+	if (alreadyChecked) return true;
+	if (!prayerAt || !now) return false;
+	return now >= prayerAt;
+}

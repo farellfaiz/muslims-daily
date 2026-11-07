@@ -2,7 +2,7 @@
 	import { addDays, dateKey, formatTime, tzLabel } from '#lib/date.ts';
 	import { PRAYERS, nextPrayer, type DayTimes, type PrayerKey } from '#lib/prayer.ts';
 	import { settings, timesForDay, tracker, toast } from '#lib/state/app.svelte.ts';
-	import { isComplete, isUdzur, togglePrayer } from '#lib/tracker.ts';
+	import { canCheck, isComplete, isUdzur, togglePrayer } from '#lib/tracker.ts';
 	import Icon from './Icon.svelte';
 
 	let { now, today, tomorrow }: { now: Date | null; today: DayTimes | null; tomorrow: DayTimes | null } = $props();
@@ -48,9 +48,18 @@
 
 	let burst = $state<PrayerKey | null>(null);
 
-	// Centang bebas kapan saja: orang sering baru ingat mencatat setelah salat, atau keesokan harinya.
+	// Salat yang sudah masuk waktunya bebas dicentang kapan saja (orang sering baru ingat mencatat
+	// setelah salat, atau keesokan harinya). Yang belum masuk waktunya dikunci.
+	const locked = (p: PrayerKey) => !canCheck(times?.[p], now, !!log[p]);
+
 	function tap(p: PrayerKey) {
 		if (!key) return;
+		if (locked(p)) {
+			const at = times?.[p];
+			const name = PRAYERS.find((x) => x.key === p)!.name;
+			toast.say(at ? `Waktu ${name} belum masuk. Masuk pukul ${formatTime(at)}.` : `Waktu ${name} belum masuk.`);
+			return;
+		}
 		const was = isComplete(tracker.value.logs[key]);
 		tracker.value = togglePrayer(tracker.value, key, p);
 		if (tracker.value.logs[key]?.[p]) {
@@ -100,7 +109,16 @@
 		<div class="rows" style:--from="{dir * 24}px">
 			{#each PRAYERS as p (p.key)}
 				{@const done = !!log[p.key]}
-				<button class="row" class:next={p.key === nextKey && !done} class:done aria-pressed={done} onclick={() => tap(p.key)}>
+				{@const lock = now !== null && locked(p.key)}
+				<button
+					class="row"
+					class:next={p.key === nextKey && !done}
+					class:done
+					class:lock
+					aria-pressed={done}
+					aria-disabled={lock}
+					onclick={() => tap(p.key)}
+				>
 					<span class="txt">
 						<span class="nm">{p.name}</span>
 						<span class="tm num">{times ? `${formatTime(times[p.key])} ${now ? tzLabel(now) : ''}` : '--.--'}</span>
@@ -259,6 +277,14 @@
 		place-items: center;
 		color: transparent;
 		transition: all 0.3s var(--ease);
+	}
+	/* Belum masuk waktu: lingkaran putus-putus dan redup, tanda belum bisa dicentang. */
+	.lock .chk {
+		border-style: dashed;
+		opacity: 0.5;
+	}
+	.lock:not(.next) .nm {
+		color: var(--ink2);
 	}
 	.done .chk {
 		background: var(--navy);
