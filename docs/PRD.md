@@ -3,8 +3,8 @@
 | | |
 | --- | --- |
 | Pemilik | Farell Faiz Firmansyah |
-| Status | MVP berjalan, konten doa masih draf |
-| Versi dokumen | 0.1, 8 November 2026 |
+| Status | MVP berjalan, konten doa dan dzikir masih draf |
+| Versi dokumen | 0.2, 8 November 2026 |
 | Repo | https://github.com/farellfaiz/muslims-daily |
 
 Dokumen ini mencatat **apa** yang dibangun, **untuk siapa**, dan **kenapa** keputusannya begitu, termasuk ide yang sudah dicoba lalu ditolak. Detail teknis cara menjalankan ada di [README](../README.md).
@@ -60,7 +60,7 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 ### 4.3 Catatan salat di beranda (Selesai)
 - Lima baris salat dengan jam masing-masing. Satu ketukan = sudah salat, ketuk lagi = batal.
 - **Pemilih hari** dengan panah kiri dan kanan (juga bisa digeser di HP): Hari ini, Kemarin, lalu nama hari. Tidak bisa maju melewati hari ini, mundur sampai satu tahun.
-- Centang **tidak dikunci jadwal**. Pengguna sering lupa mencentang setelah salat.
+- Salat yang **sudah masuk waktunya** bebas dicentang kapan saja, termasuk hari-hari sebelumnya (pengguna sering lupa mencentang). Salat hari ini yang **belum masuk waktunya dikunci**: lingkaran putus-putus redup, ketukan memunculkan "Waktu Ashar belum masuk. Masuk pukul 14.57." Centang yang sudah ada selalu bisa dibatalkan.
 - Salat berikutnya ditandai, hanya bila masih di hari yang sama.
 
 ### 4.4 Tracker (Selesai)
@@ -79,13 +79,37 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 
 ### 4.6 Lainnya (Selesai)
 - Pengaturan lokasi, metode hitung, dan mazhab.
+- **Koreksi jadwal** (bisa dibuka-tutup, tertutup bawaan): geser tiap salat per menit, maksimal 30 menit ke depan atau ke belakang, dengan jam hari ini yang langsung terlihat untuk dicocokkan dengan jadwal masjid. Ringkasan di judul kartu ("Tanpa koreksi" atau "Maghrib +2"). Koreksi dipakai di semua tempat: hero, catatan salat, hari-hari lalu.
+- **Imsak**: 5, 10 (bawaan), atau 15 menit sebelum Subuh.
+- **Tampilan**: Ikuti HP, Terang, atau Gelap.
 - **Cadangan data**: ringkasan (hari tercatat, jumlah salat, doa favorit) dan kapan terakhir dicadangkan; penanda peach bila sudah ada catatan tapi belum pernah dicadangkan.
   - *Simpan* mengunduh `muslims-daily-cadangan-YYYY-MM-DD.json` berisi pengaturan, catatan salat, favorit, dan preferensi baca. Tidak ada server.
   - *Pulihkan* membaca file itu, menampilkan ringkasan isinya, lalu menunggu konfirmasi. Catatan salat, hari udzur, dan favorit **digabung** (tidak ada centang yang hilang); lokasi, metode, dan preferensi baca diganti isi cadangan.
   - File rusak atau dari aplikasi lain ditolak dengan pesan jelas; bagian yang rusak dibuang tanpa menggagalkan sisanya.
 - Daftar fitur yang akan datang dan informasi tentang aplikasi.
 
-### 4.7 PWA (Selesai)
+### 4.7 Dzikir (Selesai; konten pagi petang Draf)
+- Satu halaman `/dzikir` dengan dua jenis: **Setelah salat** dan **Pagi & petang**. Pilihan bawaan mengikuti jam: sampai 45 menit setelah masuk waktu salat dibuka dzikir setelah salat; selebihnya Subuh sampai Dzuhur dan Ashar sampai Maghrib dibuka dzikir pagi petang. Bisa diganti manual, dan tautan `?set=salat` membuka langsung.
+- **Setelah salat**: 6 dzikir (istighfar 3×, tasbih, tahmid, takbir masing-masing 33×, dan lainnya) lalu 16 doa, diambil apa adanya dari situs pemilik [Dzikir & Doa Setelah Sholat](https://farellfaiz.github.io/dzikr-and-duas/) (`src/lib/data/salat.ts`). Pilihan salat (Subuh sampai Isya) otomatis ke salat terakhir yang sudah masuk; dini hari masih terhitung setelah Isya kemarin. Bagian Al-Ma'tsurat dari situs itu sengaja tidak dipakai.
+- **Pagi & petang**: mengikuti sistem Muslims Daily (Hisnul Muslim, sumber per bacaan, `src/lib/data/dzikir.ts`). Waktu bawaan: pagi dari Subuh sampai sebelum Ashar, selebihnya petang.
+- Setiap bacaan berupa kartu: nomor bintang, judul, jumlah bacaan, teks Arab, latin, terjemahan, sumber, keutamaan, dan catatan jujur bila sanadnya dinilai lemah.
+- Lafaz yang berbeda antara pagi dan petang (*aṣbaḥnā* dan *amsainā*) otomatis menyesuaikan. Ada bacaan yang khusus pagi atau khusus petang.
+- **Penghitung**: tombol besar di bawah tiap kartu, satu ketukan = satu bacaan. Bacaan pendek (sampai 10x) memakai titik-titik, bacaan panjang (100x) memakai angka dan bilah. HP bergetar halus tiap ketukan. Saat selesai, kartu meredup dan layar bergeser ke bacaan berikutnya.
+- Progres ("5 dari 22 bacaan") tersimpan per sesi (tiap salat, pagi, petang), masing-masing dengan tanggalnya sendiri, dan mulai dari nol saat tanggal berganti. Ada tombol mulai ulang.
+- Halaman Doa punya pintasan "Dzikir & doa setelah salat".
+- Memakai preferensi baca yang sama dengan doa (latin, terjemahan, ukuran huruf Arab).
+
+### 4.8 Kiblat (Selesai)
+- Arah kiblat dihitung di perangkat (lingkaran besar) dari lokasi yang dipilih, lengkap dengan arah mata angin dan jarak ke Ka'bah.
+- **Kompas**: piringan berputar mengikuti arah hadap HP (iOS meminta izin lewat ketukan "Aktifkan kompas"). Penunjuk tetap di atas. Saat selisih 4° atau kurang, bingkai menyala peach, muncul "Sudah menghadap kiblat", dan HP bergetar singkat. Sebelum sejajar muncul petunjuk "Putar ke kanan 12°".
+- Tanpa kompas (laptop) atau izin ditolak: piringan diam dengan utara di atas dan petunjuk derajat.
+- Panduan kalibrasi angka 8, disorot bila akurasi kompas buruk.
+
+### 4.9 Mode gelap (Selesai)
+- Palet malam diturunkan dari ikon: latar navy pekat, aksen biru muda, peach tetap sebagai matahari. Bukit hero menjadi siluet gelap di bawah langit.
+- Mengikuti pengaturan HP, atau dipaksa Terang/Gelap dari Lainnya. Tema dipasang sebelum halaman digambar (tidak berkedip), dan warna bilah status ikut latar.
+
+### 4.10 PWA (Selesai)
 - Bisa dipasang ke layar utama, seluruh aplikasi termasuk font di-precache (Workbox), memperbarui diri otomatis.
 - Semua halaman di-prerender menjadi file statis sehingga bisa di-host gratis.
 
@@ -96,7 +120,7 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 | Topik | Diputuskan | Ditolak / diganti | Alasan |
 | --- | --- | --- | --- |
 | Status tracker | Sudah atau belum salat | Tepat waktu / terlambat / terlewat | Tracker untuk menjaga kebiasaan, bukan menilai |
-| Kapan boleh centang | Kapan saja, termasuk hari lalu | Hanya setelah waktu salat masuk | Pengguna sering lupa mencentang |
+| Kapan boleh centang | Setelah waktu salat masuk, kapan saja sesudahnya (termasuk hari lalu) | Bebas tanpa kunci (versi awal); hanya di dalam waktu salat itu | Salat yang belum tiba tidak masuk akal dicentang, tapi pengguna sering lupa mencentang yang sudah lewat |
 | Detail doa | Layar baru | Modal atau pop-up | Doa panjang tidak nyaman di pop-up |
 | Langit hero | Mengikuti waktu asli | Tombol "pratinjau langit" | Fitur demo yang membingungkan pengguna |
 | Busur hero | Dua mode, siang dan malam | Satu busur Subuh sampai Isya | Malam hari bulan muncul di posisi yang salah |
@@ -106,6 +130,11 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 | Notifikasi adzan | Ditunda | Masuk MVP | PWA butuh server Web Push; iOS hanya jalan bila sudah dipasang |
 | Gaya CSS | Token CSS + style per komponen | Tailwind | Lebih ringan dan cukup untuk desain ini |
 | Pulihkan cadangan | Gabung catatan salat | Timpa seluruh data | Memulihkan di HP yang sudah dipakai tidak boleh menghapus centang baru |
+| Imsak | Bisa diatur 5, 10, 15 menit (bawaan 10) | Tetap 10 menit | Jadwal imsakiyah tiap daerah berbeda |
+| Koreksi jadwal | Per salat, per menit, maks 30 | Satu geser untuk semua salat | Selisih dengan masjid biasanya tidak sama di tiap salat |
+| Dzikir | Penghitung ketuk di tiap kartu, satu halaman bergulir | Satu bacaan per layar | Mudah melihat urutan dan melompat; layar bergeser sendiri saat bacaan selesai |
+| Sumber dzikir setelah salat | Situs pemilik (dzikr-and-duas) | Hisnul Muslim | Susunan yang biasa dibaca pemilik; bagian lain situs itu tidak dipakai |
+| Kiblat | Piringan berputar, penunjuk tetap | Jarum berputar di atas piringan diam | Sama dengan kompas fisik; Ka'bah terlihat "datang" ke atas saat sejajar |
 
 ## 6. Desain
 
@@ -113,10 +142,11 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 - **Huruf**: Fraunces (judul dan angka besar), Plus Jakarta Sans (isi), Amiri (Arab).
 - **Motif**: lengkung bawang, bintang delapan (penanda nomor doa), langit yang berubah.
 - **Gerak**: halus dan bermakna (transisi halaman, centang dengan percikan, api yang bergoyang), menghormati `prefers-reduced-motion`.
-- **Mode**: terang dulu. Mode gelap masuk roadmap.
+- **Kredit**: halaman Lainnya mencantumkan "Desain terinspirasi dari Pillars", sumber dzikir setelah salat, dan pustaka adhan.
+- **Mode**: terang dan gelap (langit malam). Semua warna lewat token CSS di `src/app.css`; komponen tidak boleh menulis warna langsung.
 - **Tulisan**: bahasa Indonesia santai, label singkat, tanpa em dash, jam ditulis "04.06 WIB".
 
-## 7. Aturan konten doa
+## 7. Aturan konten doa dan dzikir
 
 1. Wajib ada sumber: ayat (surah dan nomor ayat) atau hadis (perawi).
 2. Teks dicek dari rujukan (mushaf Kemenag, kitab hadis, Hisnul Muslim), bukan dari ingatan atau situs acak.
@@ -126,9 +156,9 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 ## 8. Teknis singkat
 
 - SvelteKit 3 + Svelte 5, `adapter-static`, `@vite-pwa/sveltekit`, `adhan`, Fontsource.
-- Data pengguna di `localStorage` dengan kunci `md:settings`, `md:tracker`, `md:doa`, `md:reading`, `md:backup` (waktu cadangan terakhir).
-- Logika jadwal, busur hero, dan tracker berupa fungsi murni yang diuji dengan Vitest.
-- Anggaran performa: JavaScript di bawah 100 KB gzip (saat ini sekitar 67 KB), skor Lighthouse 95 ke atas, jalan penuh offline setelah kunjungan pertama.
+- Data pengguna di `localStorage` dengan kunci `md:settings`, `md:tracker`, `md:doa`, `md:reading`, `md:backup` (waktu cadangan terakhir), `md:theme`, `md:dzikir` (hitungan dzikir hari ini).
+- Logika jadwal, busur hero, tracker, kiblat, hitungan dzikir, dan cadangan berupa fungsi murni yang diuji dengan Vitest.
+- Anggaran performa: JavaScript di bawah 100 KB gzip (saat ini sekitar 93 KB untuk semua halaman; data dzikir hanya dimuat di halaman dzikir), skor Lighthouse 95 ke atas, jalan penuh offline setelah kunjungan pertama.
 
 ## 9. Risiko dan batasan
 
@@ -137,27 +167,25 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 | Konten doa keliru | Tinggi, menyangkut ibadah | Label draf, aturan konten, verifikasi sebelum rilis publik |
 | Data hilang saat browser dibersihkan | Riwayat streak hilang | Cadangan ke file JSON di halaman Lainnya, dengan penanda bila belum pernah dicadangkan |
 | Notifikasi adzan terbatas di PWA | Pengguna tidak diingatkan | Fase 2 dengan Web Push; jelaskan batasan di iOS |
-| Selisih jadwal dengan masjid setempat | Kepercayaan pengguna turun | Pilihan metode dan mazhab; ke depan penyesuaian manual per salat |
+| Selisih jadwal dengan masjid setempat | Kepercayaan pengguna turun | Pilihan metode dan mazhab, plus koreksi manual per salat |
+| Kompas HP tidak akurat (magnet, belum dikalibrasi) | Arah salat keliru | Derajat dan arah mata angin selalu tampil; panduan kalibrasi angka 8; sarankan mencocokkan dengan arah masjid terdekat |
 | Versi lama tersimpan service worker | Pengguna melihat versi lama sekali | Pembaruan otomatis; muat ulang berikutnya sudah versi baru |
 
 ## 10. Roadmap
 
 **Berikutnya (prioritas)**
-1. Verifikasi dan perbanyak konten doa dari rujukan terbuka.
+1. Verifikasi konten doa dan dzikir oleh orang yang paham, lalu perbanyak doa dari rujukan terbuka.
 2. Deploy ke hosting statis (Vercel atau Cloudflare Pages) dengan domain.
 
 **Fitur**
-- Dzikir pagi dan petang (memakai mesin yang sama dengan doa, plus penghitung).
 - Al-Qur'an dengan terjemahan per kata.
-- Arah kiblat dengan kalibrasi kompas.
-- Mode gelap.
 - Koleksi doa pribadi.
 - Notifikasi adzan (Web Push).
-- Penyesuaian manual jadwal per salat (+/- menit).
+- Pengingat dzikir pagi dan petang (bersama notifikasi adzan).
+- Riwayat dzikir di tracker (jejak hari dzikir pagi dan petang).
 
 ## 11. Pertanyaan terbuka
 
-- Siapa yang akan memverifikasi konten doa sebelum rilis publik?
+- Siapa yang akan memverifikasi konten doa dan dzikir sebelum rilis publik?
 - Domain dan hosting final.
-- Apakah selisih imsak tetap 10 menit, atau bisa diatur pengguna?
 - Perlukah fitur khusus Ramadan (jadwal imsakiyah, tracker puasa)?

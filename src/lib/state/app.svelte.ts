@@ -2,6 +2,7 @@ import { DEFAULT_CITY } from '#lib/cities.ts';
 import { addDays } from '#lib/date.ts';
 import { IMSAK_MINUTES, timesFor, type Adjust, type DayTimes, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
 import { emptyTracker, type TrackerData } from '#lib/tracker.ts';
+import { emptyProgress, type DzikirProgress } from '#lib/dzikirProgress.ts';
 import { Persisted } from './persisted.svelte.ts';
 
 export interface Settings {
@@ -56,6 +57,9 @@ export const doaPrefs = new Persisted<DoaPrefs>('doa', {
 });
 
 export const reading = new Persisted<ReadingPrefs>('reading', { lat: true, tr: true, wbw: false, size: 30 });
+
+/** Hitungan dzikir pagi dan petang hari ini. */
+export const dzikirProgress = new Persisted<DzikirProgress>('dzikir', emptyProgress());
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 /** Tema tampilan. 'system' mengikuti pengaturan HP. Dibaca juga oleh skrip kecil di app.html. */

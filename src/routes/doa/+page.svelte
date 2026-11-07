@@ -62,6 +62,15 @@
 	<h1>Doa harian</h1>
 </header>
 
+<a class="card salat press" href="/dzikir?set=salat">
+	<span class="sico" aria-hidden="true"></span>
+	<span class="sgrow">
+		<span class="st">Dzikir &amp; doa setelah salat</span>
+		<span class="ss">Urutan lengkap dengan penghitung tasbih</span>
+	</span>
+	<Icon name="chevron" size={18} />
+</a>
+
 <label class="search">
 	<Icon name="search" />
 	<span class="sr-only">Cari doa</span>
@@ -328,5 +337,38 @@
 	}
 	.fav:active {
 		transform: scale(1.25);
+	}
+	.salat {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 14px;
+		margin-bottom: 12px;
+		text-decoration: none;
+		color: var(--ink3);
+	}
+	.sico {
+		width: 30px;
+		height: 34px;
+		flex: none;
+		border-radius: 50% 50% 6px 6px / 60% 60% 6px 6px;
+		background: var(--arch);
+		box-shadow: inset 0 -12px 0 var(--cream);
+	}
+	.sgrow {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.st {
+		font-weight: 700;
+		font-size: 14px;
+		color: var(--ink);
+	}
+	.ss {
+		font-size: 12px;
+		color: var(--ink2);
+		margin-top: 1px;
 	}
 </style>

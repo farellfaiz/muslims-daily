@@ -4,6 +4,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { CITIES } from '#lib/cities.ts';
+	import { SOURCE_NAME, SOURCE_URL } from '#lib/data/salat.ts';
 	import { METHODS, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
 	import { settings, theme, toast, type ThemeMode } from '#lib/state/app.svelte.ts';
 
@@ -48,7 +49,6 @@
 
 	const SOON = [
 		["Al-Qur'an", 'Mushaf lengkap dengan terjemahan per kata'],
-		['Dzikir pagi dan petang', 'Penghitung dan pengingat'],
 		['Notifikasi adzan', 'Pengingat waktu salat']
 	];
 </script>
@@ -130,6 +130,15 @@
 			Aplikasi open source, gratis, tanpa iklan, dan tanpa akun. Semua catatan tersimpan di perangkatmu sendiri.
 		</p>
 	</div>
+</section>
+<section class="card credits">
+	<div class="label">Kredit</div>
+	<p>Desain terinspirasi dari <b>Pillars</b> (Prayer Times &amp; Qibla).</p>
+	<p>
+		Dzikir dan doa setelah salat dari
+		<a href={SOURCE_URL} target="_blank" rel="noopener">{SOURCE_NAME}</a>.
+	</p>
+	<p>Jadwal salat dan arah kiblat dihitung dengan pustaka <b>adhan</b>.</p>
 </section>
 
 <style>
@@ -267,6 +276,23 @@
 		gap: 14px;
 		align-items: center;
 		padding: 16px;
+	}
+	.credits {
+		margin-top: 12px;
+		padding: 14px 16px;
+	}
+	.credits p {
+		margin: 8px 0 0;
+		font-size: 12.5px;
+		line-height: 1.5;
+		color: var(--ink2);
+	}
+	.credits b {
+		color: var(--ink);
+	}
+	.credits a {
+		color: var(--navy);
+		font-weight: 700;
 	}
 	.about img {
 		border-radius: 16px;
