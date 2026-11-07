@@ -263,7 +263,7 @@
 	.done .chk {
 		background: var(--navy);
 		border: 1.6px solid var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 	}
 	.burst {
 		position: absolute;

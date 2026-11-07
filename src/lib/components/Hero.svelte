@@ -136,7 +136,7 @@
 		--ogee: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V52C0 33 13 23 29 15C39 10 46 6 50 0C54 6 61 10 71 15C87 23 100 33 100 52V100Z'/%3E%3C/svg%3E");
 		position: relative;
 		height: 400px;
-		background: var(--navy);
+		background: var(--arch);
 		-webkit-mask: var(--ogee) 0 0/100% 100% no-repeat;
 		mask: var(--ogee) 0 0/100% 100% no-repeat;
 		border-radius: 0 0 26px 26px;

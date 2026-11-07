@@ -157,8 +157,8 @@
 		border-radius: 10px;
 		display: grid;
 		place-items: center;
-		background: #fbf0d9;
-		color: #b07d24;
+		background: var(--gold-soft);
+		color: var(--gold);
 	}
 	.bl {
 		flex: 1;
@@ -176,8 +176,8 @@
 		white-space: nowrap;
 	}
 	.badge.record {
-		background: #fbf0d9;
-		color: #8a5f14;
+		background: var(--gold-soft);
+		color: var(--gold-ink);
 	}
 	.t {
 		font-weight: 800;
@@ -268,7 +268,7 @@
 		width: 22px;
 		height: 22px;
 		border-radius: 50%;
-		background: #fff;
+		background: var(--knob);
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 		transition: transform 0.25s var(--ease);
 	}

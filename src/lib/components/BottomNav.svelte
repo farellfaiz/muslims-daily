@@ -32,13 +32,13 @@
 		width: calc(min(430px, 100%) - 28px);
 		height: var(--nav-h);
 		border-radius: 24px;
-		background: rgba(34, 56, 79, 0.95);
+		background: var(--nav-bg);
 		backdrop-filter: blur(14px);
 		-webkit-backdrop-filter: blur(14px);
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
 		padding: 6px;
-		box-shadow: 0 18px 40px -16px rgba(34, 56, 79, 0.7);
+		box-shadow: 0 18px 40px -16px var(--nav-shadow);
 		view-transition-name: bottom-nav;
 	}
 	a {
@@ -51,13 +51,13 @@
 		font-size: 10.5px;
 		font-weight: 700;
 		text-decoration: none;
-		color: rgba(250, 246, 241, 0.55);
+		color: var(--nav-ink);
 		transition:
 			background 0.3s var(--ease),
 			color 0.3s var(--ease);
 	}
 	a[aria-current='page'] {
 		color: var(--ink);
-		background: var(--paper);
+		background: var(--nav-active);
 	}
 </style>

@@ -181,7 +181,7 @@
 		height: 46px;
 		border-radius: 14px;
 		background: var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 		font-weight: 700;
 		font-size: 14px;
 		display: flex;

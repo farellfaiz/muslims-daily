@@ -163,7 +163,7 @@
 		z-index: 5;
 		margin: 0 -18px;
 		padding: 14px 18px 10px;
-		background: rgba(250, 246, 241, 0.92);
+		background: var(--paper-glass);
 		backdrop-filter: blur(14px);
 		-webkit-backdrop-filter: blur(14px);
 		border-bottom: 1px solid transparent;
@@ -233,7 +233,7 @@
 	.opt[aria-pressed='true'] {
 		background: var(--navy);
 		border-color: var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 	}
 	.fs {
 		margin-left: auto;
@@ -371,8 +371,8 @@
 		color: var(--navy);
 	}
 	.source.warn {
-		background: #fdf1ea;
-		border-color: #f3d3c2;
+		background: var(--peach-wash);
+		border-color: var(--peach-line);
 		color: var(--peach-ink);
 	}
 	.src {
@@ -420,14 +420,14 @@
 		margin-top: 12px;
 		border-radius: 18px;
 		background: var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 		font-weight: 800;
 		font-size: 15px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		box-shadow: 0 14px 30px -14px rgba(51, 80, 111, 0.8);
+		box-shadow: 0 14px 30px -14px var(--frame-shadow);
 		transition: background 0.3s var(--ease);
 	}
 	.done.ok {

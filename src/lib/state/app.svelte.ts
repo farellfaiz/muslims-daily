@@ -57,6 +57,10 @@ export const doaPrefs = new Persisted<DoaPrefs>('doa', {
 
 export const reading = new Persisted<ReadingPrefs>('reading', { lat: true, tr: true, wbw: false, size: 30 });
 
+export type ThemeMode = 'system' | 'light' | 'dark';
+/** Tema tampilan. 'system' mengikuti pengaturan HP. Dibaca juga oleh skrip kecil di app.html. */
+export const theme = new Persisted<{ mode: ThemeMode }>('theme', { mode: 'system' });
+
 /** Kapan terakhir pengguna menyimpan file cadangan (ISO). Kosong = belum pernah. */
 export const backupMeta = new Persisted<{ lastAt: string }>('backup', { lastAt: '' });
 

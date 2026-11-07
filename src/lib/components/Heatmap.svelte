@@ -101,25 +101,25 @@
 		outline-offset: 1px;
 	}
 	.l0 {
-		background: #e9eef3;
+		background: var(--h0);
 	}
 	.l1 {
-		background: #cfe0f0;
+		background: var(--h1);
 	}
 	.l2 {
-		background: #a6c4e0;
+		background: var(--h2);
 	}
 	.l3 {
-		background: #7399be;
+		background: var(--h3);
 	}
 	.l4 {
-		background: #4d7097;
+		background: var(--h4);
 	}
 	.l5 {
-		background: #2b4664;
+		background: var(--h5);
 	}
 	.lh {
-		background: repeating-linear-gradient(45deg, #f3d3c2 0 3px, var(--peach-soft) 3px 6px);
+		background: repeating-linear-gradient(45deg, var(--peach-line) 0 3px, var(--peach-soft) 3px 6px);
 	}
 	.foot {
 		display: flex;
@@ -165,7 +165,7 @@
 	}
 	.pill.full {
 		background: var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 	}
 	.pill.udz {
 		background: var(--peach-soft);
@@ -200,7 +200,7 @@
 	.pr.done .dot {
 		background: var(--navy);
 		border: 1.5px solid var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 		animation: pop 0.3s var(--ease);
 	}
 	.pn {

@@ -10,7 +10,7 @@
 	import { pwaInfo } from 'virtual:pwa-info';
 	import BottomNav from '#lib/components/BottomNav.svelte';
 	import Toast from '#lib/components/Toast.svelte';
-	import { clock } from '#lib/state/app.svelte.ts';
+	import { clock, theme } from '#lib/state/app.svelte.ts';
 	import { quiet } from '#lib/transition.ts';
 
 	let { children } = $props();
@@ -20,6 +20,22 @@
 		// Service worker: aplikasi tersimpan untuk offline dan memperbarui diri diam-diam.
 		import('virtual:pwa-register').then(({ registerSW }) => registerSW({ immediate: true }));
 		return stop;
+	});
+
+	// Tema: atribut data-theme di <html> + warna bilah status mengikuti latar halaman.
+	$effect(() => {
+		const mode = theme.value.mode;
+		const root = document.documentElement;
+		if (mode === 'system') delete root.dataset.theme;
+		else root.dataset.theme = mode;
+		const media = matchMedia('(prefers-color-scheme: dark)');
+		const paint = () => {
+			const meta = document.querySelector('meta[name="theme-color"]');
+			meta?.setAttribute('content', getComputedStyle(root).getPropertyValue('--paper').trim() || '#FAF6F1');
+		};
+		paint();
+		media.addEventListener('change', paint);
+		return () => media.removeEventListener('change', paint);
 	});
 
 	// Transisi halus antarhalaman (didukung Chrome/Edge/Safari terbaru; browser lain langsung pindah).
@@ -66,7 +82,7 @@
 		.app {
 			box-shadow:
 				0 0 0 1px var(--line),
-				0 30px 80px -30px rgba(34, 56, 79, 0.35);
+				0 30px 80px -30px var(--frame-shadow);
 		}
 	}
 </style>

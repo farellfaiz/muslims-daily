@@ -5,7 +5,7 @@
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { CITIES } from '#lib/cities.ts';
 	import { METHODS, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
-	import { settings, toast } from '#lib/state/app.svelte.ts';
+	import { settings, theme, toast, type ThemeMode } from '#lib/state/app.svelte.ts';
 
 	const s = $derived(settings.value);
 	let locating = $state(false);
@@ -40,12 +40,17 @@
 	const setMethod = (m: MethodKey) => (settings.value = { ...s, method: m });
 	const setMadhab = (m: MadhabKey) => (settings.value = { ...s, madhab: m });
 
+	const THEMES: [ThemeMode, string][] = [
+		['system', 'Ikuti HP'],
+		['light', 'Terang'],
+		['dark', 'Gelap']
+	];
+
 	const SOON = [
 		["Al-Qur'an", 'Mushaf lengkap dengan terjemahan per kata'],
 		['Dzikir pagi dan petang', 'Penghitung dan pengingat'],
 		['Kiblat', 'Kompas dengan kalibrasi'],
-		['Notifikasi adzan', 'Pengingat waktu salat'],
-		['Mode gelap', 'Nyaman untuk tahajud']
+		['Notifikasi adzan', 'Pengingat waktu salat']
 	];
 </script>
 
@@ -97,6 +102,16 @@
 </section>
 
 <AdjustCard />
+
+<section class="card group">
+	<div class="label">Tampilan</div>
+	<div class="seg wide" role="group" aria-label="Tema tampilan">
+		{#each THEMES as [m, name] (m)}
+			<button aria-pressed={theme.value.mode === m} onclick={() => (theme.value = { mode: m })}>{name}</button>
+		{/each}
+	</div>
+	<p class="hint">Mode gelap nyaman untuk tahajud dan membaca doa di malam hari.</p>
+</section>
 
 <BackupCard />
 
@@ -151,7 +166,7 @@
 		height: 46px;
 		border-radius: 14px;
 		background: var(--navy);
-		color: #fff;
+		color: var(--on-navy);
 		font-weight: 700;
 		font-size: 14px;
 		display: flex;
