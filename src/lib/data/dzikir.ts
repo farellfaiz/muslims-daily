@@ -51,19 +51,44 @@ export const DZIKIR: Dzikir[] = [
 		latin: "Allāhu lā ilāha illā huwal-ḥayyul-qayyūm, lā ta'khudzuhū sinatun wa lā naum, lahū mā fis-samāwāti wa mā fil-arḍ, man dzal-ladzī yasyfa'u 'indahū illā bi'idznih, ya'lamu mā baina aidīhim wa mā khalfahum, wa lā yuḥīṭūna bisyai'in min 'ilmihī illā bimā syā', wasi'a kursiyyuhus-samāwāti wal-arḍ, wa lā ya'ūduhū ḥifẓuhumā, wa huwal-'aliyyul-'aẓīm.",
 		translation: 'Allah, tidak ada tuhan selain Dia, Yang Mahahidup lagi terus-menerus mengurus makhluk-Nya. Dia tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Tidak ada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang ada di hadapan mereka dan apa yang ada di belakang mereka, sedangkan mereka tidak mengetahui sedikit pun dari ilmu-Nya kecuali yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi, dan Dia tidak merasa berat menjaga keduanya. Dialah Yang Mahatinggi lagi Mahaagung.'
 	},
-	// Al-Falaq dan An-Nas dari https://api.alquran.cloud/v1/surah/113/quran-uthmani dan .../114/quran-uthmani
+	// Al-Ikhlas, Al-Falaq, An-Nas dari https://api.alquran.cloud/v1/surah/{112,113,114}/quran-uthmani.
+	// Satu kartu per surah; id 2 tetap untuk Al-Ikhlas supaya progres lama tidak bergeser.
 	{
 		id: 2,
-		slug: 'tiga-surah',
-		title: 'Tiga surah perlindungan',
+		slug: 'al-ikhlas',
+		title: 'Al-Ikhlas',
 		count: 3,
-		source: 'QS. Al-Ikhlas, Al-Falaq, An-Nas; HR. Abu Dawud no. 5082, Tirmidzi no. 3575',
-		benefit: 'Dibaca tiga kali pagi dan petang, ketiganya mencukupimu dari segala sesuatu.',
+		source: 'QS. Al-Ikhlas; HR. Abu Dawud no. 5082, Tirmidzi no. 3575',
+		benefit: 'Al-Ikhlas, Al-Falaq, dan An-Nas dibaca masing-masing tiga kali pagi dan petang; ketiganya mencukupimu dari segala sesuatu.',
 		verified: false,
 		ref: 'https://api.alquran.cloud/v1/surah/112/quran-uthmani',
-		arabic: 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ ﴿١﴾ ٱللَّهُ ٱلصَّمَدُ ﴿٢﴾ لَمْ يَلِدْ وَلَمْ يُولَدْ ﴿٣﴾ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ﴿٤﴾\nبِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ ﴿١﴾ مِن شَرِّ مَا خَلَقَ ﴿٢﴾ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ﴿٣﴾ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ ﴿٤﴾ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴿٥﴾\nبِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ ﴿١﴾ مَلِكِ ٱلنَّاسِ ﴿٢﴾ إِلَٰهِ ٱلنَّاسِ ﴿٣﴾ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ﴿٤﴾ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ ﴿٥﴾ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ ﴿٦﴾',
-		latin: "Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakun lahū kufuwan aḥad.\nBismillāhir-raḥmānir-raḥīm. Qul a'ūdzu birabbil-falaq. Min syarri mā khalaq. Wa min syarri ghāsiqin idzā waqab. Wa min syarrin-naffātsāti fil-'uqad. Wa min syarri ḥāsidin idzā ḥasad.\nBismillāhir-raḥmānir-raḥīm. Qul a'ūdzu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Alladzī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.",
-		translation: 'Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah, Dialah Allah Yang Maha Esa. Allah tempat bergantung segala sesuatu. Dia tidak beranak dan tidak pula diperanakkan. Dan tidak ada sesuatu pun yang setara dengan Dia.\nDengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah, aku berlindung kepada Tuhan yang menguasai subuh, dari kejahatan makhluk yang Dia ciptakan, dari kejahatan malam apabila telah gelap gulita, dari kejahatan para peniup pada buhul-buhul (penyihir), dan dari kejahatan orang yang dengki apabila ia mendengki.\nDengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah, aku berlindung kepada Tuhan manusia, Raja manusia, sembahan manusia, dari kejahatan pembisik yang bersembunyi, yang membisikkan kejahatan ke dalam dada manusia, dari golongan jin dan manusia.'
+		arabic: 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ ﴿١﴾ ٱللَّهُ ٱلصَّمَدُ ﴿٢﴾ لَمْ يَلِدْ وَلَمْ يُولَدْ ﴿٣﴾ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ﴿٤﴾',
+		latin: "Bismillāhir-raḥmānir-raḥīm. Qul huwallāhu aḥad. Allāhuṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakun lahū kufuwan aḥad.",
+		translation: 'Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah, Dialah Allah Yang Maha Esa. Allah tempat bergantung segala sesuatu. Dia tidak beranak dan tidak pula diperanakkan. Dan tidak ada sesuatu pun yang setara dengan Dia.'
+	},
+	{
+		id: 20,
+		slug: 'al-falaq',
+		title: 'Al-Falaq',
+		count: 3,
+		source: 'QS. Al-Falaq; HR. Abu Dawud no. 5082, Tirmidzi no. 3575',
+		verified: false,
+		ref: 'https://api.alquran.cloud/v1/surah/113/quran-uthmani',
+		arabic: 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ ﴿١﴾ مِن شَرِّ مَا خَلَقَ ﴿٢﴾ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ﴿٣﴾ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ ﴿٤﴾ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴿٥﴾',
+		latin: "Bismillāhir-raḥmānir-raḥīm. Qul a'ūdzu birabbil-falaq. Min syarri mā khalaq. Wa min syarri ghāsiqin idzā waqab. Wa min syarrin-naffātsāti fil-'uqad. Wa min syarri ḥāsidin idzā ḥasad.",
+		translation: 'Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah, aku berlindung kepada Tuhan yang menguasai subuh, dari kejahatan makhluk yang Dia ciptakan, dari kejahatan malam apabila telah gelap gulita, dari kejahatan para peniup pada buhul-buhul (penyihir), dan dari kejahatan orang yang dengki apabila ia mendengki.'
+	},
+	{
+		id: 21,
+		slug: 'an-nas',
+		title: 'An-Nas',
+		count: 3,
+		source: 'QS. An-Nas; HR. Abu Dawud no. 5082, Tirmidzi no. 3575',
+		verified: false,
+		ref: 'https://api.alquran.cloud/v1/surah/114/quran-uthmani',
+		arabic: 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ ﴿١﴾ مَلِكِ ٱلنَّاسِ ﴿٢﴾ إِلَٰهِ ٱلنَّاسِ ﴿٣﴾ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ﴿٤﴾ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ ﴿٥﴾ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ ﴿٦﴾',
+		latin: "Bismillāhir-raḥmānir-raḥīm. Qul a'ūdzu birabbin-nās. Malikin-nās. Ilāhin-nās. Min syarril-waswāsil-khannās. Alladzī yuwaswisu fī ṣudūrin-nās. Minal-jinnati wan-nās.",
+		translation: 'Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang. Katakanlah, aku berlindung kepada Tuhan manusia, Raja manusia, sembahan manusia, dari kejahatan pembisik yang bersembunyi, yang membisikkan kejahatan ke dalam dada manusia, dari golongan jin dan manusia.'
 	},
 	// lafaz petang dari HR. Muslim no. 2723 (https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-muslim/6908.json), koma ditambahkan
 	{
