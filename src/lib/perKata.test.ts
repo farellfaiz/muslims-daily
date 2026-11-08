@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DZIKIR } from './data/dzikir.ts';
 import { SALAT } from './data/salat.ts';
+import { SALAT_RINGKAS } from './data/salatRingkas.ts';
 import { perKataKey, tokens, type PerKata } from './perKata.ts';
 import raw from '../../static/data/per-kata.json';
 
@@ -8,7 +9,7 @@ const data = raw as unknown as PerKata;
 
 // Semua teks yang tampil di halaman Dzikir, dengan kuncinya.
 const texts: [string, string][] = [
-	...SALAT.map((d) => [perKataKey('salat', d.id), d.arabic] as [string, string]),
+	...[...SALAT, ...SALAT_RINGKAS].map((d) => [perKataKey('salat', d.id), d.arabic] as [string, string]),
 	...DZIKIR.flatMap((d) => [
 		[perKataKey('dzikir', d.id), d.arabic] as [string, string],
 		...(d.petang ? [[perKataKey('dzikir', d.id, true), d.petang.arabic] as [string, string]] : [])
@@ -42,7 +43,7 @@ describe('data arti per kata', () => {
 		for (const [key, e] of Object.entries(data)) {
 			if (e.src !== 'quran') continue;
 			const id = Number(key.split(':')[1]);
-			const src = key.startsWith('salat:') ? SALAT.find((d) => d.id === id)?.source : DZIKIR.find((d) => d.id === id)?.source;
+			const src = key.startsWith('salat:') ? [...SALAT, ...SALAT_RINGKAS].find((d) => d.id === id)?.source : DZIKIR.find((d) => d.id === id)?.source;
 			expect(src).toMatch(/^QS\./);
 		}
 	});

@@ -6,6 +6,8 @@
 	import Words from '#lib/components/Words.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { forTime } from '#lib/dzikirTime.ts';
+	import Picker from '#lib/components/Picker.svelte';
+	import { GROUP_LABEL, SALAT_VERSI, type SalatVersi } from '#lib/salatVersi.ts';
 	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
 	import { dateKey } from '#lib/date.ts';
 	import {
@@ -20,7 +22,7 @@
 		type Session
 	} from '#lib/dzikirProgress.ts';
 	import { PRAYERS, type PrayerKey } from '#lib/prayer.ts';
-	import { clock, dzikirProgress, reading, schedule, toast } from '#lib/state/app.svelte.ts';
+	import { clock, dzikirPrefs, dzikirProgress, reading, schedule, toast } from '#lib/state/app.svelte.ts';
 
 	let { data } = $props();
 
@@ -34,7 +36,7 @@
 		arabic: string;
 		latin: string;
 		translation: string;
-		group?: 'dzikir' | 'doa';
+		group?: 'dzikir' | 'doa' | 'quran';
 		source?: string;
 		benefit?: string;
 		note?: string;
@@ -62,9 +64,14 @@
 	// Sesi setelah Isya yang berlanjut lewat tengah malam tetap memakai tanggal kemarin.
 	const date = $derived(!now ? '' : set === 'salat' && last && prayer === last.prayer ? last.date : dateKey(now));
 
+	// Versi dzikir setelah salat: Al-Azhar (Syifa Budi) atau ringkas. Pilihan diingat.
+	const versi = $derived(dzikirPrefs.value.salat);
+	const setVersi = (v: string) => (dzikirPrefs.value = { ...dzikirPrefs.value, salat: v as SalatVersi });
+	const salatList = $derived(versi === 'ringkas' ? data.salatRingkas : data.salat);
+
 	const items = $derived<Item[]>(
 		set === 'salat'
-			? data.salat.map((d) => ({ ...d, key: perKataKey('salat', d.id) }))
+			? salatList.map((d) => ({ ...d, count: d.countFor?.[prayer] ?? d.count, key: perKataKey('salat', d.id) }))
 			: forTime(data.dzikir, time).map((d) => ({
 					...d,
 					...d.text,
@@ -76,7 +83,7 @@
 	const done = $derived(doneCount(dzikirProgress.value, session, date, items));
 	const allDone = $derived(items.length > 0 && done === items.length);
 	const pct = $derived(items.length ? (done / items.length) * 100 : 0);
-	const draft = $derived(set === 'pagi-petang' && items.some((d) => d.verified === false));
+	const draft = $derived(items.some((d) => d.verified === false));
 	const prayerName = $derived(PRAYERS.find((p) => p.key === prayer)!.name);
 	const heading = $derived(set === 'salat' ? `Setelah ${prayerName}` : time === 'pagi' ? 'Pagi' : 'Petang');
 
@@ -85,13 +92,23 @@
 	// Journey: gambaran alur semua bacaan sesi ini. Tertutup bawaannya supaya tidak mendorong kartu bacaan terlalu jauh.
 	let journeyOpen = $state(false);
 	const nextId = $derived(items.find((d) => (n[d.id] ?? 0) < d.count)?.id);
+	// kelompok bacaan sesuai urutan kemunculannya, mis. 6 dzikir lalu 16 doa
 	const groups = $derived(
-		set === 'salat'
-			? (['dzikir', 'doa'] as const).map((g) => ({ g, total: items.filter((d) => d.group === g).length }))
-			: []
+		[...new Set(items.map((d) => d.group).filter((g) => !!g))].map((g) => ({
+			g: g!,
+			total: items.filter((d) => d.group === g).length
+		}))
 	);
 	const flow = $derived(
-		groups.length ? groups.map((x) => `${x.total} ${x.g}`).join(' lalu ') : `${items.length} dzikir ${time}`
+		groups.length
+			? groups.map((x) => `${x.total} ${GROUP_LABEL[x.g][1]}`).join(' lalu ')
+			: `${items.length} dzikir ${time}`
+	);
+	// "Dzikir lalu doa" atau "Dzikir lalu bacaan Al-Qur'an", sesuai versi
+	const order = $derived(
+		groups
+			.map((x, k) => (k === 0 ? GROUP_LABEL[x.g][0] : GROUP_LABEL[x.g][1]))
+			.join(' lalu ')
 	);
 	const nextItem = $derived(items.find((d) => d.id === nextId));
 	const jump = (id: number) => document.getElementById(`dz-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -202,6 +219,13 @@
 	{/if}
 </div>
 
+{#if set === 'salat'}
+	<div class="versi">
+		<span class="label">Versi</span>
+		<Picker label="Versi dzikir setelah salat" size="sm" options={SALAT_VERSI} value={versi} onchange={setVersi} />
+	</div>
+{/if}
+
 <section class="card journey" aria-labelledby="journey-h">
 	<button class="jh" aria-expanded={journeyOpen} aria-controls="journey-list" onclick={() => (journeyOpen = !journeyOpen)}>
 		<span class="grow">
@@ -226,7 +250,7 @@
 			{#each items as d, i (d.id)}
 				{@const ok = (n[d.id] ?? 0) >= d.count}
 				{#if d.group && d.group !== items[i - 1]?.group}
-					<li class="sg">{d.group === 'dzikir' ? 'Dzikir' : 'Doa'}</li>
+					<li class="sg">{GROUP_LABEL[d.group][0]}</li>
 				{/if}
 				<li>
 					<button class="step" class:ok class:now={d.id === nextId} onclick={() => jump(d.id)}>
@@ -252,7 +276,7 @@
 		<div class="pt"><span class="num">{done}</span> dari <span class="num">{items.length}</span> bacaan</div>
 		<div class="track"><span style:width="{pct}%"></span></div>
 		<div class="ps">
-			{#if set === 'salat'}Dzikir lalu doa, selepas salat {prayerName}
+			{#if set === 'salat'}{order}, selepas salat {prayerName}
 			{:else if time === 'pagi'}Dibaca setelah Subuh sampai sebelum Ashar
 			{:else}Dibaca setelah Ashar sampai malam{/if}
 		</div>
@@ -271,7 +295,7 @@
 	{@const ok = c >= d.count}
 	{@const pk = opt.wbw ? perKata?.[d.key] : undefined}
 	{#if d.group && d.group !== items[i - 1]?.group}
-		<div class="sec-h"><h2>{d.group === 'dzikir' ? 'Dzikir' : 'Doa'}</h2></div>
+		<div class="sec-h"><h2>{GROUP_LABEL[d.group][0]}</h2></div>
 	{/if}
 	<article class="card dz" class:ok class:on={active?.id === d.id && !allDone} id="dz-{d.id}" data-id={d.id}>
 		<div class="dh">
@@ -365,7 +389,11 @@
 
 {#if set === 'salat'}
 	<p class="credit">
-		Teks dari <a href={data.source.url} target="_blank" rel="noopener">{data.source.name}</a>.
+		{#if versi === 'ringkas'}
+			Disusun dari bab dzikir setelah salam dalam Hisnul Muslim. Teks Arab dari Sahih Bukhari, Sahih Muslim, dan Al-Qur'an.
+		{:else}
+			Versi Al-Azhar (Syifa Budi). Teks dari <a href={data.source.url} target="_blank" rel="noopener">{data.source.name}</a>.
+		{/if}
 	</p>
 {/if}
 
@@ -458,6 +486,12 @@
 	}
 	.strip .seg-doa {
 		background: var(--peach-soft);
+	}
+	.strip .seg-quran {
+		background: var(--gold-soft);
+	}
+	.strip .seg-quran.done {
+		background: var(--gold);
 	}
 	.strip .seg-dzikir.done {
 		background: var(--navy);
@@ -914,6 +948,12 @@
 		font-weight: 700;
 		font-size: 13px;
 		color: var(--navy);
+	}
+	.versi {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: -2px 2px 12px;
 	}
 	.credit {
 		margin: 18px 2px 0;

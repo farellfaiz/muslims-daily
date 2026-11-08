@@ -1,5 +1,6 @@
 /**
- * Dzikir dan doa setelah salat fardu.
+ * Dzikir dan doa setelah salat fardu, versi Al-Azhar (susunan Syifa Budi).
+ * Versi lain yang bisa dipilih pengguna: salatRingkas.ts (lihat #lib/salatVersi.ts).
  *
  * Teks Arab, latin, dan terjemahan diambil apa adanya dari "Dzikir & Doa Setelah Sholat"
  * (SOURCE_URL), kumpulan susunan pemilik proyek. Perubahan dari sumber hanya:
@@ -14,12 +15,19 @@ export interface SalatItem {
 	id: number;
 	slug: string;
 	title: string;
-	/** dzikir (dibaca berhitung) lalu doa */
-	group: 'dzikir' | 'doa';
+	/** dzikir (dibaca berhitung), doa, atau bacaan Al-Qur'an */
+	group: 'dzikir' | 'doa' | 'quran';
 	count: number;
-	/** nomor ayat bila bacaan berupa ayat Al-Qur'an */
+	/** jumlah bacaan yang berbeda untuk salat tertentu, mis. tiga kali setelah Subuh dan Maghrib */
+	countFor?: Partial<Record<'subuh' | 'dzuhur' | 'ashar' | 'maghrib' | 'isya', number>>;
+	/** rujukan: nomor hadis atau ayat */
 	source?: string;
+	benefit?: string;
 	note?: string;
+	/** false = susunan latin/terjemahan belum dicek orang yang paham */
+	verified?: boolean;
+	/** URL rujukan tempat teks Arab diambil */
+	ref?: string;
 	arabic: string;
 	latin: string;
 	translation: string;
