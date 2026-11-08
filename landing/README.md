@@ -17,8 +17,9 @@ npm run preview    # coba hasil build
 
 ## Deploy
 
-Buat project baru di Vercel atau Cloudflare Pages dari repo yang sama, dengan **Root Directory = `landing`**,
-build command `npm run build`, dan output `build`. Project aplikasinya tetap memakai root repo.
+Buat project Cloudflare Pages kedua dari repo yang sama, dengan **Root directory = `landing`**,
+build command `npm run build`, dan output `build`, lalu pasang domain `muslimsdaily.id`.
+Project aplikasinya tetap memakai root repo. Header cache ada di [`static/_headers`](static/_headers).
 
 ## Isi halaman
 

@@ -1,0 +1,21 @@
+# Header untuk Cloudflare Pages (host lain mengabaikan file ini).
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Service worker dan manifest harus selalu dicek ulang, supaya pembaruan aplikasi langsung sampai.
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Cache-Control: no-cache
+  Content-Type: application/manifest+json
+
+/_app/version.json
+  Cache-Control: no-cache
+
+# Nama file di sini mengandung hash, jadi aman disimpan selamanya.
+/_app/immutable/*
+  Cache-Control: public, max-age=31536000, immutable

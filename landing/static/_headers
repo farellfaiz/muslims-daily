@@ -1,0 +1,10 @@
+# Header untuk Cloudflare Pages (host lain mengabaikan file ini).
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Nama file di sini mengandung hash, jadi aman disimpan selamanya.
+/_app/immutable/*
+  Cache-Control: public, max-age=31536000, immutable
