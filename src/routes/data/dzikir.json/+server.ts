@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { DZIKIR } from '#lib/data/dzikir.ts';
 import { SALAT, SOURCE_NAME, SOURCE_URL } from '#lib/data/salat.ts';
 import { SALAT_RINGKAS } from '#lib/data/salatRingkas.ts';
+import wirdulLathif from '#lib/data/wirdulLathif.json';
 
 /**
  * Teks dzikir sebagai file statis (dibuat saat build). Data tetap ditulis di src/lib/data,
@@ -16,8 +17,10 @@ export type DzikirData = {
 	/** versi ringkas dari hadis sahih */
 	salatRingkas: typeof SALAT_RINGKAS;
 	dzikir: typeof DZIKIR;
+	/** versi kedua dzikir pagi petang, dari NU Online */
+	wirdul: typeof wirdulLathif;
 };
 
 export function GET() {
-	return json({ source: { url: SOURCE_URL, name: SOURCE_NAME }, salat: SALAT, salatRingkas: SALAT_RINGKAS, dzikir: DZIKIR } satisfies DzikirData);
+	return json({ source: { url: SOURCE_URL, name: SOURCE_NAME }, salat: SALAT, salatRingkas: SALAT_RINGKAS, dzikir: DZIKIR, wirdul: wirdulLathif } satisfies DzikirData);
 }

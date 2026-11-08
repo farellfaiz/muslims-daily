@@ -6,7 +6,7 @@
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { forTime } from '#lib/dzikirTime.ts';
 	import Sheet from '#lib/components/Sheet.svelte';
-	import { GROUP_LABEL, SALAT_VERSI, TASBIH_SLUGS, type DzikirPrefs } from '#lib/salatVersi.ts';
+	import { GROUP_LABEL, PAGI_VERSI, SALAT_VERSI, TASBIH_SLUGS, type DzikirPrefs } from '#lib/salatVersi.ts';
 	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
 	import { dateKey } from '#lib/date.ts';
 	import {
@@ -66,6 +66,7 @@
 	// Pengaturan (versi, jumlah tasbih, getar, geser otomatis) di lembar sendiri. Pilihan diingat.
 	const prefs = $derived(dzikirPrefs.value);
 	const versi = $derived(prefs.salat);
+	const pagiVersi = $derived(prefs.pagi);
 	const setPref = <K extends keyof DzikirPrefs>(k: K, v: DzikirPrefs[K]) => (dzikirPrefs.value = { ...prefs, [k]: v });
 	let settingsOpen = $state(false);
 	const salatList = $derived(versi === 'ringkas' ? data.salatRingkas : data.salat);
@@ -76,12 +77,14 @@
 	const items = $derived<Item[]>(
 		set === 'salat'
 			? salatList.map((d) => ({ ...d, count: countOf(d), key: perKataKey('salat', d.id) }))
-			: forTime(data.dzikir, time).map((d) => ({
-					...d,
-					...d.text,
-					group: undefined,
-					key: perKataKey('dzikir', d.id, time === 'petang' && !!d.petang)
-				}))
+			: pagiVersi === 'wirdul'
+				? data.wirdul[time].map((d) => ({ ...d, key: `wirdul:${d.id}` }))
+				: forTime(data.dzikir, time).map((d) => ({
+						...d,
+						...d.text,
+						group: undefined,
+						key: perKataKey('dzikir', d.id, time === 'petang' && !!d.petang)
+					}))
 	);
 	const n = $derived(counts(dzikirProgress.value, session, date));
 	const done = $derived(doneCount(dzikirProgress.value, session, date, items));
@@ -121,7 +124,8 @@
 		document.getElementById(`dz-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	};
 
-	// Arti per kata: file terpisah, baru diunduh saat pertama kali dinyalakan.
+	// Arti per kata: file terpisah, baru diunduh saat pertama kali dinyalakan. Hanya ditampilkan untuk
+	// ayat Al-Qur'an (arti per kata quran.com); bacaan hadis belum punya sumber arti per kata yang terbuka.
 	let perKata = $state<PerKata | null>(null);
 	let perKataFailed = $state(false);
 	$effect(() => {
@@ -292,6 +296,18 @@
 	</div>
 
 	<div class="set-sec">
+		<div class="label">Versi dzikir pagi &amp; petang</div>
+		<div class="vopts">
+			{#each PAGI_VERSI as v (v.value)}
+				<button class="vopt" aria-pressed={pagiVersi === v.value} onclick={() => setPref('pagi', v.value)}>
+					<span class="radio"></span>
+					<span class="grow"><span class="vl">{v.label}</span><span class="vs">{v.sub}</span></span>
+				</button>
+			{/each}
+		</div>
+	</div>
+
+	<div class="set-sec">
 		<div class="label">Tasbih, tahmid, takbir</div>
 		<div class="seg wide" role="group" aria-label="Jumlah tasbih, tahmid, takbir">
 			<button aria-pressed={prefs.tasbih === 33} onclick={() => setPref('tasbih', 33)}><span class="num">33</span>× masing-masing</button>
@@ -335,7 +351,8 @@
 {#each items as d, i (d.id)}
 	{@const c = n[d.id] ?? 0}
 	{@const ok = c >= d.count}
-	{@const pk = opt.wbw ? perKata?.[d.key] : undefined}
+	{@const pkAll = opt.wbw ? perKata?.[d.key] : undefined}
+	{@const pk = pkAll?.src === 'quran' ? pkAll : undefined}
 	{#if d.group && d.group !== items[i - 1]?.group}
 		<div class="sec-h"><h2>{GROUP_LABEL[d.group][0]}</h2></div>
 	{/if}
@@ -354,13 +371,11 @@
 
 		{#if pk}
 			<Words words={pk.w} lat={opt.lat} size={opt.size} />
-			<p class="wsrc">
-				{#if pk.src === 'quran'}Arti per kata dari quran.com{:else}<span class="dot"></span>Arti per kata masih draf, belum diverifikasi{/if}
-			</p>
+			<p class="wsrc">Arti per kata dari quran.com</p>
 			{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
 		{:else}
 			<p class="ar" style:font-size="{opt.size}px">{d.arabic}</p>
-			{#if opt.wbw && !perKataFailed}<p class="wsrc">Memuat arti per kata…</p>{/if}
+			{#if opt.wbw && !perKata && !perKataFailed}<p class="wsrc">Memuat arti per kata…</p>{/if}
 			{#if opt.lat}<p class="lat">{d.latin}</p>{/if}
 			{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
 		{/if}
@@ -436,6 +451,17 @@
 		{:else}
 			Versi Al-Azhar (Syifa Budi). Teks dari <a href={data.source.url} target="_blank" rel="noopener">{data.source.name}</a>.
 		{/if}
+	</p>
+{:else if pagiVersi === 'wirdul'}
+	<p class="credit">
+		Wirdul Lathif susunan al-Habib Abdullah al-Haddad. Teks Arab, transliterasi, dan terjemahan dari
+		<a href={data.wirdul.source.url} target="_blank" rel="noopener">{data.wirdul.source.name}</a>
+		({data.wirdul.source.team.join('; ')}).
+	</p>
+{:else}
+	<p class="credit">
+		Susunan Hisnul Muslim. Teks Arab dari hisnmuslim.com dan Al-Qur'an; terjemahan dari Hisnul Muslim edisi
+		Indonesia; transliterasi disusun Muslims Daily.
 	</p>
 {/if}
 
@@ -847,10 +873,6 @@
 		margin: 8px 2px 0;
 		font-size: 11.5px;
 		color: var(--ink3);
-	}
-	.wsrc .dot {
-		width: 6px;
-		height: 6px;
 	}
 	.dz {
 		margin-top: 12px;

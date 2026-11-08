@@ -1,8 +1,9 @@
 /**
- * Akses ke doa.json. Hanya diimpor dari +page.server.ts sehingga teks lengkap cukup disisipkan
- * ke halaman yang membutuhkannya saat prerender, tidak ikut JavaScript aplikasi.
+ * Akses ke data doa (NU Online + buku Kemenag RI). Hanya diimpor dari +page.server.ts sehingga teks
+ * lengkap cukup disisipkan ke halaman yang membutuhkannya saat prerender, tidak ikut JavaScript aplikasi.
  */
-import raw from '#lib/data/doa.json';
+import nuRaw from '#lib/data/doa.json';
+import kemenagRaw from '#lib/data/doa-kemenag.json';
 import {
 	doaHref,
 	isReading,
@@ -13,7 +14,8 @@ import {
 	type DailyDoa,
 	type Doa,
 	type DoaItem,
-	type Part
+	type Part,
+	type SourceKey
 } from '#lib/data/doa.ts';
 
 interface RawDoa {
@@ -21,12 +23,40 @@ interface RawDoa {
 	slug: string;
 	category: string;
 	title: string;
-	description: string;
-	url: string;
 	parts: Part[];
+	source: SourceKey;
+	/** NU Online: keterangan sumber + tim di bawah garis "----" */
+	description?: string;
+	url?: string;
+	/** Kemenag: keterangan dan halaman buku */
+	note?: string;
+	page?: number;
+	ownText?: boolean;
 }
 
-const DATA = raw as { categories: { slug: string; name: string }[]; doa: RawDoa[] };
+type RawCategory = { slug: string; name: string };
+const NU = nuRaw as { categories: RawCategory[]; doa: Omit<RawDoa, 'source'>[] };
+const KEMENAG = kemenagRaw as { categories: RawCategory[]; doa: Omit<RawDoa, 'source'>[] };
+
+/** Kategori baru dari buku Kemenag disisipkan setelah kategori NU yang paling dekat temanya. */
+const INSERT_AFTER: Record<string, string> = {
+	'doa-pagi-petang': 'doa-keseharian',
+	'doa-al-quran': 'doa-para-nabi-di-al-quran',
+	'doa-ampunan': 'doa-kualitas-diri'
+};
+const categories = [...NU.categories];
+for (const c of KEMENAG.categories) {
+	const at = categories.findIndex((x) => x.slug === INSERT_AFTER[c.slug]);
+	categories.splice(at < 0 ? categories.length : at + 1, 0, c);
+}
+
+const DATA = {
+	categories,
+	doa: [
+		...NU.doa.map((d) => ({ ...d, source: 'nu' as const })),
+		...KEMENAG.doa.map((d) => ({ ...d, source: 'kemenag' as const }))
+	] satisfies RawDoa[]
+};
 
 const readingsOf = (d: RawDoa) => d.parts.filter(isReading);
 const wordsOf = (d: RawDoa) => readingsOf(d).reduce((n, p) => n + wordCount(p.arabic), 0);
@@ -73,7 +103,7 @@ function splitDescription(desc: string) {
 }
 
 export function getDoa(category: string, slug: string): Doa | undefined {
-	const d = DATA.doa.find((x) => x.category === category && x.slug === slug);
+	const d: RawDoa | undefined = DATA.doa.find((x) => x.category === category && x.slug === slug);
 	if (!d) return;
 	return {
 		id: d.id,
@@ -81,16 +111,19 @@ export function getDoa(category: string, slug: string): Doa | undefined {
 		category: d.category,
 		title: d.title,
 		parts: d.parts,
-		url: d.url,
+		source: d.source,
+		url: d.url ?? null,
+		page: d.page,
+		ownText: d.ownText ?? false,
 		words: wordsOf(d),
-		...splitDescription(d.description)
+		...(d.source === 'nu' ? splitDescription(d.description ?? '') : { note: d.note ?? '', team: [] })
 	};
 }
 
 export const ALL_PATHS = DATA.doa.map((d) => ({ kategori: d.category, slug: d.slug }));
 
 /** Doa pendek berbacaan tunggal untuk kartu "doa hari ini". */
-export const DAILY: DailyDoa[] = DATA.doa.flatMap((d) => {
+export const DAILY: DailyDoa[] = DATA.doa.flatMap((d: RawDoa) => {
 	const r = readingsOf(d);
 	if (d.parts.length !== 1 || r.length !== 1 || !r[0].translation || wordCount(r[0].arabic) > 24) return [];
 	return [

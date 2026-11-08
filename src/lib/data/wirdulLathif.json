@@ -1,0 +1,955 @@
+{
+	"source": {
+		"name": "NU Online",
+		"url": "https://quran.nu.or.id/wirid/wirid-harian/wirdul-lathif-pagi",
+		"note": "Al-Wirdul Lathif (wirid yang ringan) disusun oleh salah satu wali quthub di zamannya, yakni Al-Imam al-Habib Abdullah bin ‘Alawi al-Haddad. Beliau juga merupakan penyusun wirid Ratib al-Haddad.\n\nNaskah dalam aplikasi ini sudah diselaraskan dengan naskah wirid yang terhimpun dalam “Khulâshatul Madad an-Nabawi”, (Tangerang, Penerbit Putra Bumi, halaman 88-105), kumpulan doa dan wirid yang disusun oleh Habib Umar bin Hafidz.",
+		"team": [
+			"Penyalin & Penerjemah: Ahmad Mundzir",
+			"Pentransliterasi: Muhammad Aiz Luthfi",
+			"Editor: Mahbib Khoiron"
+		],
+		"fetchedAt": "2026-11-08"
+	},
+	"pagi": [
+		{
+			"id": 1002,
+			"title": "Al-Ikhlas",
+			"count": 3,
+			"source": "QS. Al-Ikhlas",
+			"arabic": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ\nقُلْ هُوَ اللّٰهُ اَحَدٌۚ، اَللّٰهُ الصَّمَدُۚ، لَمْ يَلِدْ وَلَمْ يُوْلَدْۙ، وَلَمْ يَكُنْ لَّهٗ كُفُوًا اَحَـــــدٌ",
+			"latin": "Bismillâhir-rahmânir-rahîm(i). Qul huwallâhu aḫad(un), Allâhush-shamad(u), lam yalid wa lam yûlad, wa lam yakun lahu kufuwan aḫad(un).",
+			"translation": "Dengan menyebut nama Allah yang Maha Pengasih lagi Maha Penyayang.\nKatakanlah (wahai Muhammad): “Dialah Allah Yang Maha Esa. Allah Dzat yang menjadi tumpuan segala permohonan. Ia tidak beranak dan tidak pula diperanakkan. Dan tidak ada siapa pun yang sebanding dengan-Nya."
+		},
+		{
+			"id": 1003,
+			"title": "Al-Falaq",
+			"count": 3,
+			"source": "QS. Al-Falaq",
+			"arabic": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ\nقُلْ اَعُوْذُ بِرَبِّ الْفَلَقِۙ، مِنْ شَرِّ مَـــا خَلَقَۙ، وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ، وَمِنْ شَرِّ النَّفّٰثٰتِ فِى الْعُقَدِۙ، وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ",
+			"latin": "Bismillâhir-rahmânir-rahîm(i).\nQul a‘ûdzu birabbil-falaq(i), min syarri mâ khalaq(a), wa min syarri ghâsiqin idzâ waqab(a), wa min syarrin-naffatsâti fil-‘uqad(i), wa min syarri ḫâsidin idzâ hasad(a).",
+			"translation": "Dengan menyebut nama Allah yang Maha Pengasih lagi Maha Penyayang.\nKatakanlah (wahai Muhammad), “Aku berlindung kepada Tuhan yang menciptakan cahaya subuh. Dari kejahatan makhluk-makhluk yang Ia ciptakan. Dari kejahatan malam apabila telah gelap gelita. Dari (ahli-ahli sihir) yang menghembus pada simpul-simpul ikatan. Dan dari kejahatan orang yang dengki apabila ia melakukan kedengkiannya."
+		},
+		{
+			"id": 1004,
+			"title": "An-Nas",
+			"count": 3,
+			"source": "QS. An-Nas",
+			"arabic": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ\nقُلْ اَعُوْذُ بِرَبِّ النَّاسِۙ، مَلِكِ النَّـــاسِۙ، اِلٰهِ النَّاسِۙ، مِنْ شَرِّ الْوَسْوَاسِ ەۙ الْخَنَّاسِۖ، الَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِۙ، مِنَ الْجِنَّةِ وَالنَّــاسِ",
+			"latin": "Bismillâhir-rahmânir-rahîm(i).\nQul a‘ûdzu birabbin-nâs(i), malikin-nâs(i), ilâhin-nâs(i), min syarril-waswâsil-khannâs(i), alladzî yuwaswisu fî shudûrin-nâs(i), minal jinnati wan-nâs(i).",
+			"translation": "Dengan menyebut nama Allah yang Maha Pengasih lagi Maha Penyayang.\nKatakanlah (wahai Muhammad): “Aku berlindung kepada Tuhan pemelihara manusia. Yang Menguasai manusia. Tuhannya manusia. Dari kejahatan pembisik penghasut yang timbul tenggelam. Yang melemparkan bisikan dan hasutannya ke dalam hati manusia. Dari kalangan jin dan manusia.”"
+		},
+		{
+			"id": 1005,
+			"title": "Al-Mu’minun: 97-98",
+			"count": 3,
+			"source": "QS. Al-Mu’minun: 97-98",
+			"arabic": "رَبِّ أَعُوْذُ بِـكَ مِنْ هَمَـزَاتِ الشَّيَـاطِينِ، وَأَعُوذُ بِكَ رَبِّ أَنْ يَحْضُـرُوْنِ",
+			"latin": "Rabbi a‘udzu bika min hamazâtisy-syayâthîn(i), wa a‘udzubika rabbi ‘an yaḫdlurûn(i).",
+			"translation": "Ya Tuhanku, aku berlindung kepada-Mu dari bisikan-bisikan setan. Dan aku berlindung kepada-Mu, ya Tuhanku, dari kedatangan mereka kepadaku."
+		},
+		{
+			"id": 1006,
+			"title": "Al-Mu’minun: 115",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 115",
+			"arabic": "أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَاكُمْ عَبَثًا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُـوْنَ",
+			"latin": "Afaḫasibtum annamâ khalaqnâkum ‘abatsan wa annakum ilainâ lâ turja‘ûn(a).",
+			"translation": "Maka apakah kalian mengira, sesungguhnya Kami menciptakan kalian dengan sia-sia dan kalian tidak akan dikembalikan kepada kami?"
+		},
+		{
+			"id": 1007,
+			"title": "Al-Mu’minun: 116",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 116",
+			"arabic": "فَتَعٰلَى اللّٰهُ الْمَلِكُ الْحَقُّۚ لَآ اِلٰهَ اِلَّا هُوَۚ رَبُّ الْعَرْشِ الْكَرِيْمِ",
+			"latin": "Fata‘âlallâhul-malikul-haqqu lâ ilâha illâ huwa rabbul-‘arsyil-karîm(i)",
+			"translation": "Maka Mahatinggi Allah, Raja yang Sebenarnya. Tidak ada tuhan (yang berhak disembah) selain Dia, Tuhan (yang memiliki) ‘Arsy yang mulia."
+		},
+		{
+			"id": 1008,
+			"title": "Al-Mu’minun: 117",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 117",
+			"arabic": "وَمَنْ يَّدْعُ مَعَ اللّٰهِ اِلٰهًا اٰخَرَ لَا بُرْهَانَ لَهٗ بِهٖۙ فَاِنَّمَا حِسَابُهٗ عِنْدَ رَبِّهٖۗ اِنَّهٗ لَا يُفْلِحُ الْكٰفِرُوْنَ",
+			"latin": "Wa man yad‘u ma‘allâhi ilahan âkhara lâ burhâna lahu bihi fainnamâ ḫisâbuhu ‘inda rabbihi, innahu lâ yufliḫul-kâfirûn(a)",
+			"translation": "Dan barang siapa menyembah tuhan yang lain di samping Allah, padahal tidak ada suatu dalil pun baginya tentang itu, maka sesungguhnya perhitungannya di sisi Tuhannya. Sesungguhnya orang-orang yang kafir tidaklah beruntung."
+		},
+		{
+			"id": 1009,
+			"title": "Al-Mu’minun: 118",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 118",
+			"arabic": "وَقُلْ رَّبِّ اغْفِرْ وَارْحَمْ وَاَنْتَ خَيْرُ الرّٰحِمِيْنَࣖ",
+			"latin": "Wa qul rabbighfir warḫam wa anta khairur-râḫimîn(a)",
+			"translation": "Katakanlah (Nabi Muhammad), \"Ya Tuhanku, berilah ampunan dan rahmat. Engkaulah sebaik-baik pemberi rahmat."
+		},
+		{
+			"id": 1010,
+			"title": "Ar-Rum: 17",
+			"count": 1,
+			"source": "QS. Ar-Rum: 17",
+			"arabic": "فَسُبْحَانَ اللهِ حِيْنَ تُمْسُوْنَ وَحِيْنَ تُصْبِحُوْنَ",
+			"latin": "Fasubḫânallâhi ḫîna tumsûna wa ḫîna tushbiḫûn(a)",
+			"translation": "Maka bertasbihlah kalian kepada Allah di saat kalian berada di waktu petang dan di saat kalian berada di waktu pagi."
+		},
+		{
+			"id": 1011,
+			"title": "Ar-Rum: 18",
+			"count": 1,
+			"source": "QS. Ar-Rum: 18",
+			"arabic": "وَلَهُ الْحَمْدُ فِي السَّمَوَاتِ وَالأَرْضِ وَعَشِيًّا وَحِيْنَ تُظْهِرُوْنَ",
+			"latin": "Walahul-ḫamdu fis-samâwâti wal-ardli wa ‘asyiyyan wa hîna tudh-hirûn(a)",
+			"translation": "Dan hanya bagi-Nya segala puji di langit dan di bumi dan di waktu petang dan di saat kalian berada di waktu dhuhur."
+		},
+		{
+			"id": 1012,
+			"title": "Ar-Rum: 19",
+			"count": 1,
+			"source": "QS. Ar-Rum: 19",
+			"arabic": "يُخْرِجُ الْحَيَّ مِنَ الْمَيِّتِ وَيُخْرِجُ الْمَيِّتَ مِنَ الْحَيِّ وَيُحْيِ الأَرْضَ بَعْدَ مَوْتِهَا وَكَذٰلِكَ تُخْرَجُوْنَ",
+			"latin": "Yukhrijul-ḫayya minal-mayyiti wa yukhrijul-mayyita minal-ḫayyi wa yuḫyil-ardla ba‘da mautihâ wa kadzâlika tukhrajûn(a).",
+			"translation": "Dia mengeluarkan yang hidup dari yang mati, mengeluarkan yang mati dari yang hidup, dan menghidupkan bumi sesudah matinya. Dan seperti itulah kalian dikeluarkan (dari kubur)."
+		},
+		{
+			"id": 1013,
+			"title": "A‘udzubillâhis-samî‘il-‘alîmi minasy-syaithanir-rajîm(i)",
+			"count": 3,
+			"arabic": "أَعُوْذُ بِاللهِ السَّمِيْعِ الْعَلِيْمِ مِنَ الشَّيْطَانِ الرَّجِيْمِ",
+			"latin": "A‘udzubillâhis-samî‘il-‘alîmi minasy-syaithanir-rajîm(i).",
+			"translation": "Aku berlindung kepada Allah yang Maha Mendengar lagi Maha Mengetahui dari bisikan setan yang terkutuk."
+		},
+		{
+			"id": 1014,
+			"title": "Al-Hashr: 21",
+			"count": 1,
+			"source": "QS. Al-Hashr: 21",
+			"arabic": "لَوْ اَنْزَلْنَا هٰذَا الْقُرْاٰنَ عَلٰى جَبَلٍ لَّرَاَيْتَهٗ خَاشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ اللّٰهِۗ  وَتِلْكَ الْاَمْثَالُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمْ يَتَفَكَّرُوْنَ",
+			"latin": "Lau anzalnâ hâdzal-qur’âna ‘ala jabalin lara’aitahu khâsyi‘an mutashaddi‘an min khasyatillâh(i), watilkal-amtsâlu nadlribuhâ linnâsi la‘allahum yatafakkarun(a).",
+			"translation": "Sekiranya Kami turunkan Al-Qur'an ini kepada sebuah gunung, pasti kamu akan melihatnya tunduk terpecah belah disebabkan takut kepada Allah. Dan perumpamaan-perumpamaan itu Kami buat untuk manusia agar mereka berpikir."
+		},
+		{
+			"id": 1015,
+			"title": "Al-Hashr: 22",
+			"count": 1,
+			"source": "QS. Al-Hashr: 22",
+			"arabic": "هُوَ اللّٰهُ الَّذِيْ لَآ اِلٰهَ اِلَّا هُوَۚ عَالِمُ الْغَيْبِ وَالشَّهَادَةِۚ هُوَ الرَّحْمٰنُ الرَّحِيْمُ",
+			"latin": "Huwallâhul-ladzî lâ ilâha illâ huwa ‘âlimul-ghaibi wasy-syahâdat(i) huwar-rahmânur-rahîm(u).",
+			"translation": "Dialah Allah tidak ada tuhan selain Dia. Yang Mengetahui yang gaib dan yang nyata, Dialah Yang Maha Pengasih, Maha Penyayang."
+		},
+		{
+			"id": 1016,
+			"title": "Al-Hashr: 23",
+			"count": 1,
+			"source": "QS. Al-Hashr: 23",
+			"arabic": "هُوَ اللّٰهُ الَّذِيْ لَآ اِلٰهَ اِلَّا هُوَۚ  اَلْمَلِكُ الْقُدُّوْسُ السَّلٰمُ الْمُؤْمِنُ الْمُهَيْمِنُ الْعَزِيْزُ الْجَبَّارُ الْمُتَكَبِّرُۗ سُبْحٰنَ اللّٰهِ عَمَّا يُشْرِكُوْنَ",
+			"latin": "Huwallâhul-ladzî lâ ilâha illâ huwal-malikul-quddûsus-salâmul-mu’minul-muhaiminul-‘azîzul-jabbârul-mutakabbir(u), subhânallâhi ‘ammâ yusyrikûn(a).",
+			"translation": "Dialah Allah tidak ada tuhan selain Dia. Maharaja, Yang Mahasuci, Yang Mahasejahtera, Yang Menjaga Keamanan, Pemelihara Keselamatan, Yang Mahaperkasa, Yang Mahakuasa, Yang Memiliki Segala Keagungan, Mahasuci Allah dari apa yang mereka persekutukan."
+		},
+		{
+			"id": 1017,
+			"title": "Al-Hashr: 24",
+			"count": 1,
+			"source": "QS. Al-Hashr: 24",
+			"arabic": "هُوَ اللّٰهُ الْخَالِقُ الْبَارِئُ الْمُصَوِّرُ لَهُ الْاَسْمَاۤءُ الْحُسْنٰىۗ يُسَبِّحُ لَهٗ مَا فِى السَّمٰوٰتِ وَالْاَرْضِۚ وَهُوَ الْعَزِيْزُ الْحَكِيْمُ",
+			"latin": "Huwallâhul-khâliqul-bâriul-mushawwiru lahul-asmâul ḫusna, yusabbihu lahu mâ fis-samawâti wal-ardl(i), wa huwal-‘azizul-hakîm(u).",
+			"translation": "Dialah Allah Yang Menciptakan, Yang Mengadakan, Yang Membentuk Rupa, Dia memiliki nama-nama yang indah. Apa yang di langit dan di bumi bertasbih kepada-Nya. Dan Dialah Yang Mahaperkasa, Mahabijaksana."
+		},
+		{
+			"id": 1018,
+			"title": "Al-Saffat: 79",
+			"count": 1,
+			"source": "QS. Al-Saffat: 79",
+			"arabic": "سَلَامٌ عَلَى نُوْحٍ فِي الْعَالَمِيْنَ",
+			"latin": "Salâmun ‘ala nûhin fil-‘alamîn(a).",
+			"translation": "Kesejahteraan dilimpahkan atas Nabi Nuh di seluruh alam."
+		},
+		{
+			"id": 1019,
+			"title": "Al-Saffat: 80",
+			"count": 1,
+			"source": "QS. Al-Saffat: 80",
+			"arabic": "إِنَّا كَذٰلِكَ نَجْزِي الْمُحْسِنِيْنَ",
+			"latin": "Innâ kadzâlika najzil-muhsinîn(a).",
+			"translation": "Sesungguhnya demikianlah Kami memberi balasan kepada orang-orang yang berbuat baik."
+		},
+		{
+			"id": 1020,
+			"title": "Al-Saffat: 81",
+			"count": 1,
+			"source": "QS. Al-Saffat: 81",
+			"arabic": "إِنَّهُ مِنْ عِبَادِنَا الْمُؤْمِنِيْنَ",
+			"latin": "Innahu min ‘ibâdinâl-mu’minîna.",
+			"translation": "Sesungguhnya dia termasuk di antara hamba-hamba Kami yang beriman."
+		},
+		{
+			"id": 1021,
+			"title": "A‘udzu bikalimâtillâhit-tâmmâti min syarri …",
+			"count": 3,
+			"arabic": "أَعُوْذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+			"latin": "A‘udzu bikalimâtillâhit-tâmmâti min syarri mâ khalaq.",
+			"translation": "Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kejahatan makhluk-Nya."
+		},
+		{
+			"id": 1022,
+			"title": "Bismillahil-ladzî lâ yadlurru ma‘as …",
+			"count": 3,
+			"arabic": "بِسْمِ اللهِ الَّذِيْ لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيْعُ الْعَلِيْمُ",
+			"latin": "Bismillahil-ladzî lâ yadlurru ma‘as mihi syai’un fil-ardli wa lâ fis-samâ’i wa huwas-sami`ul-‘alîm(u).",
+			"translation": "Dengan nama Allah yang dengan nama-Nya tak satu pun yang di bumi maupun di langit dapat memberi bencana dan Ia Maha Mendengar lagi Maha Mengetahui."
+		},
+		{
+			"id": 1023,
+			"title": "Allâhumma innî ashbaḫtu minka …",
+			"count": 3,
+			"arabic": "اَللّٰهُمَّ إِنِّيْ أَصْبَحْتُ مِنْكَ فِي نِعْمَةٍ وَعَافِيَةٍ وَسِتْرٍ، فَأَتْمِمْ نِعْمَتَكَ عَلَيَّ وَعَافِيَتَكَ وَسِتْرَكَ فِي الدُّنْيَا وَالْاٰخِرَةِ",
+			"latin": "Allâhumma innî ashbaḫtu minka fî ni‘matin wa ‘âfiyatin wa sitrin, fa’atmim ni‘mataka ‘alayya wa ‘âfiyataka wa sitraka fid-dunyâ wal-âkhirat.",
+			"translation": "Ya Allah, sesungguhnya aku berada pada pagi hari ini, dari (karunia)-Mu, (aku dalam keadaan) mendapat kenikmatan, kesehatan serta tertutup (aib)ku, maka sempurnakan kenikmatan, kesehatan dan tutup yang Engkau berikan kepadaku di dunia dan akhirat."
+		},
+		{
+			"id": 1024,
+			"title": "Allâhumma innî ashbahtu usyhiduka …",
+			"count": 4,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ وَأُشْهِدُ حَمَلَةَ عَرْشِكَ وَمَلَائِكَتَكَ وَجَمِيعَ خَلْقِكَ أَنَّكَ أَنْتَ اللهُ لَا إِلٰهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيْكَ لَكَ وَأَنَّ سَيِّدَنَا مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ",
+			"latin": "Allâhumma innî ashbahtu usyhiduka wa usyhidu hamalata ‘arsyika wa malâ’ikatika wa jamî‘a khalqika annaka antallâhu lâ ilâha illâ anta waḫdaka lâ syarîka laka wa anna sayyidanâ Muhammadan ‘abduka wa rasûluka.",
+			"translation": "Ya Allah, sesungguhnya aku di pagi hari ini aku menjadikan-Mu sebagai saksi, dan aku juga menjadikan saksi para pemikul ‘Arsy-Mu, para malaikat-Mu dan seluruh makhluk-Mu, bahwa Engkaulah Tuhan, tidak ada Tuhan selain Engkau dengan keesaan-Mu, tidak ada sekutu bagi-Mu, dan sesungguhnya Muhammad adalah hamba dan utusan-Mu."
+		},
+		{
+			"id": 1025,
+			"title": "Al-ḫamdulillâhi rabbil-‘alâlamîna ḫamdan yuwâfî …",
+			"count": 3,
+			"arabic": "اَلْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ حَمْدًا يُوَافِيْ نِعَمَهُ وَيُكَافِئُ مَزِيْدَهُ",
+			"latin": "Al-ḫamdulillâhi rabbil-‘alâlamîna ḫamdan yuwâfî ni‘amahu wa yukâfi’u mazîdah(u).",
+			"translation": "Segala puji bagi Allah, Tuhan seru sekalian alam, pujian yang memadai nikmat-nikmat-Nya dan mencukupi penambahan-Nya."
+		},
+		{
+			"id": 1026,
+			"title": "Al-Baqarah: 256",
+			"count": 3,
+			"source": "QS. Al-Baqarah: 256",
+			"arabic": "اٰمَنْتُ بِاللهِ العَظِيْمِ، وَكَفَرْتُ بِالْجِبْتِ وَالطَّاغُوْتِ، وَاسْتَمْسَكْتُ بِالْعُرْوَةِ الْوُثْقَى لَا انْفِصَامَ لَهَا، وَاللهُ سَمِيْعٌ عَلِيمٌ",
+			"latin": "Âmantu billâhil-‘adhimi, wa kafartu biljibti wath-thâghûti, wastamsaktu bil-‘urwatil-wutsqa lâ anfishâma wallâhu samî‘un ‘alîm(un).",
+			"translation": "Aku beriman kepada Allah Yang Mahaagung dan ingkar terhadap kejahatan dan thaghut (segala yang disekutukan dengan Allah), dan aku berpegang dengan tali yang kokoh yang tidak ada putusnya, dan Allah Maha Mendengar lagi Maha Mengetahui."
+		},
+		{
+			"id": 1027,
+			"title": "Radlîtu billâhi rabba(n), wa …",
+			"count": 3,
+			"arabic": "رَضِيْتُ بِاللهِ رَبًّـــا، وَ بِالْإِسْلَامِ دِيْنًـا، وَبِمُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا وَرَسُوْلاً",
+			"latin": "Radlîtu billâhi rabba(n), wa bil Islâmi dîna(n), wa bi Muhammadin shallâhu ‘alaihi wa sallama nabiyyan wa rasûla(n).",
+			"translation": "Aku ridha Allah sebagai Tuhan, Islam sebagai agama, dan Muhammad ﷺ sebagai nabi dan rasul."
+		},
+		{
+			"id": 1028,
+			"title": "al-Taubah: 129",
+			"count": 7,
+			"source": "QS. al-Taubah: 129",
+			"arabic": "حَسْـبِيَ اللهُ لَا إِلٰهَ إِلَّا هُـوَ عَلَيْـــهِ تَـوَكَّلْتُ وَهُـوَ رَبُّ العَرْشِ العَظِيْـمِ",
+			"latin": "Ḫasbiyallâhu lâ ilâha illa Huwa ‘alaihi tawakkaltu wa Huwa rabbul-‘arsyil-‘adhîm.",
+			"translation": "Cukuplah Allah bagiku, tidak ada Tuhan selain Dia, hanya kepada-Nya aku bertawakal, dan Dialah Penguasa Arasy yang agung"
+		},
+		{
+			"id": 1029,
+			"title": "Allâhumma shalli ‘ala sayyidinâ …",
+			"count": 10,
+			"arabic": "اَللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَاٰلِهِ وَصَحْبِهِ وَسَلِّمْ",
+			"latin": "Allâhumma shalli ‘ala sayyidinâ Muḫammadin wa âlihi wa shaḫbihi wa sallim.",
+			"translation": "Ya Allah, limpahkanlah rahmat dan salam kepada junjungan kami Baginda Muhammad serta keluarga dan sahabat-sahabatnya."
+		},
+		{
+			"id": 1030,
+			"title": "Allâhumma innî as’aluka min …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ مِنْ فُجَاءَةِ الْخَيْرِ، وَأَعُوْذُ بِكَ مِنْ فُجَاءَةِ الشَّرِّ",
+			"latin": "Allâhumma innî as’aluka min fujâ-atil-khair(i), wa a‘ûdzubika min fujâ-atisy-syarri",
+			"translation": "Ya Allah aku bermohon kepada-Mu kebaikan yang tidak disangka, dan aku berlindung kepada-Mu dari bencana yang mengejutkan."
+		},
+		{
+			"id": 1031,
+			"title": "Allâhumma anta rabbî lâ …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِيْ، وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوْذُ بِـكَ مِنْ شَرِّ مَـا صَنَعْـتُ، أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوْءُ بِذَنْبِيْ فَاغْفِرْ لِيْ، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ",
+			"latin": "Allâhumma anta rabbî lâ ilâha illâ anta khalaqtanî, wa anâ ‘abduka, wa anâ ‘ala ‘ahdika wa wa‘dika mâstatha‘tu a‘ûdzubika min syarri mâ shana‘tu, abû’u laka bi ni‘matika alayya, wa abû’u bi dzanbî faghfirlî, fa innahu lâ yaghfirudz-dzunûba illa anta.",
+			"translation": "Ya Allah, Engkaulah Tuhanku, tidak ada Tuhan selain-Mu, Engkau telah menciptakan aku dan aku ini adalah hamba-Mu, dan aku di atas titah dan janji-Mu sekuat kemampuanku. Aku berlindung kepada-Mu dari keburukan apa pun yang aku lakukan, aku mengakui nikmat yang Engkau karuniakan kepadaku, dan aku mengakui dosaku. Maka ampunilah aku, karena tak ada yang dapat mengampuni dosa-dosa selain Engkau."
+		},
+		{
+			"id": 1032,
+			"title": "Allâhumma anta rabbi lâ …",
+			"count": 1,
+			"arabic": "اللّٰهُمَّ أَنْتَ رَبِّيْ، لَا إِلٰهَ إلَّا أَنْتَ، عَلَيْكَ تَوَكَّلْـتُ، وَأَنْتَ رَبُّ الْعَـرْشِ الْعَظِيْـمِ",
+			"latin": "Allâhumma anta rabbi lâ ilâha illa anta, ‘alaika tawakkaltu, wa anta rabbul-‘arsyil-‘adhîm",
+			"translation": "Ya Allah, Engkaulah Tuhanku. Tidak ada Tuhan selain Engkau, hanya kepada Engkau aku berserah diri, dan Engkaulah Tuhannya arasy yang agung."
+		},
+		{
+			"id": 1033,
+			"title": "Mâ syâ’allâhu kâna, wa …",
+			"count": 1,
+			"arabic": "مَا شَاءَ اللهُ كَانَ، وَمَا لَمْ يَشَأْ لَـمْ يَكُنْ، وَلَا حَـوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْمِ",
+			"latin": "Mâ syâ’allâhu kâna, wa mâ lam yasya’ lam yakun, wa lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm.",
+			"translation": "Apa yang dikehendaki Allah pasti terjadi, dan apa yang tidak dikehendaki tidak akan terjadi. Tidak ada upaya untuk melakukan ketaatan tanpa pertolongan Allah dan tidak ada kekuatan menghindari kemaksiatan kecuali dengan pertolongan Allah yang Mahatinggi lagi Mahaagung."
+		},
+		{
+			"id": 1034,
+			"title": "Al Talaq: 12",
+			"count": 1,
+			"source": "QS. Al Talaq: 12",
+			"arabic": "أَعْلَـمُ أَنَّ اللهَ عَلَى كُلِّ شَيْءٍ قَدِيْـرٌ وَأَنَّ اللهَ قَدْ أَحَـاطَ بِكُلِّ شَيْءٍ عِلْمًـا",
+			"latin": "A‘lamu annallâha ‘ala kulli syai’in qadîr(un), wa annallâha qad aḫâtha bikulli syai’in ‘ilma(n).",
+			"translation": "Aku mengetahui, sesungguhnya Allah Mahakuasa atas segala sesuatu dan sesungguhnya ilmu Allah meliputi setiap sesuatu."
+		},
+		{
+			"id": 1035,
+			"title": "Allâhumma innî a‘udzubika min …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَعُوْذُ بِـكَ مِنْ شَرِّ نَفْسِيْ، وَمِنْ شَرِّ كُلِّ دَابَّـــةٍ أَنْتَ آخِـذٌ بِنَاصِيَتِهَا، إِنَّ رَبِيِّ عَلَى صِرَاطٍ مُسْتَقِيْمٍ",
+			"latin": "Allâhumma innî a‘udzubika min syarri nafsî, wa min syarri kulli dâbbatin anta âkhidzun binâshiyatihâ, inna rabbi ‘ala shirâtin mustaqîm(in).",
+			"translation": "Ya Allah, aku berlindung kepada-Mu dari kejahatan pribadiku dan dari kejahatan segala hewan melata yang ubun-ubunnya berada dalam genggaman-Mu, sesungguhnya Tuhanku selalu berada di atas jalan yang lurus."
+		},
+		{
+			"id": 1036,
+			"title": "Yâ ḫayyu yâ qayyûmu …",
+			"count": 1,
+			"arabic": "يَا حَيُّ يَا قَيُّوْمُ، بِرَحْمَتِكَ أَسْتَغِيْثُ، وَمِنْ عَذَابِكَ أَسْتَجِيْرُ",
+			"latin": "Yâ ḫayyu yâ qayyûmu, biraḫmatika astaghîtsu, wa min ‘adzâbika astajîru",
+			"translation": "Wahai Dzat yang Mahahidup, wahai Dzat yang berdiri sendiri, dengan rahmat-Mu aku mohon pertolongan dan aku mohon perlindungan dari siksaan-Mu."
+		},
+		{
+			"id": 1037,
+			"title": "Ashliḫ lî sya’nî kullahu …",
+			"count": 1,
+			"arabic": "أَصْلِحْ لِيْ شَأْنِيْ كُلَّهُ، وَلَا تَكِلْنِيْ إِلَى نَفْسِيْ وَلَا إِلَى أَحَدٍ مِنْ خَلْقِكَ طَرْفَةَ عَيْنٍ",
+			"latin": "Ashliḫ lî sya’nî kullahu, wa lâ takilnî ila nafsî wa lâ ila aḫadin min khalqika tharfata ‘ain(in).",
+			"translation": "Perbaikilah keaadanku semuanya, janganlah Engkau menyerahkan aku kepada pribadiku sendiri, dan jangan juga Engkau serahkan kepada salah seorang pun dari makhluk-Mu walaupun hanya sekejap mata."
+		},
+		{
+			"id": 1038,
+			"title": "Allâhumma innî a`ûdzubika minal-hammi …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوْذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوْذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوْذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ",
+			"latin": "Allâhumma innî a`ûdzubika minal-hammi wal-hazani, wa a`ûdzubika minal-`ajzi wal kasali. Wa a`ûdzubika minal-jubni wal-bukhli, wa a`ûdzubika min ghalabatid-daini wa qahrir-rijâl(i).",
+			"translation": "Ya Allah, sesungguhnya aku berlindung kepada-Mu dari penderitaan dan kesedihan. Aku berlindung kepada-Mu dari lemah dan malas. Aku berlindung kepada-Mu dari pengecut dan kikir. Dan aku berlindung kepada-Mu dari lilitan utang dan kesewenang-wenangan manusia."
+		},
+		{
+			"id": 1039,
+			"title": "Allâhumma innî as’alukal-‘âfiyata fid-dunya …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ",
+			"latin": "Allâhumma innî as’alukal-‘âfiyata fid-dunya wa lakhirat(i).",
+			"translation": "Ya Allah, aku memohon kepada-Mu kesejahteraan di dunia dan akhirat."
+		},
+		{
+			"id": 1040,
+			"title": "Allâhumma innî as’alukal-‘afwa wal-‘âfiyata …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَـافِيَةَ، وَالْمُعَافَاةَ الدَّائِمَةَ، فِي دِيْنِيْ وَدُنْيَايَ وَأَهْلِيْ وَمَالِيْ",
+			"latin": "Allâhumma innî as’alukal-‘afwa wal-‘âfiyata, wal-mu‘âfâtad-dâ’imata fi dînî wa dunyâya wa ahlî wa mâlî",
+			"translation": "Ya Allah, sesungguhnya aku memohon kepada-Mu pengampunan dan kesejahteraan serta perlindungan yang abadi dalam agamaku, duniaku, keluargaku, dan hartaku."
+		},
+		{
+			"id": 1041,
+			"title": "Allâhummastur ‘aurâtî wa âmin …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ اسْتُرْ عَوْرَاتِيْ وَاٰمِنْ رَوْعَاتِيْ",
+			"latin": "Allâhummastur ‘aurâtî wa âmin rau‘âtî",
+			"translation": "Ya Allah, tutuplah segala aibku dan amankan ketakutan-ketakutanku."
+		},
+		{
+			"id": 1042,
+			"title": "Allâhummahfadhnî min baini yadayya …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ احْفَظْنِيْ مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِيْ وَعَنْ يَمِيْنِيْ وَعَنْ شِمَالِيْ وَمِنْ فَوْقِيْ، وَأَعُوْذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيْ",
+			"latin": "Allâhummahfadhnî min baini yadayya wa min khalfî wa ‘an yamînî wa ‘an syimâlî wa min fauqî. Wa ‘audzu bi‘adhamatika an ughtâla min tahtî.",
+			"translation": "Ya Allah, peliharalah aku dari depan dan belakangku, dari kanan, kiri dan dari atasku. Dengan keagungan-Mu aku berlindung agar jangan ditipu dari bawahku."
+		},
+		{
+			"id": 1043,
+			"title": "Allâhumma anta khalaqtanî wa …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ أَنْتَ خَلَقْتَنِيْ، وَأَنْتَ تَهْدِيْنِيْ، وَأَنْتَ تُطْعِمُنِيْ وَأَنْتَ تَسْقِيْنِيْ، وَأَنْتَ تُمِيْتُنِيْ، وَأَنْتَ تُحْيِيْنِيْ، وَأَنْتَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ",
+			"latin": "Allâhumma anta khalaqtanî wa anta tahdînî wa anta tuth‘imunî wa anta tasqînî wa anta tumitunî wa anta tuḫyînî wa anta ‘alâ kulli syai’in qadîr",
+			"translation": "Ya Allah, Engkaulah yang menciptakaku, memberikan petunjuk, makan dan minum kepadaku, dan Engkau yang mematikan serta membangkitkanku dan Engkau Mahakuasa atas segala sesuatu."
+		},
+		{
+			"id": 1044,
+			"title": "Ashbaḫnâ ‘ala fithratil-Islâmi wa …",
+			"count": 1,
+			"arabic": "أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِيْنِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَاٰلِهِ وَسَلَّمَ، وَعَلَى مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفًا مُسْلِمًا، وَمَا كَانَ مِنَ الْمُشْرِكِيْنَ",
+			"latin": "Ashbaḫnâ ‘ala fithratil-Islâmi wa ‘ala kalimatil-ikhlâshi wa ‘ala dîni nabiyyinâ Muḫammadin shallallâhu ‘alaihi wa sallama wa ‘ala millati abînâ Ibrâhîma ḫanîfan musliman wa mâ kâna minal-musyrikîn(a).",
+			"translation": "Kami berada pada pagi hari dengan fitrah beragama Islam, di atas kalimat ikhlas, berada pada agama nabi kami Muhammad ﷺ dan agama bapak kami Ibrahim alaihissalam yang lurus dan berserah diri (kepada Allah), dan sekali-kali bukanlah dia dari golongan orang-orang yang mempersekutukan Allah dengan yang lain."
+		},
+		{
+			"id": 1045,
+			"title": "Allâhumma bika ashbaḫnâ wa …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوْتُ، وَعَلَيْكَ نَتَوَكَّلُ، وَإِلَيْكَ النُّشُوْرُ. أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلّٰهِ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ",
+			"latin": "Allâhumma bika ashbaḫnâ wa bika amsainâ wa bika naḫyâ wa bika namûtu wa ‘alaika natawakkalu wa ilaikan-nusyûr(u). ashbaḫnâ wa ashbaḫal-mulku lillâhi wal-ḫamdulillâhi rabbil-‘âlamîn(a)",
+			"translation": "Ya Allah, dengan pertolongan-Mu kami berada di waktu pagi, dengan pertolongan-Mu kami berada di waktu petang, dengan pertolongan-Mu kami hidup, dengan pertolongan-Mu kami mati, kepada-Mu kami berserah diri, dan hanya kepada-Mu tempat kebangkitan. Kami berada di waktu pagi dan kerajaan milik Allah. Segala puji bagi Allah Tuhan semesta alam."
+		},
+		{
+			"id": 1046,
+			"title": "Allâhumma innî as’aluka khaira …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هٰذَا الْيَوْمِ فَتْحَهُ وَنَصْرَهُ وَنُوْرَهُ وَبَرَكَتَهُ وَهُدَاهُ",
+			"latin": "Allâhumma innî as’aluka khaira hâdzâl-yaumi fat-ḫahu wa nashrahu wa nûrahu wa barakatahu wa hudâhu.",
+			"translation": "Ya Allah, kami memohon kepada-Mu kebaikan hari ini, pembukaannya, pertolongannya, cahayanya, barakahnya dan petunjuknya."
+		},
+		{
+			"id": 1047,
+			"title": "Allâhumma innî as’aluka khaira …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هٰذَا الْيَوْمِ، وَخَيْرَ مَا فِيْهِ، وَخَيْرَ مَا قَبْلَهُ، وَخَيْرَ مَا بَعْدَهُ، وَأَعُوْذُ بِكَ مِنْ شَرِّ هٰذَا الْيَوْمِ، وَشَرِّ مَا فِيْهِ، وَشَرِّ مَا قَبْلَهُ، وَشَرِّ مَا بَعْدَهُ",
+			"latin": "Allâhumma innî as’aluka khaira hâdzâl-yaumi, wa khaira mâ fîhi, wa khaira mâ qablahu wa khaira mâ ba‘dahu, wa a‘udzûbika min syarri hâdzal-yaumi wa syarri mâ fîhi, wa syarri mâ qablahu wa syarri mâ ba‘dahu",
+			"translation": "Ya Allah, aku memohon kepada-Mu kebaikan hari ini, kebaikan apa pun yang ada di dalamnya, serta kebaikan apa pun sebelum dan sesudahnya. Aku berlindung kepada-Mu dari keburukan hari ini, keburukan apa pun yang terdapat di dalamnya, keburukan apa pun sebelum dan sesudahnya."
+		},
+		{
+			"id": 1048,
+			"title": "Allâhumma mâ ashbaḫa bî …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ مَا أَصْبَحَ بِيْ مِنْ نِعْمَةٍ أَوْ بِأَحَـدٍ مِنْ خَلْقِكَ، فَمِنْكَ وَحْدَكَ لَا شَرِيْكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ عَلَى ذٰلِكَ",
+			"latin": "Allâhumma mâ ashbaḫa bî min ni‘matin au bi aḫadin min khalqika faminka waḫdaka lâ syarîka lak(a), falakal ḫamdu wa lakasy-syukru ‘ala dzâlik(a).",
+			"translation": "Ya Allah, nikmat apa pun yang aku terima di pagi ini atau yang diterima oleh salah seorang dari hamba-Mu, maka sumbernya hanyalah dari Engkau semata, tidak ada sekutu bagi-Mu, hanya bagi-Mu pujian dan hanya kepada-Mu syukur atas itu semua."
+		},
+		{
+			"id": 1049,
+			"title": "Subḫânallâhi wa biḫamdihi ‘adada …",
+			"count": 3,
+			"arabic": "سُبْحَانَ اللهِ وَبِحَمْدِهِ عَدَدَ خَلْقِـهِ وَرِضَى نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ",
+			"latin": "Subḫânallâhi wa biḫamdihi ‘adada khalqihi wa rida nafsihi wazinata ‘arsyihi wa midâda kalimatih(i).",
+			"translation": "Mahasuci Allah, dengan memuji-Nya sebanyak bilangan makhluk-Nya, sebanyak bilangan ridla-Nya, sebanyak timbangan Arsy-Nya dan sebanyak tinta untuk menulis kalimat-kalimat-Nya."
+		},
+		{
+			"id": 1050,
+			"title": "Subhânallâhil-adhîmi wa biḫamdihi ‘adada …",
+			"count": 3,
+			"arabic": "سُبْحَانَ اللهِ الْعَظِيْمِ وَبِحَمْدِهِ عَدَدَ خَلْقِـهِ وَرِضَى نَفْسِـهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ",
+			"latin": "Subhânallâhil-adhîmi wa biḫamdihi ‘adada khalqihi wa rida nafsihi wazinata ‘arsyihi wa midâda kalimatih(i).",
+			"translation": "Mahasuci Allah yang Mahaagung, dengan memuji-Nya sebanyak bilangan makhluk-Nya, sebanyak bilangan ridla-Nya, sebanyak timbangan Arsy-Nya dan sebanyak tinta untuk menulis kalimat-kalimat-Nya."
+		},
+		{
+			"id": 1051,
+			"title": "Subḫânallâhi ‘adada mâ khalaqa …",
+			"count": 1,
+			"arabic": "سُبْحَـانَ اللهِ عَدَدَ مَا خَلَقَ فِي السَّمَـاءِ، سُبْحَـانَ اللهِ عَدَدَ مَا خَلَـقَ فِي الأَرْضِ، سُبْحَـانَ اللهِ عَدَدَ مَا بَيْنَ ذٰلِكَ، سُبْحَـانَ اللهِ عَدَدَ مَا هُوَ خَـالِقٌ",
+			"latin": "Subḫânallâhi ‘adada mâ khalaqa fis-samâ’i, subḫânallâhi ‘adada mâ khalaqa fil-ardli, subḫânallâhi ‘adada mâ baina dzâlika, subḫânallâhi ‘adada mâ huwa khâliq(un).",
+			"translation": "Mahasuci Allah sebanyak bilangan apa saja yang Ia ciptakan di langit. Mahasuci Allah sebanyak bilangan apa saja yang Ia ciptakan di bumi. Mahasuci Allah sebanyak bilangan apa saja yang ada di antara keduanya. Mahasuci Allah sebanyak apa saja yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 1052,
+			"title": "Al-ḫamdulillâhi ‘adada mâ khalaqa …",
+			"count": 1,
+			"arabic": "اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا خَلَـقَ فِي السَّمَـاءِ، اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا خَلَـقَ فِي الْأَرْضِ، اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا بَيْنَ ذٰلِكَ، اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا هُوَ خَـالِقٌ",
+			"latin": "Al-ḫamdulillâhi ‘adada mâ khalaqa fis-samâ’i, al-ḫamdulillâhi ‘adada mâ khalaqa fil-ardli, al-ḫamdulillâhi ‘adada mâ baina dzâlika, al-ḫamdulillâhi ‘adada mâ huwa khâliq(un).",
+			"translation": "Segala puji bagi Allah sebanyak bilangan apa saja yang Ia ciptakan di langit. Segala puji bagi Allah sebanyak bilangan apa saja yang Ia ciptakan di bumi. Segala puji bagi Allah sebanyak bilangan apa saja yang ada di antara keduanya. Segala puji bagi Allah sebanyak bilangan yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 1053,
+			"title": "Lâ ilâha illallâhu ‘adada …",
+			"count": 1,
+			"arabic": "لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا خَلَـقَ فِي السَّمَـاءِ، لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا خَلَـقَ فِي الْأَرْضِ، لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا بَيْنَ ذٰلِكَ، لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا هُوَ خَـالِقٌ",
+			"latin": "Lâ ilâha illallâhu ‘adada mâ khalaqa fis-samâ’i, Lâ ilâha illallâhu ‘adada mâ khalaqa fil-ardli, Lâ ilâha illallâhu ‘adada mâ baina dzâlika, Lâ ilâha illallâhu ‘adada mâ huwa khâliq(un)",
+			"translation": "Tidak ada Tuhan selain Allah sebanyak bilangan apa saja yang Ia ciptakan di langit. Tidak ada Tuhan selain Allah sebanyak bilangan apa saja yang Ia ciptakan di bumi. Tidak ada Tuhan selain Allah sebanyak bilangan apa saja yang ada di antara keduanya. Tidak ada Tuhan selain Allah sebanyak hitungan apa saja di mana Allah sebagai penciptanya."
+		},
+		{
+			"id": 1054,
+			"title": "Allâhu akbaru ‘adada mâ …",
+			"count": 1,
+			"arabic": "اللهُ أَكْبَرُ عَدَدَ مَـا خَلَـقَ فِي السَّمَـاءِ، اللهُ أَكْبَرُ عَدَدَ مَـا خَلَـقَ فِي الْأَرْضِ، اللهُ أَكْبَرُ عَدَدَ مَـا بَيْنَ ذٰلِكَ، اللهُ أَكْبَرُ عَدَدَ مَـا هُوَ خَـالِقٌ",
+			"latin": "Allâhu akbaru ‘adada mâ khalaqa fis-samâ’i, Allâhu akbaru ‘adada mâ khalaqa fil-ardli, Allâhu akbaru ‘adada mâ baina dzâlika, Allâhu akbaru ‘adada mâ huwa khâliq(un)",
+			"translation": "Allah Mahabesar sebanyak bilangan apa saja yang Ia ciptakan di langit. Allah Mahabesar sebanyak bilangan apa saja yang Ia ciptakan di bumi. Allah Mahabesar sebanyak bilangan apa saja yang ada di antara keduanya. Allah Mahabesar sebanyak bilangan apa saja yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 1055,
+			"title": "Lâ ḫaula wa lâ …",
+			"count": 1,
+			"arabic": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَـا خَلَقَ فِي السَّمَاءِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَـا خَلَقَ فِي الأَرْضِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَـا بَيْنَ ذَلِكَ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَا هُوَ خَالِقٌ",
+			"latin": "Lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ khalaqa fis-samâ’i, Lâ haula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ khalaqa fil-ardli, Lâ haula wa lâ quwwata illâ billâhil-’aliyyil-adhîm ‘adada mâ baina dzâlika, Lâ haula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ huwa khâliq(un)",
+			"translation": "Tidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang Ia ciptakan di langit.\nTidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang Ia ciptakan di bumi. Tidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang ada di antara keduanya.\nTidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 1056,
+			"title": "Lâ ilâha illallâhu waḫdahu …",
+			"count": 3,
+			"arabic": "لَا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِيْ وَيُمِيْتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ عَدَدَ كُلِّ ذَرَّةٍ أَلْفَ مَرَّةٍ",
+			"latin": "Lâ ilâha illallâhu waḫdahu lâ syarîka lah(u), lahul mulku wa lahul ḫamdu yuḫyî wa yumîtu wa huwa ‘alâ kulli syai’in qadîr(un) ‘adada kulli dzarratin alfa marratin.",
+			"translation": "Tidak ada Tuhan selain Allah yang Maha Esa, tidak ada sekutu bagi-Nya, kerajaan hanya milik-Nya, dan hanya bagi-Nya segala puji, yang Maha Menghidupkan dan Maha Mematikan. Dia Mahakuasa atas segala sesuatu sebanyak bilangan biji dzarrah sebanyak seribu kali."
+		},
+		{
+			"id": 1057,
+			"title": "Allâhumma shalli ‘alâ sayyidinâ …",
+			"count": 3,
+			"arabic": "اَللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ مِفْتَاحِ بَابِ رَحْمَةِ اللهِ، عَدَدَ مَا فِي عِلْمِ اللهِ، صَلَاةً وَسَلَامًا دَائِمَيْنِ بِدَوَامِ مُلْكِ اللهِ وَعَلَى اٰلِهِ وَصَحْبِهِ عَدَدَ كُلِّ ذَرَّةٍ أَلْفَ مَرَّةٍ",
+			"latin": "Allâhumma shalli ‘alâ sayyidinâ muḫammadin miftâḫi bâbi raḫmatillâhi ‘adada mâ fî ‘ilmillâhi shalâtan wa salâman dâ-imaini bi dawâmi mulkillâhi wa ‘alâ âlihi wa shaḫbihi ‘adada kulli dzarratin alfa marrah.",
+			"translation": "Ya Allah limpahkanlah rahmat kepada junjungan kami Nabi Muhammad, kunci pembuka kasih sayang Allah, sebanyak sesuatu dalam pengetahuan Allah, dengan limpahan rahmat dan keselamatan yang terus-menerus sepanjang kekalnya Kerajaan Allah dengan limpahan rahmat dan keselamatan yang terus-menerus sepanjang kekalnya Kerajaan Allah—dan (limpahkan juga) kepada beserta keluarga dan para sahabat beliau— sebanyak hitungan setiap atom seribu kali."
+		}
+	],
+	"petang": [
+		{
+			"id": 2002,
+			"title": "Al-Ikhlas",
+			"count": 3,
+			"source": "QS. Al-Ikhlas",
+			"arabic": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ\nقُلْ هُوَ اللّٰهُ اَحَدٌۚ، اَللّٰهُ الصَّمَدُۚ، لَمْ يَلِدْ وَلَمْ يُوْلَدْۙ، وَلَمْ يَكُنْ لَّهٗ كُفُوًا اَحَـــــدٌ",
+			"latin": "Bismillâhir-raḫmânir-raḫîm(i). Qul huwallâhu aḫad(un), Allâhush-shamad(u), lam yalid wa lam yûlad, wa lam yakun lahu kufuwan aḫad(un).",
+			"translation": "Dengan menyebut nama Allah yang Maha Pengasih lagi Maha Penyayang.\nKatakanlah (wahai Muhammad): “Dialah Allah Yang Maha Esa. Allah Dzat yang menjadi tumpuan segala permohonan. Ia tidak beranak dan tidak pula diperanakkan. Dan tidak ada siapa pun yang sebanding dengan-Nya."
+		},
+		{
+			"id": 2003,
+			"title": "Al-Falaq",
+			"count": 3,
+			"source": "QS. Al-Falaq",
+			"arabic": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ\nقُلْ اَعُوْذُ بِرَبِّ الْفَلَقِۙ، مِنْ شَرِّ مَـــا خَلَقَۙ، وَمِنْ شَرِّ غَاسِقٍ اِذَا وَقَبَۙ، وَمِنْ شَرِّ النَّفّٰثٰتِ فِى الْعُقَدِۙ، وَمِنْ شَرِّ حَاسِدٍ اِذَا حَسَدَ",
+			"latin": "Bismillâhir-raḫmânir-raḫîm(i).\nQul a‘ûdzu birabbil-falaq(i), min syarri mâ khalaq(a), wa min syarri ghâsiqin idzâ waqab(a), wa min syarrin-naffatsâti fil-‘uqad(i), wa min syarri hâsidin idzâ hasad(a).",
+			"translation": "Dengan menyebut nama Allah yang Maha Pengasih lagi Maha Penyayang.\nKatakanlah (wahai Muhammad), “Aku berlindung kepada Tuhan yang menciptakan cahaya subuh. Dari kejahatan makhluk-makhluk yang Ia ciptakan. Dari kejahatan malam apabila telah gelap gelita. Dari (ahli-ahli sihir) yang menghembus pada simpul-simpul ikatan. Dan dari kejahatan orang yang dengki apabila ia melakukan kedengkiannya."
+		},
+		{
+			"id": 2004,
+			"title": "An-Nas",
+			"count": 3,
+			"source": "QS. An-Nas",
+			"arabic": "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ\nقُلْ اَعُوْذُ بِرَبِّ النَّاسِۙ، مَلِكِ النَّـــاسِۙ، اِلٰهِ النَّاسِۙ، مِنْ شَرِّ الْوَسْوَاسِ ەۙ الْخَنَّاسِۖ، الَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِۙ، مِنَ الْجِنَّةِ وَالنَّــاسِ",
+			"latin": "Bismillâhir-raḫmânir-raḫîm(i).\nQul a‘ûdzu birabbin-nâs(i), malikin-nâs(i), ilâhin-nâs(i), min syarril-waswâsil-khannâs(i), alladzî yuwaswisu fî shudûrin-nâs(i), minal jinnati wan-nâs(i).",
+			"translation": "Dengan menyebut nama Allah yang Maha Pengasih lagi Maha Penyayang.\nKatakanlah (wahai Muhammad): “Aku berlindung kepada Tuhan pemelihara manusia. Yang Menguasai manusia. Tuhannya manusia. Dari kejahatan pembisik penghasut yang timbul tenggelam. Yang melemparkan bisikan dan hasutannya ke dalam hati manusia. Dari kalangan jin dan manusia.”"
+		},
+		{
+			"id": 2005,
+			"title": "Al-Mu’minun: 97-98",
+			"count": 3,
+			"source": "QS. Al-Mu’minun: 97-98",
+			"arabic": "رَبِّ أَعُوْذُ بِـكَ مِنْ هَمَـزَاتِ الشَّيَـاطِينِ، وَأَعُوذُ بِكَ رَبِّ أَنْ يَحْضُـرُوْنِ",
+			"latin": "Rabbi a‘udzu bika min hamazâtisy-syayâthîn(i), wa a‘udzubika rabbi an yahdlurûn(i).",
+			"translation": "Ya Tuhanku, aku berlindung kepada-Mu dari bisikan-bisikan setan. Dan aku berlindung kepada-Mu, ya Tuhanku, dari kedatangan mereka kepadaku."
+		},
+		{
+			"id": 2006,
+			"title": "Al-Mu’minun: 115",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 115",
+			"arabic": "أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَاكُمْ عَبَثًا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُـوْنَ",
+			"latin": "Afaḫasibtum annamâ khalaqnâkum ‘abatsan wa annakum ilainâ lâ turja‘ûn(a).",
+			"translation": "Maka apakah kalian mengira, sesungguhnya Kami menciptakan kalian dengan sia-sia dan kalian tidak akan dikembalikan kepada kami?"
+		},
+		{
+			"id": 2007,
+			"title": "Al-Mu’minun: 116",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 116",
+			"arabic": "فَتَعٰلَى اللّٰهُ الْمَلِكُ الْحَقُّۚ لَآ اِلٰهَ اِلَّا هُوَۚ رَبُّ الْعَرْشِ الْكَرِيْمِ",
+			"latin": "Fata‘âlallâhul-malikul-haqqu lâ ilâha illâ huwa rabbul-‘arsyil-karîm(i)",
+			"translation": "Maka Mahatinggi Allah, Raja yang sebenarnya. Tidak ada Tuhan selain Dia, Tuhan (yang memiliki) ‘Arsy yang mulia."
+		},
+		{
+			"id": 2008,
+			"title": "Al-Mu’minun: 117",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 117",
+			"arabic": "وَمَنْ يَّدْعُ مَعَ اللّٰهِ اِلٰهًا اٰخَرَ لَا بُرْهَانَ لَهٗ بِهٖۙ فَاِنَّمَا حِسَابُهٗ عِنْدَ رَبِّهٖۗ اِنَّهٗ لَا يُفْلِحُ الْكٰفِرُوْنَ",
+			"latin": "Wa man yad‘u ma‘allâhi ilahan âkhara lâ burhâna lahu bihi fainnamâ ḫisâbuhu ‘inda rabbihi, innahu lâ yufliḫul-kâfirûn(a)",
+			"translation": "Dan barang siapa mengembah kepada tuhan yang lain di samping Allah, padahal tidak ada suatu dalil pun baginya tentang itu, maka sesungguhnya perhitungannya di sisi Tuhannya. Sesungguhnya orang-orang yang kafir tidaklah beruntung."
+		},
+		{
+			"id": 2009,
+			"title": "Al-Mu’minun: 118",
+			"count": 1,
+			"source": "QS. Al-Mu’minun: 118",
+			"arabic": "وَقُلْ رَّبِّ اغْفِرْ وَارْحَمْ وَاَنْتَ خَيْرُ الرّٰحِمِيْنَࣖ",
+			"latin": "Wa qur rabbighfir warham wa anta khairur-râhimîn(a)",
+			"translation": "Katakanlah (Nabi Muhammad), \"Ya Tuhanku, berilah ampunan dan rahmat. Engkaulah sebaik-baik pemberi rahmat."
+		},
+		{
+			"id": 2010,
+			"title": "Ar-Rum: 17",
+			"count": 1,
+			"source": "QS. Ar-Rum: 17",
+			"arabic": "فَسُبْحَانَ اللهِ حِيْنَ تُمْسُوْنَ وَحِيْنَ تُصْبِحُوْنَ",
+			"latin": "Fasubḫânallâhi ḫîna tumsûna wa ḫîna tushbiḫûn(a)",
+			"translation": "Maka bertasbihlah kalian kepada Allah di saat kalian berada di waktu petang dan di saat kalian berada di waktu pagi."
+		},
+		{
+			"id": 2011,
+			"title": "Ar-Rum: 18",
+			"count": 1,
+			"source": "QS. Ar-Rum: 18",
+			"arabic": "وَلَهُ الْحَمْدُ فِي السَّمَوَاتِ وَالأَرْضِ وَعَشِيًّا وَحِيْنَ تُظْهِرُوْنَ",
+			"latin": "Walahul-ḫamdu fis-samâwâti wal-ardli wa ‘asyiyyan wa ḫîna tudh-hirûn(a)",
+			"translation": "Dan hanya bagi-Nya segala puji di langit dan di bumi dan di waktu petang dan di saat kalian berada di waktu dhuhur."
+		},
+		{
+			"id": 2012,
+			"title": "Ar-Rum: 19",
+			"count": 1,
+			"source": "QS. Ar-Rum: 19",
+			"arabic": "يُخْرِجُ الْحَيَّ مِنَ الْمَيِّتِ وَيُخْرِجُ الْمَيِّتَ مِنَ الْحَيِّ وَيُحْيِ الأَرْضَ بَعْدَ مَوْتِهَا وَكَذٰلِكَ تُخْرَجُوْنَ",
+			"latin": "Yukhrijul-ḫayya minal-mayyiti wa yukhrijul-mayyita minal-ḫayyi wa yuḫyil-ardla ba‘da mautihâ wa kadzâlika tukhrajûn(a).",
+			"translation": "Dia mengeluarkan yang hidup dari yang mati, mengeluarkan yang mati dari yang hidup, dan menghidupkan bumi sesudah matinya. Dan seperti itulah kalian dikeluarkan (dari kubur)."
+		},
+		{
+			"id": 2013,
+			"title": "A‘udzubillâhis-samî‘il-‘alîmi minasy-syaithanir-rajîm(i)",
+			"count": 3,
+			"arabic": "أَعُوْذُ بِاللهِ السَّمِيْعِ الْعَلِيْمِ مِنَ الشَّيْطَانِ الرَّجِيْمِ",
+			"latin": "A‘udzubillâhis-samî‘il-‘alîmi minasy-syaithanir-rajîm(i).",
+			"translation": "Aku berlindung kepada Allah yang Maha Mendengar lagi Maha Mengetahui dari bisikan setan yang terkutuk."
+		},
+		{
+			"id": 2014,
+			"title": "Al-Hashr: 21",
+			"count": 1,
+			"source": "QS. Al-Hashr: 21",
+			"arabic": "لَوْ اَنْزَلْنَا هٰذَا الْقُرْاٰنَ عَلٰى جَبَلٍ لَّرَاَيْتَهٗ خَاشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ اللّٰهِۗ  وَتِلْكَ الْاَمْثَالُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمْ يَتَفَكَّرُوْنَ",
+			"latin": "Lau anzalnâ hâdzal-qur’âna ‘ala jabalin lara’aitahu khâsyi‘an mutashaddi‘an min khasyatillâh(i), watilka nadlribuhâ linnâsi la‘allahum yatafakkarun(a).",
+			"translation": "Sekiranya Kami turunkan Al-Qur'an ini kepada sebuah gunung, pasti kamu akan melihatnya tunduk terpecah belah disebabkan takut kepada Allah. Dan perumpamaan-perumpamaan itu Kami buat untuk manusia agar mereka berpikir."
+		},
+		{
+			"id": 2015,
+			"title": "Al-Hashr: 22",
+			"count": 1,
+			"source": "QS. Al-Hashr: 22",
+			"arabic": "هُوَ اللّٰهُ الَّذِيْ لَآ اِلٰهَ اِلَّا هُوَۚ عَالِمُ الْغَيْبِ وَالشَّهَادَةِۚ هُوَ الرَّحْمٰنُ الرَّحِيْمُ",
+			"latin": "Huwallâhul-ladzî lâ ilâha illâ huwa ‘âlimul-ghaibi wasy-syahâdat(i) huwar-raḫmânur-raḫîm(u).",
+			"translation": "Dialah Allah tidak ada tuhan selain Dia. Yang Mengetahui yang gaib dan yang nyata, Dialah Yang Maha Pengasih, Maha Penyayang."
+		},
+		{
+			"id": 2016,
+			"title": "Al-Hashr: 23",
+			"count": 1,
+			"source": "QS. Al-Hashr: 23",
+			"arabic": "هُوَ اللّٰهُ الَّذِيْ لَآ اِلٰهَ اِلَّا هُوَۚ  اَلْمَلِكُ الْقُدُّوْسُ السَّلٰمُ الْمُؤْمِنُ الْمُهَيْمِنُ الْعَزِيْزُ الْجَبَّارُ الْمُتَكَبِّرُۗ سُبْحٰنَ اللّٰهِ عَمَّا يُشْرِكُوْنَ",
+			"latin": "Huwallâhul-ladzî lâ ilâha illâ huwal-malikul-quddûsus-salamul-mu’minul-muhaimnul-‘azîzul-jabbârul-mutakabbir(u), subḫânallâhi ‘ammâ yusyrikûn(a).",
+			"translation": "Dialah Allah tidak ada tuhan selain Dia. Maharaja, Yang Mahasuci, Yang Mahasejahtera, Yang Menjaga Keamanan, Pemelihara Keselamatan, Yang Mahaperkasa, Yang Mahakuasa, Yang Memiliki Segala Keagungan, Mahasuci Allah dari apa yang mereka persekutukan."
+		},
+		{
+			"id": 2017,
+			"title": "Al-Hashr: 24",
+			"count": 1,
+			"source": "QS. Al-Hashr: 24",
+			"arabic": "هُوَ اللّٰهُ الْخَالِقُ الْبَارِئُ الْمُصَوِّرُ لَهُ الْاَسْمَاۤءُ الْحُسْنٰىۗ يُسَبِّحُ لَهٗ مَا فِى السَّمٰوٰتِ وَالْاَرْضِۚ وَهُوَ الْعَزِيْزُ الْحَكِيْمُ",
+			"latin": "Huwallâhul-khâliqul-bâriul-mushawwiru lahul-asmâul ḫusna, yusabbiḫu lahu mâ fis-samawâti wal-ardl(i), wa huwal-‘azizul-hakîm(u).",
+			"translation": "Dialah Allah Yang Menciptakan, Yang Mengadakan, Yang Membentuk Rupa, Dia memiliki nama-nama yang indah. Apa yang di langit dan di bumi bertasbih kepada-Nya. Dan Dialah Yang Mahaperkasa, Mahabijaksana."
+		},
+		{
+			"id": 2018,
+			"title": "Al-Saffat: 79",
+			"count": 1,
+			"source": "QS. Al-Saffat: 79",
+			"arabic": "سَلَامٌ عَلَى نُوْحٍ فِي الْعَالَمِيْنَ",
+			"latin": "Salâmun ‘ala nûhin fil-‘alamîn(a).",
+			"translation": "Kesejahteraan dilimpahkan atas Nabi Nuh di seluruh alam."
+		},
+		{
+			"id": 2019,
+			"title": "Al-Saffat: 80",
+			"count": 1,
+			"source": "QS. Al-Saffat: 80",
+			"arabic": "إِنَّا كَذٰلِكَ نَجْزِي الْمُحْسِنِيْنَ",
+			"latin": "Innâ kadzâlika najzil-muḫsinîn(a).",
+			"translation": "Sesungguhnya demikianlah Kami memberi balasan kepada orang-orang yang berbuat baik."
+		},
+		{
+			"id": 2020,
+			"title": "Al-Saffat: 81",
+			"count": 1,
+			"source": "QS. Al-Saffat: 81",
+			"arabic": "إِنَّهُ مِنْ عِبَادِنَا الْمُؤْمِنِيْنَ",
+			"latin": "Innahu min ‘ibâdinâl-mu’minîna.",
+			"translation": "Sesungguhnya dia termasuk di antara hamba-hamba Kami yang beriman."
+		},
+		{
+			"id": 2021,
+			"title": "A‘udzu bikalimâtillâhit-tâmmâti min syarri …",
+			"count": 3,
+			"arabic": "أَعُوْذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+			"latin": "A‘udzu bikalimâtillâhit-tâmmâti min syarri mâ khalaq.",
+			"translation": "Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kejahatan makhluk-Nya."
+		},
+		{
+			"id": 2022,
+			"title": "Bismillahil-ladzî lâ yadlurru ma‘as …",
+			"count": 3,
+			"arabic": "بِسْمِ اللهِ الَّذِيْ لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيْعُ الْعَلِيْمُ",
+			"latin": "Bismillahil-ladzî lâ yadlurru ma‘as mihi syai’un fil-ardli wa lâ fis-samâ’i wa huwas-sami‘ul-‘alîm(u).",
+			"translation": "Dengan nama Allah yang dengan nama-Nya tak satu pun yang di bumi maupun di langit dapat memberi bencana dan Ia Maha Mendengar lagi Maha Mengetahui."
+		},
+		{
+			"id": 2023,
+			"title": "Allâhumma innî amsaitu minka …",
+			"count": 3,
+			"arabic": "اَللّٰهُمَّ إِنِّيْ أَمْسَيْتُ مِنْكَ فِي نِعْمَةٍ وَعَافِيَةٍ وَسِتْرٍ، فَأَتْمِمْ نِعْمَتَكَ عَلَيَّ وَعَافِيَتَكَ وَسِتْرَكَ فِي الدُّنْيَا وَالْاٰخِرَةِ",
+			"latin": "Allâhumma innî amsaitu minka fî ni‘matin wa ‘âfiyatin wa sitrin, fa atimma ni‘mataka ‘alayya wa ‘âfiyataka wa sitrika fid-dunya wal-âkhirat(i).",
+			"translation": "Ya Allah, sesungguhnya aku berada pada sore hari ini, dari (karunia)-Mu, (aku dalam keadaan) mendapat kenikmatan, kesehatan serta tertutup (aib)ku, maka sempurnakan kenikmatan, kesehatan dan tutup yang Engkau berikan kepadaku di dunia dan akhirat."
+		},
+		{
+			"id": 2024,
+			"title": "Allâhumma innî amsaitu usyhiduka …",
+			"count": 4,
+			"arabic": "اللّٰهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ وَأُشْهِدُ حَمَلَةَ عَرْشِكَ وَمَلَائِكَتَكَ وَجَمِيعَ خَلْقِكَ أَنَّكَ أَنْتَ اللهُ لَا إِلٰهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيْكَ لَكَ وَأَنَّ سَيِّدَنَا مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ",
+			"latin": "Allâhumma innî amsaitu usyhiduka wa usyhidu ḫamalata ‘arsyika wa malâikataka wa jamî‘a khalqika annaka antallâhu lâ ilâha illa anta waḫdaka lâ syarîka laka wa anna sayyidanâ Muḫammadan ‘abduka wa rasûluk(a).",
+			"translation": "Ya Allah, sesungguhnya aku di sore hari ini aku menjadikan-Mu sebagai saksi, dan aku juga menjadikan saksi para pemikul ‘Arsy-Mu, para malaikat-Mu dan seluruh makhluk-Mu, bahwa Engkaulah Tuhan, tidak ada Tuhan selain Engkau dengan keesaan-Mu, tidak ada sekutu bagi-Mu, dan sesungguhnya Muhammad adalah hamba dan utusan-Mu."
+		},
+		{
+			"id": 2025,
+			"title": "Al-ḫamdulillâhi rabbil-‘alâlamîna ḫamdan yuwâfî …",
+			"count": 3,
+			"arabic": "اَلْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ حَمْدًا يُوَافِيْ نِعَمَهُ وَيُكَافِئُ مَزِيْدَهُ",
+			"latin": "Al-ḫamdulillâhi rabbil-‘alâlamîna ḫamdan yuwâfî ni‘amahu wa yukâfi’u mazîdah(u).",
+			"translation": "Segala puji bagi Allah, Tuhan seru sekalian alam, pujian yang memadai nikmat-nikmat-Nya dan mencukupi penambahan-Nya."
+		},
+		{
+			"id": 2026,
+			"title": "Al-Baqarah: 256",
+			"count": 3,
+			"source": "QS. Al-Baqarah: 256",
+			"arabic": "اٰمَنْتُ بِاللهِ العَظِيْمِ، وَكَفَرْتُ بِالْجِبْتِ وَالطَّاغُوْتِ، وَاسْتَمْسَكْتُ بِالْعُرْوَةِ الْوُثْقَى لَا انْفِصَامَ لَهَا، وَاللهُ سَمِيْعٌ عَلِيمٌ",
+			"latin": "Âmantu billâhil-‘adhimi, wa kafartu biljibti wath-thâghûti, wastamsaktu bil‘urwatil-wutsqa lâ anfishâma lahâ wallâhu samî‘un ‘alîm(un).",
+			"translation": "Aku beriman kepada Allah Yang Mahaagung dan ingkar terhadap kejahatan dan thaghut (segala yang disekutukan dengan Allah), dan aku berpegang dengan tali yang kokoh yang tidak ada putusnya, dan Allah Maha Mendengar lagi Maha Mengetahui."
+		},
+		{
+			"id": 2027,
+			"title": "Radlîtu billâhi rabba(n), wa …",
+			"count": 3,
+			"arabic": "رَضِيْتُ بِاللهِ رَبًّـــا، وَ بِالْإِسْلَامِ دِيْنًـا، وَبِمُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا وَرَسُوْلاً",
+			"latin": "Radlîtu billâhi rabba(n), wa bil Islâmi dîna(n), wa bi Muḫammadin shallâhu ‘alaihi wa sallama nabiyyan wa rasûla(n).",
+			"translation": "Aku ridha Allah sebagai Tuhan, Islam sebagai agama, dan Muhammad ﷺ sebagai nabi dan rasul."
+		},
+		{
+			"id": 2028,
+			"title": "al-Taubah: 129",
+			"count": 7,
+			"source": "QS. al-Taubah: 129",
+			"arabic": "حَسْـبِيَ اللهُ لَا إِلٰهَ إِلَّا هُـوَ عَلَيْـــهِ تَـوَكَّلْتُ وَهُـوَ رَبُّ الْعَرْشِ الْعَظِيْـمِ",
+			"latin": "Ḫasbiyallâhu lâ ilâha illa Huwa ‘alaihi tawakkaltu wa Huwa rabbul-‘arsyil-‘adhîm.",
+			"translation": "Cukuplah Allah bagiku, tidak ada Tuhan selain Dia, hanya kepada-Nya aku bertawakal, dan Dialah Penguasa Arasy yang agung"
+		},
+		{
+			"id": 2029,
+			"title": "Allâhumma shalli ‘ala sayyidinâ …",
+			"count": 10,
+			"arabic": "اَللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَاٰلِهِ وَصَحْبِهِ وَسَلِّمْ",
+			"latin": "Allâhumma shalli ‘ala sayyidinâ Muḫammadin wa âlihi wa shaḫbihi wa sallim.",
+			"translation": "Ya Allah, limpahkanlah rahmat dan salam kepada junjungan kami Baginda Muhammad serta keluarga dan sahabat-sahabatnya."
+		},
+		{
+			"id": 2030,
+			"title": "Allâhumma innî as’aluka min …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ مِنْ فُجَاءَةِ الْخَيْرِ، وَأَعُوْذُ بِكَ مِنْ فُجَاءَةِ الشَّرِّ",
+			"latin": "Allâhumma innî as’aluka min fujâ-’atil-khair(i), wa a‘ûdzubika min fujâ-’atisy-syarri",
+			"translation": "Ya Allah aku bermohon kepada-Mu kebaikan yang tidak disangka, dan aku berlindung kepada-Mu dari bencana yang mengejutkan."
+		},
+		{
+			"id": 2031,
+			"title": "Allâhumma anta rabbî lâ …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِيْ، وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوْذُ بِـكَ مِنْ شَرِّ مَـا صَنَعْـتُ، أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوْءُ بِذَنْبِيْ فَاغْفِرْ لِيْ، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ",
+			"latin": "Allâhumma anta rabbî lâ ilâha illâ anta khalaqtanî, wa anâ ‘abduka, wa anâ ‘ala ‘ahdika wa wa‘dika mâstatha‘tu a‘ûdzubika min syarri mâ shana‘tu, abû’u laka bi ni‘matika alayya, wa abû’u bi dzanbî faghfirlî, fa innahu lâ yaghfirudz-dzunûba illa anta.",
+			"translation": "Ya Allah, Engkaulah Tuhanku, tidak ada Tuhan selain-Mu, Engkau telah menciptakan aku dan aku ini adalah hamba-Mu, dan aku di atas titah dan janji-Mu sekuat kemampuanku. Aku berlindung kepada-Mu dari keburukan apa pun yang aku lakukan, aku mengakui nikmat yang Engkau karuniakan kepadaku, dan aku mengakui dosaku. Maka ampunilah aku, karena tak ada yang dapat mengampuni dosa-dosa selain Engkau."
+		},
+		{
+			"id": 2032,
+			"title": "Allâhumma anta rabbi lâ …",
+			"count": 1,
+			"arabic": "اللّٰهُمَّ أَنْتَ رَبِّيْ، لَا إِلٰهَ إلَّا أَنْتَ، عَلَيْكَ تَوَكَّلْـتُ، وَأَنْتَ رَبُّ الْعَـرْشِ الْعَظِيْـمِ",
+			"latin": "Allâhumma anta rabbi lâ ilâha illa anta, ‘alaika tawakkaltu, wa anta rabbul-‘arsyil-‘adhîm",
+			"translation": "Ya Allah, Engkaulah Tuhanku. Tidak ada Tuhan selain Engkau, hanya kepada Engkau aku berserah diri, dan Engkaulah Tuhannya arasy yang agung."
+		},
+		{
+			"id": 2033,
+			"title": "Mâ syâ’allâhu kâna, wa …",
+			"count": 1,
+			"arabic": "مَا شَاءَ اللهُ كَانَ، وَمَا لَمْ يَشَأْ لَـمْ يَكُنْ، وَلَا حَـوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْمِ",
+			"latin": "Mâ syâ’allâhu kâna, wa mâ lam yasya’ lam yakun, wa lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-‘adhîm.",
+			"translation": "Apa yang dikehendaki Allah pasti terjadi, dan apa yang tidak dikehendaki tidak akan terjadi. Tidak ada upaya untuk melakukan ketaatan tanpa pertolongan Allah dan tidak ada kekuatan menghindari kemaksiatan kecuali dengan pertolongan Allah yang Mahatinggi lagi Mahaagung."
+		},
+		{
+			"id": 2034,
+			"title": "Al Talaq: 12",
+			"count": 1,
+			"source": "QS. Al Talaq: 12",
+			"arabic": "أَعْلَـمُ أَنَّ اللهَ عَلَى كُلِّ شَيْءٍ قَدِيْـرٌ وَأَنَّ اللهَ قَدْ أَحَـاطَ بِكُلِّ شَيْءٍ عِلْمًـا",
+			"latin": "A‘lamu annallâha ‘ala kulli syai’in qadîr(un), wa annallâha qad ahâtha bikulli syai’in ‘ilma(n).",
+			"translation": "Aku mengetahui, sesungguhnya Allah Mahakuasa atas segala sesuatu dan sesungguhnya ilmu Allah meliputi setiap sesuatu."
+		},
+		{
+			"id": 2035,
+			"title": "Allâhumma innî a‘udzubika min …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَعُوْذُ بِـكَ مِنْ شَرِّ نَفْسِيْ، وَمِنْ شَرِّ كُلِّ دَابَّـــةٍ أَنْتَ آخِـذٌ بِنَاصِيَتِهَا، إِنَّ رَبِيِّ عَلَى صِرَاطٍ مُسْتَقِيْمٍ",
+			"latin": "Allâhumma innî a‘udzubika min syarri nafsî, wa min syarri kulli dâbbatin anta âkhidzun binâshiyatihâ, inna rabbi ‘ala shirâtin mustaqîm(in).",
+			"translation": "Ya Allah, aku berlindung kepada-Mu dari kejahatan pribadiku dan dari kejahatan segala hewan melata yang ubun-ubunnya berada dalam genggaman-Mu, sesungguhnya Tuhanku selalu berada di atas jalan yang lurus."
+		},
+		{
+			"id": 2036,
+			"title": "Yâ ḫayyu yâ qayyûmu …",
+			"count": 1,
+			"arabic": "يَا حَيُّ يَا قَيُّوْمُ، بِرَحْمَتِكَ أَسْتَغِيْثُ، وَمِنْ عَذَابِكَ أَسْتَجِيْرُ",
+			"latin": "Yâ ḫayyu yâ qayyûmu, biraḫmatika astaghîtsu, wa min ‘adzâbika astajîru",
+			"translation": "Wahai Dzat yang Mahahidup, wahai Dzat yang berdiri sendiri, dengan rahmat-Mu aku mohon pertolongan dan aku mohon perlindungan dari siksaan-Mu."
+		},
+		{
+			"id": 2037,
+			"title": "Ashliḫ lî sya’nî kullahu …",
+			"count": 1,
+			"arabic": "أَصْلِحْ لِيْ شَأْنِيْ كُلَّهُ، وَلَا تَكِلْنِيْ إِلَى نَفْسِيْ وَلَا إِلَى أَحَدٍ مِنْ خَلْقِكَ طَرْفَةَ عَيْنٍ",
+			"latin": "Ashliḫ lî sya’nî kullahu, wa lâ takilnî ila nafsî wa lâ ila aḫadin min khalqika tharfata ‘ain(in).",
+			"translation": "Perbaikilah keaadanku semuanya, janganlah Engkau menyerahkan aku kepada pribadiku sendiri, dan jangan juga Engkau serahkan kepada salah seorang pun dari makhluk-Mu walaupun hanya sekejap mata."
+		},
+		{
+			"id": 2038,
+			"title": "Allâhumma innî a’ûdzubika minal-hammi …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوْذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوْذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوْذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ",
+			"latin": "Allâhumma innî a’ûdzubika minal-hammi wal-ḫazani, wa a‘ûdzubika minal-‘ajzi wal kasali. Wa a‘ûdzubika minal-jubni wal-bukhli, wa a‘ûdzubika min ghalabatid-daini wa qahrir-rijâl(i).",
+			"translation": "Ya Allah, sesungguhnya aku berlindung kepada-Mu dari penderitaan dan kesedihan. Aku berlindung kepada-Mu dari lemah dan malas. Aku berlindung kepada-Mu dari pengecut dan kikir. Dan aku berlindung kepada-Mu dari lilitan utang dan kesewenang-wenangan manusia."
+		},
+		{
+			"id": 2039,
+			"title": "Allâhumma innî as’alukal-‘âfiyata fid-dunya …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ",
+			"latin": "Allâhumma innî as’alukal-‘âfiyata fid-dunya wa lakhirat(i).",
+			"translation": "Ya Allah, aku memohon kepada-Mu kesejahteraan di dunia dan akhirat."
+		},
+		{
+			"id": 2040,
+			"title": "Allâhumma innî as’alukal-‘afwa wal-‘âfiyata …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَـافِيَةَ، وَالْمُعَافَاةَ الدَّائِمَةَ، فِي دِيْنِيْ وَدُنْيَايَ وَأَهْلِيْ وَمَالِيْ",
+			"latin": "Allâhumma innî as’alukal-‘afwa wal-‘âfiyata, wal-mu‘âfâtad-dâ’imata fi dînî wa dunyâya wa ahlî wa mâlî",
+			"translation": "Ya Allah, sesungguhnya aku memohon kepada-Mu pengampunan dan kesejahteraan serta perlindungan yang abadi dalam agamaku, duniaku, keluargaku, dan hartaku."
+		},
+		{
+			"id": 2041,
+			"title": "Allâhummastur ‘aurâtî wa âmin …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ اسْتُرْ عَوْرَاتِيْ وَاٰمِنْ رَوْعَاتِيْ",
+			"latin": "Allâhummastur ‘aurâtî wa âmin rau‘âtî",
+			"translation": "Ya Allah, tutuplah segala aibku dan amankan ketakutan-ketakutanku."
+		},
+		{
+			"id": 2042,
+			"title": "Allâhummahfadhnî min baini yadayya …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ احْفَظْنِيْ مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِيْ وَعَنْ يَمِيْنِيْ وَعَنْ شِمَالِيْ وَمِنْ فَوْقِيْ، وَأَعُوْذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيْ",
+			"latin": "Allâhummahfadhnî min baini yadayya wa min khalfî wa ‘an yamînî wa ‘an syimâlî wa min fauqî. Wa ‘audzu bi‘adhamatika an ughtâla min tahtî.",
+			"translation": "Ya Allah, peliharalah aku dari depan dan belakangku, dari kanan, kiri dan dari atasku. Dengan keagungan-Mu aku berlindung agar jangan ditipu dari bawahku."
+		},
+		{
+			"id": 2043,
+			"title": "Allâhumma anta khalaqtanî wa …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ أَنْتَ خَلَقْتَنِيْ، وَأَنْتَ تَهْدِيْنِيْ، وَأَنْتَ تُطْعِمُنِيْ وَأَنْتَ تَسْقِيْنِيْ، وَأَنْتَ تُمِيْتُنِيْ، وَأَنْتَ تُحْيِيْنِيْ، وَأَنْتَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ",
+			"latin": "Allâhumma anta khalaqtanî wa anta wa anta tahdînî wa anta tuth‘imunî wa anta tasqînî wa anta tumîtunî wa anta tuḫyînî wa anta ‘alâ kulli syai-in qadîr(un)",
+			"translation": "Ya Allah, Engkaulah yang menciptakaku, memberikan petunjuk, makan dan minum kepadaku, dan Engkau yang mematikan serta membangkitkanku dan Engkau Mahakuasa atas segala sesuatu."
+		},
+		{
+			"id": 2044,
+			"title": "Amsainâ ‘ala fithratil-islâmi, wa …",
+			"count": 1,
+			"arabic": "أَمْسَيْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِيْنِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَاٰلِهِ وَسَلَّمَ، وَعَلَى مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفًا مُسْلِمًا، وَمَا كَانَ مِنَ الْمُشْرِكِيْنَ",
+			"latin": "Amsainâ ‘ala fithratil-islâmi, wa ‘ala kalimatil-ikhlâshi wa ‘ala dîni nabiyyinâ Muḫammadin shallâhu ‘alaihi wa âlihi wa sallama wa ‘ala millati abînâ Ibrâhîma ḫanîfan muslima(n), wa mâ kâna minal-musyrikîn(a).",
+			"translation": "Kami berada pada sore hari dengan fitrah beragama Islam, di atas kalimat ikhlas, berada pada agama nabi kami Muhammad ﷺ dan agama bapak kami Ibrahim alaihissalam yang lurus dan berserah diri (kepada Allah), dan sekali-kali bukanlah dia dari golongan orang-orang yang mempersekutukan Allah dengan yang lain."
+		},
+		{
+			"id": 2045,
+			"title": "Allâhumma bika amsainâ wa …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوْتُ، وَعَلَيْكَ نَتَوَكَّلُ، وَإِلَيْكَ الْمَصِيْرُ. أَمْسَيْنَا وأَمْسَى الْمُلْكُ لِلّٰهِ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ",
+			"latin": "Allâhumma bika amsainâ wa bika ashbaḫnâ wa bika naḫyâ wa bika namûtu wa ‘alaika natawakkalu wa ilaikal-mashîru, amsainâ wa amsal-mulku lillâhi, walḫamdulillâhi rabbil-‘alamîn(a).",
+			"translation": "Ya Allah, dengan pertolongan-Mu kami berada di waktu sore, dengan pertolongan-Mu kami berada di waktu pagi, dengan pertolongan-Mu kami hidup, dengan pertolongan-Mu kami mati, kepada-Mu kami berserah diri, dan hanya kepada-Mu tempat kebangkitan. Kami berada di waktu sore dan kerajaan milik Allah. Segala puji bagi Allah Tuhan semesta alam."
+		},
+		{
+			"id": 2046,
+			"title": "Allâhumma innî as’aluka khaira …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هٰذِهِ اللَّيْلَةِ فَتْحَهَا وَنَصْرَهَا وَنُوْرَهَا وَبَرَكَتَهَا وَهُدَاهَا",
+			"latin": "Allâhumma innî as’aluka khaira hâdzihil-lailati fatḫahâ wa nashrahâ wa nûrahâ wa barakatahâ wa hudâhâ.",
+			"translation": "Ya Allah, kami memohon kepada-Mu kebaikan malam ini, pembukaannya, pertolongannya, cahayanya, barakahnya dan petunjuknya."
+		},
+		{
+			"id": 2047,
+			"title": "Allâhumma innî as’aluka khaira …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هٰذِهِ اللَّيْلَةِ، وَخَيْرَ مَا فِيْهَا، وَخَيْرَ مَا قَبْلَهَا، وَخَيْرَ مَا بَعْدَهَا، وَأَعُوْذُ بِكَ مِنْ شَرِّ هٰذِهِ اللَّيْلَةِ، وَشَرِّ مَا فِيْهَا، وَشَرِّ مَا قَبْلَهَا، وَشَرِّ مَا بَعْدَهَا",
+			"latin": "Allâhumma innî as’aluka khaira hâdzihil lailah, wa khaira mâ fîhâ, wa khaira mâ qablahâ wa khaira mâ ba‘dahâ, wa a‘udzûbika min syarri hâdzihil lailati wa syarri mâ fîhâ, wa syarri mâ qablahâ wa syarri mâ ba‘dahâ",
+			"translation": "Ya Allah, aku memohon kepada-Mu kebaikan malam hari ini, kebaikan apa pun yang ada di dalamnya, serta kebaikan apa pun sebelum dan sesudahnya. Aku berlindung kepada-Mu dari keburukan malam hari ini, keburukan apa pun yang terdapat di dalamnya, keburukan apa pun sebelum dan sesudahnya."
+		},
+		{
+			"id": 2048,
+			"title": "Allâhumma mâ amsa bî …",
+			"count": 1,
+			"arabic": "اَللّٰهُمَّ مَا أَمْسَى بِيْ مِنْ نِعْمَةٍ أَوْ بِأَحَـدٍ مِنْ خَلْقِكَ، فَمِنْكَ وَحْدَكَ لَا شَرِيْكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ عَلَى ذٰلِكَ",
+			"latin": "Allâhumma mâ amsa bî min ni‘matin au bi aḫadin min khalqika faminka wahdaka lâ syarîka laka, falakal-ḫamdu wa lakasyu-syukru ‘ala dzâlika.",
+			"translation": "Ya Allah, nikmat apa pun yang aku terima di sore ini atau yang diterima oleh salah seorang dari hamba-Mu, maka sumbernya hanyalah dari Engkau semata, tidak ada sekutu bagi-Mu, hanya bagi-Mu pujian dan hanya kepada-Mu syukur atas itu semua."
+		},
+		{
+			"id": 2049,
+			"title": "Subhânallâhi wa bihamdihi ‘adada …",
+			"count": 3,
+			"arabic": "سُبْحَانَ اللهِ وَبِحَمْدِهِ عَدَدَ خَلْقِـهِ وَرِضَى نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ",
+			"latin": "Subhânallâhi wa bihamdihi ‘adada khalqihi wa rida nafsihi wazinata ‘arsyihi wa midâda kalimatih(i).",
+			"translation": "Mahasuci Allah, dengan memuji-Nya sebanyak bilangan makhluk-Nya, sebanyak bilangan ridla-Nya, sebanyak timbangan Arsy-Nya dan sebanyak tinta untuk menulis kalimat-kalimat-Nya."
+		},
+		{
+			"id": 2050,
+			"title": "Subhânallâhil-adhîmi wa biḫamdihi ‘adada …",
+			"count": 3,
+			"arabic": "سُبْحَانَ اللهِ الْعَظِيْمِ وَبِحَمْدِهِ عَدَدَ خَلْقِـهِ وَرِضَى نَفْسِـهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ",
+			"latin": "Subhânallâhil-adhîmi wa biḫamdihi ‘adada khalqihi wa rida nafsihi wazinata ‘arsyihi wa midâda kalimâtih(i).",
+			"translation": "Mahasuci Allah yang Mahaagung, dengan memuji-Nya sebanyak bilangan makhluk-Nya, sebanyak bilangan ridla-Nya, sebanyak timbangan Arsy-Nya dan sebanyak tinta untuk menulis kalimat-kalimat-Nya."
+		},
+		{
+			"id": 2051,
+			"title": "Subḫânallâhi ‘adada mâ khalaqa …",
+			"count": 1,
+			"arabic": "سُبْحَـانَ اللهِ عَدَدَ مَا خَلَقَ فِي السَّمَـاءِ، سُبْحَـانَ اللهِ عَدَدَ مَا خَلَـقَ فِي الأَرْضِ، سُبْحَـانَ اللهِ عَدَدَ مَا بَيْنَ ذٰلِكَ، سُبْحَـانَ اللهِ عَدَدَ مَا هُوَ خَـالِقٌ",
+			"latin": "Subḫânallâhi ‘adada mâ khalaqa fis-samâ’i, subḫânallâhi ‘adada mâ khalaqa fil-ardli, subḫânallâhi ‘adada mâ baina dzâlika, subḫânallâhi ‘adada mâ huwa khâliq(un)",
+			"translation": "Mahasuci Allah sebanyak bilangan apa saja yang Ia ciptakan di langit. Mahasuci Allah sebanyak bilangan apa saja yang Ia ciptakan di bumi. Mahasuci Allah sebanyak bilangan apa saja yang ada di antara keduanya. Mahasuci Allah sebanyak apa saja yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 2052,
+			"title": "Alḫamdulillâhi ‘adada mâ khalaqa …",
+			"count": 1,
+			"arabic": "اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا خَلَـقَ فِي السَّمَـاءِ، اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا خَلَـقَ فِي الأَرْضِ، اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا بَيْنَ ذٰلِكَ، اَلْحَمْدُ لِلّٰهِ عَدَدَ مَـا هُوَ خَـالِقٌ",
+			"latin": "Alḫamdulillâhi ‘adada mâ khalaqa fis-samâ’i, alḫamdulillâhi ‘adada mâ khalaqa fil-ardli, alḫamdulillâhi ‘adada mâ baina dzâlika, alḫamdulillâhi ‘adada mâ huwa khâliq(un)",
+			"translation": "Segala puji bagi Allah sebanyak bilangan apa saja yang Ia ciptakan di langit. Segala puji bagi Allah sebanyak bilangan apa saja yang Ia ciptakan di bumi. Segala puji bagi Allah sebanyak bilangan apa saja yang ada di antara keduanya. Segala puji bagi Allah sebanyak bilangan yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 2053,
+			"title": "Lâ ilâha illallâhu ‘adada …",
+			"count": 3,
+			"arabic": "لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا خَلَـقَ فِي السَّمَـاءِ، لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا خَلَـقَ فِي الْأَرْضِ، لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا بَيْنَ ذَلِكَ، لَا إِلٰهَ إِلَّا اللهُ عَدَدَ مَـا هُوَ خَـالِقٌ",
+			"latin": "Lâ ilâha illallâhu ‘adada mâ khalaqa fis-samâ’i, Lâ ilâha illallâhu ‘adada mâ khalaqa fil-ardli, Lâ ilâha illallâhu ‘adada mâ baina dzâlika, Lâ ilâha illallâhu ‘adada mâ huwa khâliq(un).",
+			"translation": "Tidak ada Tuhan selain Allah sebanyak bilangan apa saja yang Ia ciptakan di langit. Tidak ada Tuhan selain Allah sebanyak bilangan apa saja yang Ia ciptakan di bumi. Tidak ada Tuhan selain Allah sebanyak bilangan apa saja yang ada di antara keduanya. Tidak ada Tuhan selain Allah sebanyak hitungan apa saja di mana Allah sebagai penciptanya."
+		},
+		{
+			"id": 2054,
+			"title": "Allâhu akbaru ‘adada mâ …",
+			"count": 3,
+			"arabic": "اللهُ أَكْبَرُ عَدَدَ مَـا خَلَـقَ فِي السَّمَـاءِ، اللهُ أَكْبَرُ عَدَدَ مَـا خَلَـقَ فِي الْأَرْضِ، اللهُ أَكْبَرُ عَدَدَ مَـا بَيْنَ ذٰلِكَ، اللهُ أَكْبَرُ عَدَدَ مَـا هُوَ خَـالِقٌ",
+			"latin": "Allâhu akbaru ‘adada mâ khalaqa fis-samâ’i, Allâhu akbaru ‘adada mâ khalaqa fil-ardli, Allâhu akbaru ‘adada mâ baina dzâlika, Allâhu akbaru ‘adada mâ huwa khâliq(un)",
+			"translation": "Allah Mahabesar sebanyak bilangan apa saja yang Ia ciptakan di langit. Allah Mahabesar sebanyak bilangan apa saja yang Ia ciptakan di bumi. Allah Mahabesar sebanyak bilangan apa saja yang ada di antara keduanya. Allah Mahabesar sebanyak bilangan apa saja yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 2055,
+			"title": "Lâ ḫaula wa lâ …",
+			"count": 1,
+			"arabic": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَـا خَلَقَ فِي السَّمَاءِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَـا خَلَقَ فِي الْأَرْضِ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَـا بَيْنَ ذَلِكَ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْـمِ عَدَدَ مَا هُوَ خَالِقٌ",
+			"latin": "Lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ khalaqa fis-samâ’i, Lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ khalaqa fil-ardli, Lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ baina dzâlika, Lâ ḫaula wa lâ quwwata illâ billâhil-‘aliyyil-adhîm ‘adada mâ huwa khâliq(un)",
+			"translation": "Tidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang Ia ciptakan di langit.\nTidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang Ia ciptakan di bumi.Tidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang ada di antara keduanya.\nTidak ada upaya melaksanakan ketaatan dan tidak ada kekuatan untuk menghindar dari kemaksiatan kecuali dengan (pertolongan) Allah yang Mahatinggi dan Mahaagung sebanyak bilangan apa saja yang Allah sendiri sebagai penciptanya."
+		},
+		{
+			"id": 2056,
+			"title": "Lâ ilâha illallâhu waḫdahu …",
+			"count": 3,
+			"arabic": "لَا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِيْ وَيُمِيْتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ عَدَدَ كُلِّ ذَرَّةٍ أَلْفَ مَرَّةٍ",
+			"latin": "Lâ ilâha illallâhu waḫdahu lâ syarîka lah(u), lahul mulku wa lahul ḫamdu yuḫyî wa yumîtu wa huwa ‘alâ kulli syai’in qadîr(un) ‘adada kulli dzarratin alfa marratin.",
+			"translation": "Tidak ada Tuhan selain Allah yang Maha Esa, tidak ada sekutu bagi-Nya, kerajaan hanya milik-Nya, dan hanya bagi-Nya segala puji, yang Maha Menghidupkan dan Maha Mematikan. Dia Mahakuasa atas segala sesuatu sebanyak bilangan biji dzarrah sebanyak seribu kali."
+		},
+		{
+			"id": 2057,
+			"title": "Allâhumma shalli ‘alâ sayyidinâ …",
+			"count": 3,
+			"arabic": "اَللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ مِفْتَاحِ بَابِ رَحْمَةِ اللهِ، عَدَدَ مَا فِيْ عِلْمِ اللهِ، صَلَاةً وَسَلَامًا دَائِمَيْنِ بِدَوَامِ مُلْكِ اللهِ وَعَلَى اٰلِهِ وَصَحْبِهِ عَدَدَ كُلِّ ذَرَّةٍ أَلْفَ مَرَّةٍ",
+			"latin": "Allâhumma shalli ‘alâ sayyidinâ muḫammadin miftâḫi bâbi raḫmatillâhi ‘adada mâ fî ‘ilmillâhi shalâtan wa salâman dâ-imaini bi dawâmi mulkillâh wa ‘alâ âlihi wa shaḫbihi ‘adada kulli dzarratin alfa marrah.",
+			"translation": "Ya Allah limpahkanlah rahmat kepada junjungan kami Nabi Muhammad, kunci pembuka kasih sayang Allah, sebanyak sesuatu dalam pengetahuan Allah, dengan limpahan rahmat dan keselamatan yang terus-menerus sepanjang kekalnya Kerajaan Allahdengan limpahan rahmat dan keselamatan yang terus-menerus sepanjang kekalnya Kerajaan Allah—dan (limpahkan juga) kepada beserta keluarga dan para sahabat beliau— sebanyak hitungan setiap atom seribu kali."
+		}
+	]
+}

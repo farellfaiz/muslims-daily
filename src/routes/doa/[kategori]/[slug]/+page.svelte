@@ -3,13 +3,17 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { withTransition as vt } from '#lib/transition.ts';
 	import { dateKey } from '#lib/date.ts';
-	import { isReading, SOURCE_NAME } from '#lib/data/doa.ts';
+	import { isReading, SOURCES } from '#lib/data/doa.ts';
 	import { clock, doaPrefs, reading, toast, type ReadingPrefs } from '#lib/state/app.svelte.ts';
 
 	let { data } = $props();
 	const doa = $derived(data.doa);
 	const cat = $derived(data.category);
 	const readings = $derived(doa.parts.filter(isReading));
+	const src = $derived(SOURCES[doa.source]);
+	const srcLine = $derived(
+		doa.source === 'kemenag' ? `${SOURCES.kemenag.book}${doa.page ? `, hlm. ${doa.page}` : ''}` : `${src.name}, ${doa.url}`
+	);
 
 	// Tombol kembali: pakai riwayat bila datang dari dalam aplikasi, selain itu ke kategorinya.
 	let cameFromApp = $state(false);
@@ -45,7 +49,7 @@
 		[
 			doa.title,
 			...doa.parts.map((p) => (isReading(p) ? [p.arabic, p.latin, p.translation && `"${p.translation}"`].filter(Boolean).join('\n\n') : `— ${p.heading} —`)),
-			`Sumber: ${SOURCE_NAME}, ${doa.url}`
+			`Sumber: ${srcLine}`
 		].join('\n\n')
 	);
 
@@ -94,7 +98,7 @@
 <h1 class="disp title rise">{doa.title}</h1>
 <div class="meta">
 	{#if readings.length > 1}<span class="num">{readings.length} bacaan</span><span class="dot"></span>{/if}
-	<span class="num">{doa.words} kata</span><span class="dot"></span><span>{SOURCE_NAME}</span>
+	<span class="num">{doa.words} kata</span><span class="dot"></span><span>{src.name}</span>
 </div>
 
 <article class="card reading" style:--arsize="{opt.size}px">
@@ -125,7 +129,11 @@
 				{#each doa.team as t (t)}<li>{t}</li>{/each}
 			</ul>
 		{/if}
-		<a class="ext" href={doa.url} target="_blank" rel="noopener">Dari {SOURCE_NAME} · lihat aslinya</a>
+		{#if doa.url}
+			<a class="ext" href={doa.url} target="_blank" rel="noopener">Dari {src.name} · lihat aslinya</a>
+		{:else}
+			<p class="book">Dari buku {srcLine}</p>
+		{/if}
 	</div>
 </aside>
 
@@ -332,6 +340,13 @@
 		font-size: 11.5px;
 		color: var(--ink2);
 		line-height: 1.6;
+	}
+	.book {
+		margin: 10px 0 0;
+		font-size: 12.5px;
+		font-weight: 700;
+		color: var(--navy);
+		line-height: 1.5;
 	}
 	.ext {
 		display: inline-block;

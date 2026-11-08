@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CatIcon from '#lib/components/CatIcon.svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import { SOURCE_NAME, SOURCE_URL } from '#lib/data/doa.ts';
+	import { SOURCES } from '#lib/data/doa.ts';
 	import { doaPrefs } from '#lib/state/app.svelte.ts';
 
 	let { data } = $props();
@@ -65,9 +65,8 @@
 </nav>
 
 <p class="credit">
-	Teks doa, transliterasi, dan terjemahan dari
-	<a href={SOURCE_URL} target="_blank" rel="noopener">{SOURCE_NAME}</a>.
-	Keterangan sumber tiap doa ada di halaman bacaannya.
+	Doa dari <a href={SOURCES.nu.url} target="_blank" rel="noopener">{SOURCES.nu.name}</a> dan buku
+	<i>Kumpulan Doa Sehari-hari</i> terbitan Kemenag RI. Keterangan sumber tiap doa ada di halaman bacaannya.
 </p>
 
 <style>

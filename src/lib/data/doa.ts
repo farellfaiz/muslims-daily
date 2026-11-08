@@ -1,14 +1,20 @@
 /**
  * Kumpulan doa: tipe dan fungsi bantu yang dipakai halaman.
  *
- * Teks doa sendiri ada di doa.json, diunduh dari NU Online (https://quran.nu.or.id/doa) dengan
- * `node scripts/doa-data.mjs`. Teks Arab, transliterasi, terjemahan, dan keterangan sumber disalin
- * apa adanya; jangan disunting manual di sini. File JSON itu hanya dibaca di sisi server/prerender
- * (lihat #lib/server/doa.ts) agar tidak ikut JavaScript halaman.
+ * Teks doa ada di dua file data, keduanya hanya dibaca di sisi server/prerender
+ * (lihat #lib/server/doa.ts) agar tidak ikut JavaScript halaman:
+ * - doa.json: dari NU Online (https://quran.nu.or.id/doa), diunduh dengan `node scripts/doa-data.mjs`.
+ *   Teks Arab, transliterasi, terjemahan, dan keterangan sumber disalin apa adanya.
+ * - doa-kemenag.json: dari buku "Kumpulan Doa Sehari-hari" Kemenag RI (2013), disusun dengan
+ *   `node scripts/doa-kemenag.mjs`. Doa yang sudah ada di NU Online tidak dimasukkan.
+ * Jangan sunting file JSON itu secara manual; perbaiki di sumbernya lalu jalankan ulang skripnya.
  */
 
-export const SOURCE_NAME = 'NU Online';
-export const SOURCE_URL = 'https://quran.nu.or.id/doa';
+export const SOURCES = {
+	nu: { name: 'NU Online', url: 'https://quran.nu.or.id/doa' },
+	kemenag: { name: 'Kemenag RI', url: null, book: 'Kumpulan Doa Sehari-hari, Kementerian Agama RI (cetakan III, 2013)' }
+} as const;
+export type SourceKey = keyof typeof SOURCES;
 
 /** Satu bacaan doa, atau subjudul pemisah pada doa yang panjang. */
 export type Part = { arabic: string; latin: string; translation: string } | { heading: string };
@@ -47,12 +53,17 @@ export interface Doa {
 	category: string;
 	title: string;
 	parts: Part[];
-	/** keterangan sumber dari NU Online */
+	/** keterangan sumber */
 	note: string;
-	/** penyalin, penerjemah, editor */
+	/** penyalin, penerjemah, editor (NU Online) */
 	team: string[];
-	/** halaman doa ini di NU Online */
-	url: string;
+	source: SourceKey;
+	/** halaman doa ini di NU Online; null untuk doa dari buku */
+	url: string | null;
+	/** halaman buku (doa Kemenag) */
+	page?: number;
+	/** transliterasi/terjemahan disusun Muslims Daily (doa dari buku) */
+	ownText: boolean;
 	words: number;
 }
 
