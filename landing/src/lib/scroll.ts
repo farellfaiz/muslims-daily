@@ -18,6 +18,9 @@ function queue() {
 	}
 }
 
+/** Minta satu frame lagi, untuk animasi yang masih berjalan setelah gulirnya berhenti. */
+export const requestFrame = queue;
+
 export function onFrame(f: Frame) {
 	if (!frames.size) {
 		addEventListener('scroll', queue, { passive: true });

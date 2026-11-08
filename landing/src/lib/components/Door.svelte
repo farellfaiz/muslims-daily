@@ -10,15 +10,20 @@
 </script>
 
 <script lang="ts">
+	import { arcLabel, prayerName, tr } from '#lib/i18n.svelte.ts';
 	import { live } from '#lib/live.svelte.ts';
 	import { countdown, DOOR_STARS, formatTime, PHASES, SKY, skyGradient } from '#lib/sky.ts';
 
 	/*
 		Pintu lengkung bawang dari ikon aplikasinya, dengan langit yang hidup:
 		warna, matahari atau bulan, dan hitung mundur mengikuti jam sungguhan di kota pengunjung.
-		Saat digulir, Journey memperbesar pintu ini (--inner memudarkan isi, --dawn menggeser langit ke Subuh).
+		Saat digulir, Journey memperbesar pintu ini, memudarkan `inner`, dan memunculkan `dawn` (langit Subuh).
 	*/
-	let { el = $bindable() }: { el?: HTMLElement } = $props();
+	let {
+		el = $bindable(),
+		inner = $bindable(),
+		dawn = $bindable()
+	}: { el?: HTMLElement; inner?: HTMLElement; dawn?: HTMLElement } = $props();
 
 	const phase = $derived(live.phase ?? 'dhuha');
 	const arc = $derived(live.arc);
@@ -46,7 +51,7 @@
 				<i style:background-image={bg} style:animation-delay="{i}s"></i>
 			{/each}
 		</div>
-		<div class="inner">
+		<div class="inner" bind:this={inner}>
 			<svg class="path" viewBox="0 0 360 200" aria-hidden="true">
 				<path d="M{X0} {Y0} Q{CX} {CY} {X1} {Y0}" fill="none" stroke="currentColor" stroke-opacity=".38" stroke-width="1.2" stroke-dasharray="3 5" />
 				{#if highlight}
@@ -63,7 +68,7 @@
 						y={p.place === 'below' ? p.pt[1] + 18 : p.place === 'right' ? p.pt[1] + 3.5 : p.pt[1] - 10}
 						text-anchor={p.place === 'right' ? 'start' : 'middle'}
 						class:mk={p.kind === 'marker'}
-						class:hid={Math.abs(p.pt[0] - body[0]) < 30 && Math.abs(p.pt[1] - body[1]) < 40}>{p.label}</text
+						class:hid={Math.abs(p.pt[0] - body[0]) < 30 && Math.abs(p.pt[1] - body[1]) < 40}>{arcLabel(p.label)}</text
 					>
 				{/each}
 			</svg>
@@ -78,14 +83,18 @@
 				<path d="M0 150V128C55 62 150 26 240 24C292 23 330 33 360 46V150Z" />
 			</svg>
 			<div class="txt" aria-live="off">
-				<div class="now">{live.next ? `Menuju ${live.next.name}` : 'Jadwal salat hari ini'}</div>
+				<div class="now">
+					{live.next
+						? tr(`Menuju ${prayerName(live.next.key)}`, `Until ${prayerName(live.next.key)}`)
+						: tr('Jadwal salat hari ini', "Today's prayer times")}
+				</div>
 				<div class="cd disp num">{live.next && live.now ? countdown(+live.next.at - +live.now) : '--:--:--'}</div>
 				<div class="sub">
-					{#if live.next}Pukul {formatTime(live.next.at, tz)} {live.place.zone} · {live.place.name}{:else}&nbsp;{/if}
+					{#if live.next}{tr('Pukul', 'At')} {tr(formatTime(live.next.at, tz), formatTime(live.next.at, tz).replace('.', ':'))} {live.place.zone} · {live.place.name}{:else}&nbsp;{/if}
 				</div>
 			</div>
 		</div>
-		<div class="sky dawn" style:background={skyGradient('subuh')}></div>
+		<div class="sky dawn" bind:this={dawn} style:background={skyGradient('subuh')}></div>
 	</div>
 </div>
 
@@ -95,10 +104,16 @@
 		position: relative;
 		height: 100%;
 		aspect-ratio: 0.88;
+		transform-origin: 50% 80%;
+	}
+	/* Bingkai di-mask sendiri, supaya jendela yang isinya beranimasi tidak kena dua mask bertumpuk. */
+	.door::before {
+		content: '';
+		position: absolute;
+		inset: 0;
 		background: var(--arch);
 		-webkit-mask: var(--ogee) 0 0/100% 100% no-repeat;
 		mask: var(--ogee) 0 0/100% 100% no-repeat;
-		transform-origin: 50% 80%;
 	}
 	.win {
 		--arc-top: 16cqh;
@@ -120,8 +135,9 @@
 		opacity: 1;
 	}
 	.sky.dawn {
-		opacity: var(--dawn, 0);
+		opacity: 0;
 		transition: none;
+		will-change: opacity;
 	}
 	.stars {
 		position: absolute;
@@ -157,7 +173,7 @@
 	.inner {
 		position: absolute;
 		inset: 0;
-		opacity: var(--inner, 1);
+		will-change: opacity;
 	}
 	.path {
 		position: absolute;

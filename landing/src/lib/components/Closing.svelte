@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { APP_URL } from '#lib/config.ts';
+	import { prayerName, tr } from '#lib/i18n.svelte.ts';
 	import { live } from '#lib/live.svelte.ts';
 	import { reveal } from '#lib/scroll.ts';
 	import { countdown } from '#lib/sky.ts';
@@ -9,21 +10,21 @@
 <section class="sec closing pattern on-sky" aria-labelledby="close-h">
 	<div class="wrap inner rv" use:reveal>
 		<img src="/icons/icon-192.png" alt="" width="84" height="84" />
-		<h2 class="h2" id="close-h">Mulai dari salat berikutnya</h2>
-		<p class="sub">Buat kamu yang sedang belajar istiqamah.</p>
+		<h2 class="h2" id="close-h">{tr('Mulai dari salat berikutnya', 'Start with your next prayer')}</h2>
+		<p class="sub">{tr('Buat kamu yang sedang belajar istiqamah.', 'For anyone learning to stay consistent.')}</p>
 		<p class="live" aria-live="off">
 			{#if live.next && live.now}
 				<span class="pulse" aria-hidden="true"></span>
-				Menuju {live.next.name}
+				{tr('Menuju', 'Until')} {prayerName(live.next.key)}
 				<b class="num">{countdown(+live.next.at - +live.now)}</b>
 				<span class="where">{live.place.name}</span>
 			{:else}
-				Jadwal salat dan doa harian dalam satu app
+				{tr('Jadwal salat dan doa harian dalam satu app', 'Prayer times and daily duas in one app')}
 			{/if}
 		</p>
 		<div class="cta">
-			<a class="btn primary" href={APP_URL}>Buka aplikasi <Icon name="arrow" size={18} /></a>
-			<a class="btn ghost" href="#install">Cara install</a>
+			<a class="btn primary" href={APP_URL}>{tr('Buka aplikasi', 'Open app')} <Icon name="arrow" size={18} /></a>
+			<a class="btn ghost" href="#install">{tr('Cara install', 'How to install')}</a>
 		</div>
 	</div>
 </section>

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { APP_URL, REPO_URL } from '#lib/config.ts';
-	import { clamp, lerp, motionOn, onFrame, range, smooth, styler } from '#lib/scroll.ts';
+	import { isEn, tr } from '#lib/i18n.svelte.ts';
+	import { clamp, lerp, motionOn, onFrame, range, requestFrame, smooth, styler } from '#lib/scroll.ts';
 	import data from '#lib/screens.json';
 	import { FIELD_STARS, PHASES, SKY, skyGradient, type Phase } from '#lib/sky.ts';
 	import Door from './Door.svelte';
@@ -19,14 +20,21 @@
 
 	const shot = (id: string) => data.screens.find((s) => s.id === id) as Shot;
 
-	const CHAPTERS: { shot: Shot; phase: Phase; name: string; dot: string; title: string; text: string }[] = [
+	type Copy = { name: string; dot: string; title: string; text: string };
+	const CHAPTERS: ({ shot: Shot; phase: Phase; en: Copy } & Copy)[] = [
 		{
 			shot: shot('beranda-subuh'),
 			phase: 'subuh',
 			name: 'Subuh',
 			dot: 'Subuh',
 			title: 'Jadwal salat',
-			text: 'Hitung mundur ke salat berikutnya langsung di beranda. Warna langit dan posisi matahari ikut jam.'
+			text: 'Hitung mundur ke salat berikutnya langsung di beranda. Warna langit dan posisi matahari ikut jam.',
+			en: {
+				name: 'Fajr',
+				dot: 'Fajr',
+				title: 'Prayer times',
+				text: 'A countdown to the next prayer right on the home screen. The sky color and the sun follow the clock.'
+			}
 		},
 		{
 			shot: shot('dzikir-pagi'),
@@ -34,7 +42,13 @@
 			name: 'Pagi',
 			dot: 'Pagi',
 			title: 'Dzikir pagi & petang',
-			text: 'Counter di tiap bacaan, hitungannya tersimpan. Ada dua versi bacaan, semuanya dengan sumber.'
+			text: 'Counter di tiap bacaan, hitungannya tersimpan. Ada dua versi bacaan, semuanya dengan sumber.',
+			en: {
+				name: 'Morning',
+				dot: 'Morning',
+				title: 'Morning & evening dhikr',
+				text: 'A counter on every recitation that saves your count. Two versions of the readings, all with sources.'
+			}
 		},
 		{
 			shot: shot('tracker'),
@@ -42,7 +56,13 @@
 			name: 'Dzuhur',
 			dot: 'Dzuhur',
 			title: 'Tracker salat',
-			text: 'Centang dari beranda, streak dan riwayat 6 bulan langsung ter-update. Ada mode udzur untuk haid.'
+			text: 'Centang dari beranda, streak dan riwayat 6 bulan langsung ter-update. Ada mode udzur untuk haid.',
+			en: {
+				name: 'Dhuhr',
+				dot: 'Dhuhr',
+				title: 'Prayer tracker',
+				text: "Check off prayers from the home screen, and your streak and 6-month history update right away. There's an excused mode for periods."
+			}
 		},
 		{
 			shot: shot('doa'),
@@ -50,7 +70,13 @@
 			name: 'Ashar',
 			dot: 'Ashar',
 			title: 'Kumpulan doa',
-			text: 'Teks Arab, latin, dan terjemahan, lengkap dengan sumbernya. Search toleran ejaan: dhuha atau duha tetap ketemu.'
+			text: 'Teks Arab, latin, dan terjemahan, lengkap dengan sumbernya. Search toleran ejaan: dhuha atau duha tetap ketemu.',
+			en: {
+				name: 'Asr',
+				dot: 'Asr',
+				title: 'Dua collection',
+				text: 'Arabic, transliteration, and Indonesian translation, all with sources. Search forgives spelling: dhuha or duha both work.'
+			}
 		},
 		{
 			shot: shot('quran'),
@@ -58,7 +84,13 @@
 			name: 'Maghrib',
 			dot: 'Maghrib',
 			title: "Al-Qur'an",
-			text: '114 surat dengan latin, terjemahan Kemenag, dan arti per kata. Lanjut dari ayat terakhir yang dibaca.'
+			text: '114 surat dengan latin, terjemahan Kemenag, dan arti per kata. Lanjut dari ayat terakhir yang dibaca.',
+			en: {
+				name: 'Maghrib',
+				dot: 'Maghrib',
+				title: "Al-Qur'an",
+				text: 'All 114 surahs with transliteration, the Indonesian Kemenag translation, and word-by-word meanings. Pick up from the last verse you read.'
+			}
 		},
 		{
 			shot: shot('beranda-malam'),
@@ -66,7 +98,13 @@
 			name: 'Malam',
 			dot: 'Isya',
 			title: 'Sepertiga malam terakhir',
-			text: 'Lewat Isya, beranda menandai sepertiga malam terakhir dan jam imsak. Ada dark mode juga.'
+			text: 'Lewat Isya, beranda menandai sepertiga malam terakhir dan jam imsak. Ada dark mode juga.',
+			en: {
+				name: 'Night',
+				dot: 'Isha',
+				title: 'Last third of the night',
+				text: 'After Isha, the home screen marks the last third of the night and imsak time. Dark mode too.'
+			}
 		}
 	];
 	const N = CHAPTERS.length;
@@ -88,6 +126,8 @@
 	let cue = $state<HTMLElement>();
 	let doorWrap = $state<HTMLElement>();
 	let doorEl = $state<HTMLElement>();
+	let doorInner = $state<HTMLElement>();
+	let doorDawn = $state<HTMLElement>();
 	let skybox = $state<HTMLElement>();
 	let starsEl = $state<HTMLElement>();
 	let arcEl = $state<HTMLElement>();
@@ -122,7 +162,7 @@
 		const a = arc;
 		return [u * u * a.x0 + 2 * u * t * a.cx + t * t * a.x1, u * u * a.y0 + 2 * u * t * a.cy + t * t * a.y1];
 	}
-	const dots = $derived(CHAPTERS.map((c, i) => ({ label: c.dot, pt: at(DOT_AT[i]) })));
+	const dots = $derived(CHAPTERS.map((c, i) => ({ label: tr(c.dot, c.en.dot), pt: at(DOT_AT[i]) })));
 
 	let geo: { S: number; tx: number; ty: number } | null = null;
 
@@ -150,16 +190,37 @@
 
 	const set = styler();
 
+	/*
+		Di layar sentuh, event scroll datangnya tidak rata, apalagi saat browser sibuk. Adegannya menempel
+		di layar dan semua gerakannya dari JavaScript, jadi posisinya bisa dihaluskan tanpa terasa
+		terlepas dari jari: `shown` mengejar posisi gulir sebenarnya dengan peluruhan eksponensial.
+	*/
+	const GLIDE_MS = 110;
+	let glide = false;
+	let shown = -1;
+	let lastFrame = 0;
+
 	function frame() {
 		if (!section || !stage) return;
 		const r = section.getBoundingClientRect();
 		const h = stage.clientHeight;
+		const target = clamp(-r.top / h, 0, LEN);
 		// Adegan sudah lewat: hentikan animasi bintang, sisanya tidak perlu ditulis ulang.
 		if (r.bottom < 0) {
+			shown = target;
 			starsEl!.classList.remove('run');
 			return;
 		}
-		const s = clamp(-r.top / h, 0, LEN);
+		const now = performance.now();
+		if (!glide || shown < 0) {
+			shown = target;
+		} else {
+			shown += (target - shown) * (1 - Math.exp(-Math.min(now - lastFrame, 50) / GLIDE_MS));
+			if (Math.abs(target - shown) < 0.0004) shown = target;
+			else requestFrame();
+		}
+		lastFrame = now;
+		const s = shown;
 		const past = s > ZOOM_B + 0.1;
 
 		// 1. Hero: teks naik dan memudar, pintu membesar.
@@ -177,8 +238,8 @@
 			const m = z * z;
 			set(doorWrap!, 'transform', `translate3d(${(geo.tx * m).toFixed(1)}px, ${(geo.ty * m).toFixed(1)}px, 0) scale(${k.toFixed(4)})`);
 		}
-		set(doorEl!, '--inner', (1 - range(s, 0.1, 0.48)).toFixed(3));
-		set(doorEl!, '--dawn', smooth(range(s, 0.28, 0.85)).toFixed(3));
+		set(doorInner!, 'opacity', (1 - range(s, 0.1, 0.48)).toFixed(3));
+		set(doorDawn!, 'opacity', smooth(range(s, 0.28, 0.85)).toFixed(3));
 		set(doorWrap!, 'visibility', past ? 'hidden' : 'visible');
 		set(doorWrap!, 'will-change', past ? 'auto' : 'transform');
 		doorEl!.classList.toggle('idle', past);
@@ -196,8 +257,8 @@
 			const top = k === lo + 1 && f > 0;
 			set(el, 'opacity', k === lo ? '1' : top ? f.toFixed(3) : '0');
 			set(el, 'visibility', k === lo || top ? 'visible' : 'hidden');
-			// Hanya lapisan yang sedang berganti yang perlu layer GPU sendiri.
-			set(el, 'will-change', top ? 'opacity' : 'auto');
+			// Lapisan berikutnya disiapkan sejak bab ini diam, bukan di tengah pergantian.
+			set(el, 'will-change', k === lo + 1 ? 'opacity' : 'auto');
 		});
 		const hi = Math.min(lo + 1, N - 1);
 		const stars = lerp(SKY[PHASES[lo]].stars, SKY[PHASES[hi]].stars, f);
@@ -212,7 +273,7 @@
 
 		// 4. Masuknya busur, bukit, HP, dan teks bab.
 		const ent = smooth(range(s, 0.95, START));
-		set(arcEl!, 'clip-path', `inset(-20% ${((1 - ent) * 100).toFixed(2)}% -20% 0)`);
+		set(arcEl!, 'clip-path', ent >= 1 ? 'none' : `inset(-20% ${((1 - ent) * 100).toFixed(2)}% -20% 0)`);
 		set(hillEl!, 'transform', `translate3d(0, ${((1 - ent) * 100).toFixed(2)}%, 0)`);
 		set(phoneLayer!, 'transform', `translate3d(0, ${((1 - ent) * 0.5 * h).toFixed(1)}px, 0)`);
 		set(phoneLayer!, 'opacity', range(s, 0.95, 1.2).toFixed(3));
@@ -237,6 +298,7 @@
 	onMount(() => {
 		motion = motionOn();
 		if (!motion) return;
+		glide = matchMedia('(pointer: coarse)').matches;
 		measure();
 		const ro = new ResizeObserver(() => {
 			measure();
@@ -253,29 +315,41 @@
 	});
 </script>
 
-<section class="journey" bind:this={section} style:--len={LEN + 1} style:--start={START} aria-label="Muslims Daily">
+<section class="journey" bind:this={section} style:--len={LEN + 1} style:--start={START} style:--ch={CH} aria-label="Muslims Daily">
 	<span id="fitur" class="anchor" aria-hidden="true"></span>
+	{#if motion}
+		<!-- Titik berhenti tombol "Lanjut": posisi gulir saat tiap bab tampil penuh. -->
+		{#each CHAPTERS as c, i (c.name)}
+			<span class="stop" data-stop style:--i={i} aria-hidden="true"></span>
+		{/each}
+	{/if}
 	<div class="stage pattern on-sky" bind:this={stage} class:ink-light={lightInk}>
 		<header class="hero">
 			<div class="copy" bind:this={heroCopy}>
-				<p class="eyebrow"><span class="sun-dot"></span>Pendamping ibadah harian</p>
-				<h1 class="disp">Teman ibadah dari Subuh sampai Isya</h1>
+				<p class="eyebrow"><span class="sun-dot"></span>{tr('Pendamping ibadah harian', 'Daily worship companion')}</p>
+				<h1 class="disp">{tr('Teman ibadah dari Subuh sampai Isya', 'Your companion from Fajr to Isha')}</h1>
 				<p class="lead">
-					Jadwal salat, catatan salat, doa, dzikir, <span class="nw">Al-Qur'an,</span> dan kiblat dalam satu aplikasi. Ringan, tanpa akun, dan tetap
-					jalan tanpa internet.
+					{#if isEn()}
+						Prayer times, a prayer log, duas, dhikr, the <span class="nw">Qur'an,</span> and qibla in one app. Light, no account, and it keeps working offline.
+					{:else}
+						Jadwal salat, catatan salat, doa, dzikir, <span class="nw">Al-Qur'an,</span> dan kiblat dalam satu aplikasi. Ringan, tanpa akun, dan tetap
+						jalan tanpa internet.
+					{/if}
 				</p>
 				<div class="cta">
-					<a class="btn primary" href={APP_URL}>Buka aplikasi <Icon name="arrow" size={18} /></a>
-					<a class="btn ghost" href={REPO_URL}><Icon name="github" size={18} /> Lihat kodenya</a>
+					<a class="btn primary" href={APP_URL}>{tr('Buka aplikasi', 'Open app')} <Icon name="arrow" size={18} /></a>
+					<a class="btn ghost" href={REPO_URL}><Icon name="github" size={18} /> {tr('Lihat kodenya', 'See the code')}</a>
 				</div>
-				<p class="note">Gratis dan open source. Bisa <span class="nw">di-install</span> ke home screen HP.</p>
+				<p class="note">
+					{#if isEn()}Free and open source. Install it to your phone's home screen.{:else}Gratis dan open source. Bisa <span class="nw">di-install</span> ke home screen HP.{/if}
+				</p>
 			</div>
 			<div class="door-slot">
 				<div class="door-wrap" bind:this={doorWrap}>
-					<Door bind:el={doorEl} />
+					<Door bind:el={doorEl} bind:inner={doorInner} bind:dawn={doorDawn} />
 				</div>
 			</div>
-			<div class="cue" bind:this={cue} aria-hidden="true"><span></span>Gulir untuk masuk</div>
+			<div class="cue" bind:this={cue} aria-hidden="true"><span></span>{tr('Gulir untuk masuk', 'Scroll to enter')}</div>
 		</header>
 
 		<!-- Lapisan adegan (hanya mode animasi) -->
@@ -294,7 +368,7 @@
 				<path d="M{arc.x0} {arc.y0} Q{arc.cx} {arc.cy} {arc.x1} {arc.y1}" />
 			</svg>
 			{#each dots as d, i (d.label)}
-				<span class="dot" class:on={i === active} style:transform="translate3d({d.pt[0]}px, {d.pt[1]}px, 0)">
+				<span class="dot" class:on={i === active} style:transform="translate({d.pt[0]}px, {d.pt[1]}px)">
 					<i></i><b>{d.label}</b>
 				</span>
 			{/each}
@@ -315,15 +389,15 @@
 		</div>
 
 		<div class="chapters-wrap" bind:this={chaptersEl}>
-			<h2 class="story-h sr-only">Sehari pakai Muslims Daily</h2>
+			<h2 class="story-h sr-only">{tr('Sehari pakai Muslims Daily', 'A day with Muslims Daily')}</h2>
 			<ol class="chapters">
 				{#each CHAPTERS as c, i (c.name)}
-					<li class="chapter" class:on={i === active} class:light={SKY[c.phase].light} style:--bg={skyGradient(c.phase)}>
+					<li class="chapter" class:on={i === active} class:light={SKY[c.phase].light} style:--bg={skyGradient(c.phase)} data-stop={motion ? undefined : ''}>
 						<div class="ch-copy">
-							<p class="when"><span>{c.name}</span><span class="num">{clockOf(c.shot.at)}</span></p>
-							<h3 class="disp">{c.title}</h3>
-							<p class="txt">{c.text}</p>
-							<ol class="steps" aria-label="{i + 1} dari {N}">
+							<p class="when"><span>{tr(c.name, c.en.name)}</span><span class="num">{clockOf(c.shot.at)}</span></p>
+							<h3 class="disp">{tr(c.title, c.en.title)}</h3>
+							<p class="txt">{tr(c.text, c.en.text)}</p>
+							<ol class="steps" aria-label={tr(`${i + 1} dari ${N}`, `${i + 1} of ${N}`)}>
 								{#each CHAPTERS as _, k (k)}
 									<li class:done={k < i} class:now={k === i}></li>
 								{/each}
@@ -357,6 +431,11 @@
 	:global(.motion) .anchor {
 		top: calc(var(--start) * 100vh);
 		scroll-margin-top: calc(-1 * var(--nav-h));
+	}
+	.stop {
+		position: absolute;
+		left: 0;
+		top: calc((var(--start) + var(--i) * var(--ch)) * 100vh);
 	}
 	.stage {
 		position: relative;
@@ -575,6 +654,7 @@
 		inset: 0;
 		z-index: 2;
 		opacity: 0;
+		will-change: opacity;
 	}
 	.layer {
 		position: absolute;
@@ -585,15 +665,19 @@
 		position: absolute;
 		inset: 0;
 		opacity: 0;
+		will-change: opacity;
 	}
 	.field i {
 		position: absolute;
 		inset: 0;
 		background-size: 100% 100%;
 	}
-	.field:global(.run) i {
-		will-change: opacity;
-		animation: tw 3.2s ease-in-out infinite;
+	/* Tiga lapisan selebar layar: di HP bintangnya diam saja. */
+	@media (min-width: 900px) {
+		.field:global(.run) i {
+			will-change: opacity;
+			animation: tw 3.2s ease-in-out infinite;
+		}
 	}
 	@keyframes tw {
 		50% {
@@ -911,16 +995,22 @@
 			width: min(33vh, 74vw, 300px);
 			transform: translateX(-50%);
 		}
+		/* Blur latar di atas langit yang terus bergerak terlalu berat untuk HP: kartunya dibuat lebih pekat saja. */
 		:global(.motion) .ch-copy {
 			left: var(--gutter);
 			right: var(--gutter);
-			--glass: 10px;
 			top: calc(var(--nav-h) + 10px);
 			width: auto;
 			padding: 20px 20px 22px;
+			background: rgba(250, 246, 241, 0.9);
 			transform: translate3d(0, 24px, 0);
 		}
+		:global(.motion) .chapter.light .ch-copy {
+			background: rgba(15, 26, 38, 0.72);
+		}
 		:global(.motion) .chapter.on .ch-copy {
+			-webkit-backdrop-filter: none;
+			backdrop-filter: none;
 			transform: none;
 		}
 		:global(.motion) .ch-copy h3 {

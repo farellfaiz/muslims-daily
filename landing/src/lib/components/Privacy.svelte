@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 	import { motionOn, onFrame, range, reveal, styler } from '#lib/scroll.ts';
 	import Icon, { type IconName } from './Icon.svelte';
 
@@ -7,26 +8,40 @@
 		Malam setelah adegan Journey. Kalimat besar menyala kata demi kata mengikuti gulir,
 		lalu bukit krem dan matahari kecil menutup bagian ini seperti fajar hari berikutnya.
 	*/
-	const WORDS = 'Tanpa akun. Tanpa iklan. Tanpa pelacakan. Catatan ibadahmu hanya tersimpan di HP-mu sendiri.'.split(' ');
+	const WORDS = $derived(
+		tr(
+			'Tanpa akun. Tanpa iklan. Tanpa pelacakan. Catatan ibadahmu hanya tersimpan di HP-mu sendiri.',
+			'No account. No ads. No tracking. Your worship log stays on your own phone.'
+		).split(' ')
+	);
 	const HOT = new Set([1, 3, 5]);
 
-	const FACTS: { icon: IconName; title: string; text: string }[] = [
+	const FACTS: { icon: IconName; title: string; text: string }[] = $derived([
 		{
 			icon: 'pin',
-			title: 'Lokasi tidak dikirim',
-			text: 'Jadwal dihitung di HP. Lokasi GPS dibulatkan dan tidak dikirim ke mana pun, atau pilih saja dari 24 kota.'
+			title: tr('Lokasi tidak dikirim', 'Your location stays put'),
+			text: tr(
+				'Jadwal dihitung di HP. Lokasi GPS dibulatkan dan tidak dikirim ke mana pun, atau pilih saja dari 24 kota.',
+				'Prayer times are calculated on your phone. GPS location is rounded and never sent anywhere, or just pick from 24 cities.'
+			)
 		},
 		{
 			icon: 'file',
-			title: 'Backup satu file',
-			text: 'Simpan semua catatan ke file JSON, lalu restore di HP lain tanpa ada centang yang hilang.'
+			title: tr('Backup satu file', 'One-file backup'),
+			text: tr(
+				'Simpan semua catatan ke file JSON, lalu restore di HP lain tanpa ada centang yang hilang.',
+				'Save all your records to a JSON file, then restore on another phone without losing a single check.'
+			)
 		},
 		{
 			icon: 'code',
-			title: 'Bisa diperiksa',
-			text: 'Kodenya terbuka di GitHub. Siapa pun bisa melihat apa saja yang dilakukan aplikasinya.'
+			title: tr('Bisa diperiksa', 'Open to inspect'),
+			text: tr(
+				'Kodenya terbuka di GitHub. Siapa pun bisa melihat apa saja yang dilakukan aplikasinya.',
+				'The code is open on GitHub. Anyone can see exactly what the app does.'
+			)
 		}
-	];
+	]);
 
 	let track = $state<HTMLElement>();
 	let para = $state<HTMLElement>();
@@ -47,9 +62,10 @@
 
 <section id="privasi" class="privacy">
 	<div class="track" bind:this={track}>
+		<span class="stop" data-stop aria-hidden="true"></span>
 		<div class="pin">
 			<div class="wrap">
-				<p class="label">Privasi</p>
+				<p class="label">{tr('Privasi', 'Privacy')}</p>
 				<h2 class="big disp" bind:this={para} style:--n={WORDS.length}>
 					{#each WORDS as w, i (i)}<span class:hot={HOT.has(i)} style:--i={i}>{w}</span>{' '}{/each}
 				</h2>
@@ -57,8 +73,8 @@
 		</div>
 	</div>
 	<div class="wrap">
-		<ul class="facts">
-			{#each FACTS as f, i (f.title)}
+		<ul class="facts" data-stop>
+			{#each FACTS as f, i (f.icon)}
 				<li class="rv" use:reveal style:--d="{i * 90}ms">
 					<span class="ico"><Icon name={f.icon} size={22} /></span>
 					<h3>{f.title}</h3>
@@ -88,9 +104,21 @@
 	.pin {
 		padding: clamp(96px, 12vw, 160px) 0 clamp(40px, 6vw, 80px);
 	}
+	.track {
+		position: relative;
+	}
+	.stop {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
 	/* Ruang gulir supaya kalimat sempat menyala sambil tertahan di layar. */
 	:global(.motion) .track {
 		height: 170vh;
+	}
+	/* Tombol "Lanjut" berhenti saat kalimatnya sudah menyala semua (lihat rentang --p di atas). */
+	:global(.motion) .stop {
+		top: 58vh;
 	}
 	:global(.motion) .pin {
 		position: sticky;
@@ -122,6 +150,7 @@
 		opacity: clamp(0.16, calc(var(--p) * (var(--n) + 3) - var(--i)), 1);
 	}
 	.facts {
+		scroll-margin-top: calc(var(--nav-h) + 20px);
 		list-style: none;
 		margin: 0;
 		padding: 0;

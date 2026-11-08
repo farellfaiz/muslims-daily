@@ -5,13 +5,19 @@
 	import Journey from '#lib/components/Journey.svelte';
 	import More from '#lib/components/More.svelte';
 	import Nav from '#lib/components/Nav.svelte';
+	import NextStop from '#lib/components/NextStop.svelte';
 	import OpenSource from '#lib/components/OpenSource.svelte';
 	import Privacy from '#lib/components/Privacy.svelte';
 	import { SITE_URL } from '#lib/config.ts';
+	import { tr } from '#lib/i18n.svelte.ts';
 
-	const title = 'Muslims Daily: teman ibadah dari Subuh sampai Isya';
-	const description =
-		"Jadwal salat, catatan salat, doa, dzikir, Al-Qur'an, dan kiblat dalam satu aplikasi. Ringan, tanpa akun, tanpa iklan, dan tetap jalan tanpa internet.";
+	const title = $derived(tr('Muslims Daily: teman ibadah dari Subuh sampai Isya', 'Muslims Daily: your companion from Fajr to Isha'));
+	const description = $derived(
+		tr(
+			"Jadwal salat, catatan salat, doa, dzikir, Al-Qur'an, dan kiblat dalam satu aplikasi. Ringan, tanpa akun, tanpa iklan, dan tetap jalan tanpa internet.",
+			"Prayer times, a prayer log, duas, dhikr, the Qur'an, and qibla in one app. Light, no account, no ads, and it keeps working offline."
+		)
+	);
 </script>
 
 <svelte:head>
@@ -40,3 +46,4 @@
 	<Closing />
 </main>
 <Footer />
+<NextStop />

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { REPO_URL } from '#lib/config.ts';
+	import { isEn, tr } from '#lib/i18n.svelte.ts';
 	import { reveal } from '#lib/scroll.ts';
 	import Icon from './Icon.svelte';
 
@@ -10,11 +11,18 @@
 	<div class="wrap grid">
 		<div class="text rv" use:reveal>
 			<span class="label">Open source</span>
-			<h2 class="h2" id="oss-h">Kodenya terbuka</h2>
-			<p class="lead">Semua kodenya ada di GitHub dengan lisensi MIT. Bisa dibaca, dijalankan sendiri, atau dipakai untuk proyekmu.</p>
-			<p class="lead">Mau bantu cek bacaan atau benerin bug? <span class="nw">Pull request-nya</span> ditunggu.</p>
+			<h2 class="h2" id="oss-h">{tr('Kodenya terbuka', 'The code is open')}</h2>
+			<p class="lead">
+				{tr(
+					'Semua kodenya ada di GitHub dengan lisensi MIT. Bisa dibaca, dijalankan sendiri, atau dipakai untuk proyekmu.',
+					'All the code is on GitHub under the MIT license. Read it, run it yourself, or use it in your own project.'
+				)}
+			</p>
+			<p class="lead">
+				{#if isEn()}Want to help check a reading or fix a bug? Pull requests are welcome.{:else}Mau bantu cek bacaan atau benerin bug? <span class="nw">Pull request-nya</span> ditunggu.{/if}
+			</p>
 			<div class="cta">
-				<a class="btn primary" href={REPO_URL}><Icon name="github" size={18} /> Lihat di GitHub</a>
+				<a class="btn primary" href={REPO_URL}><Icon name="github" size={18} /> {tr('Lihat di GitHub', 'View on GitHub')}</a>
 			</div>
 		</div>
 

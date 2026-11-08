@@ -18,6 +18,11 @@
 	const gated = $derived(load !== Infinity);
 
 	const clockOf = (at: string) => at.slice(11, 16).replace(':', '.');
+
+	// Layar yang belum tampil baru didekode saat pertama digambar, dan itu bikin gulir tersendat. Dekode duluan.
+	function predecode(e: Event) {
+		(e.currentTarget as HTMLImageElement).decode().catch(() => {});
+	}
 </script>
 
 <div class="phone">
@@ -40,6 +45,7 @@
 						height="1594"
 						loading={gated ? 'eager' : 'lazy'}
 						decoding="async"
+						onload={predecode}
 					/>
 				</figure>
 			{/each}

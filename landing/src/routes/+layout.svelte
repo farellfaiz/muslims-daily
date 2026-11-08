@@ -4,11 +4,15 @@
 	import '../app.css';
 
 	import { onMount } from 'svelte';
+	import { startLang } from '#lib/i18n.svelte.ts';
 	import { live } from '#lib/live.svelte.ts';
 
 	let { children } = $props();
 
-	onMount(() => live.start());
+	onMount(() => {
+		startLang();
+		return live.start();
+	});
 </script>
 
 {@render children()}

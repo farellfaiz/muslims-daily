@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { APP_HOST } from '#lib/config.ts';
+	import { tr } from '#lib/i18n.svelte.ts';
 	import { reveal } from '#lib/scroll.ts';
 	import Icon, { type IconName } from './Icon.svelte';
 
-	const GUIDES: { name: string; browser: string; icon: IconName; steps: { icon: IconName; text: string }[] }[] = [
+	const GUIDES: { name: string; browser: string; icon: IconName; steps: { icon: IconName; text: string }[] }[] = $derived([
 		{
 			name: 'Android',
 			browser: 'Chrome',
 			icon: 'device',
 			steps: [
-				{ icon: 'compass', text: `Buka ${APP_HOST} di Chrome.` },
-				{ icon: 'kebab', text: 'Tap menu titik tiga di pojok kanan atas.' },
-				{ icon: 'addSquare', text: 'Pilih Install app atau Add to Home screen.' }
+				{ icon: 'compass', text: tr(`Buka ${APP_HOST} di Chrome.`, `Open ${APP_HOST} in Chrome.`) },
+				{ icon: 'kebab', text: tr('Tap menu titik tiga di pojok kanan atas.', 'Tap the three-dot menu in the top right.') },
+				{ icon: 'addSquare', text: tr('Pilih Install app atau Add to Home screen.', 'Choose Install app or Add to Home screen.') }
 			]
 		},
 		{
@@ -19,22 +20,24 @@
 			browser: 'Safari',
 			icon: 'device',
 			steps: [
-				{ icon: 'compass', text: `Buka ${APP_HOST} di Safari.` },
-				{ icon: 'share', text: 'Tap tombol Share di bar bawah.' },
-				{ icon: 'addSquare', text: 'Pilih Add to Home Screen, lalu Add.' }
+				{ icon: 'compass', text: tr(`Buka ${APP_HOST} di Safari.`, `Open ${APP_HOST} in Safari.`) },
+				{ icon: 'share', text: tr('Tap tombol Share di bar bawah.', 'Tap the Share button in the bottom bar.') },
+				{ icon: 'addSquare', text: tr('Pilih Add to Home Screen, lalu Add.', 'Choose Add to Home Screen, then Add.') }
 			]
 		}
-	];
+	]);
 </script>
 
 <section id="install" class="sec install pattern on-sky" aria-labelledby="install-h">
 	<div class="wrap">
 		<div class="sec-head rv" use:reveal>
 			<span class="label">Install</span>
-			<h2 class="h2" id="install-h">Install ke home screen</h2>
+			<h2 class="h2" id="install-h">{tr('Install ke home screen', 'Install to your home screen')}</h2>
 			<p class="lead">
-				Muslims Daily itu PWA, app berbasis web yang bisa di-install tanpa Play Store atau App Store. Ukurannya kecil dan
-				update-nya jalan sendiri.
+				{tr(
+					'Muslims Daily itu PWA, app berbasis web yang bisa di-install tanpa Play Store atau App Store. Ukurannya kecil dan update-nya jalan sendiri.',
+					"Muslims Daily is a PWA, a web-based app you can install without the Play Store or App Store. It's small and updates itself."
+				)}
 			</p>
 		</div>
 
@@ -75,7 +78,8 @@
 			{/each}
 		</div>
 		<p class="desk rv" use:reveal>
-			<Icon name="laptop" size={18} /> Di laptop juga bisa: klik ikon install di address bar Chrome atau Edge.
+			<Icon name="laptop" size={18} />
+			{tr('Di laptop juga bisa: klik ikon install di address bar Chrome atau Edge.', 'Works on laptops too: click the install icon in the Chrome or Edge address bar.')}
 		</p>
 	</div>
 </section>

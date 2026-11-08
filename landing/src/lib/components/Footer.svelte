@@ -1,17 +1,36 @@
 <script lang="ts">
 	import { APP_URL, REPO_URL } from '#lib/config.ts';
+	import { tr } from '#lib/i18n.svelte.ts';
 	import Icon from './Icon.svelte';
 
 	// Kredit tampil di pop up, sama seperti halaman Lainnya di aplikasinya.
-	const CREDITS: [string, string, string, string?][] = [
-		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
-		['NU Online', 'quran.nu.or.id/doa', 'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangannya.', 'https://quran.nu.or.id/doa'],
-		['Hisnul Muslim', 'Edisi Indonesia', 'Terjemahan dzikir pagi petang (alih bahasa H. Mahrus Ali). Teks Arab dari hisnmuslim.com.'],
-		['NU Online · Wirdul Lathif', 'quran.nu.or.id/wirid', 'Versi kedua dzikir pagi petang.', 'https://quran.nu.or.id/wirid'],
-		['adhan', 'Library perhitungan', 'Menghitung jadwal salat dan arah kiblat.', 'https://github.com/batoulapps/adhan-js'],
-		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.', 'https://quran.com'],
-		['Kementerian Agama RI', 'Terjemahan & doa', "Terjemahan ayat Al-Qur'an, dan doa tambahan dari buku Kumpulan Doa Sehari-hari (2013)."]
-	];
+	const CREDITS: [string, string, string, string?][] = $derived([
+		['Pillars', 'Prayer Times & Qibla', tr('Desain aplikasi ini terinspirasi darinya.', "This app's design was inspired by it.")],
+		[
+			'NU Online',
+			'quran.nu.or.id/doa',
+			tr('Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangannya.', 'Source of the dua collection: Arabic text, transliteration, translation, and notes.'),
+			'https://quran.nu.or.id/doa'
+		],
+		[
+			'Hisnul Muslim',
+			tr('Edisi Indonesia', 'Indonesian edition'),
+			tr('Terjemahan dzikir pagi petang (alih bahasa H. Mahrus Ali). Teks Arab dari hisnmuslim.com.', 'Morning and evening dhikr translation (by H. Mahrus Ali). Arabic text from hisnmuslim.com.')
+		],
+		[
+			'NU Online · Wirdul Lathif',
+			'quran.nu.or.id/wirid',
+			tr('Versi kedua dzikir pagi petang.', 'Second version of the morning and evening dhikr.'),
+			'https://quran.nu.or.id/wirid'
+		],
+		['adhan', tr('Library perhitungan', 'Calculation library'), tr('Menghitung jadwal salat dan arah kiblat.', 'Calculates prayer times and qibla direction.'), 'https://github.com/batoulapps/adhan-js'],
+		['quran.com', tr("Teks Al-Qur'an", "Qur'an text"), tr('Teks Utsmani, transliterasi, dan arti per kata.', 'Uthmani text, transliteration, and word-by-word meanings.'), 'https://quran.com'],
+		[
+			'Kementerian Agama RI',
+			tr('Terjemahan & doa', 'Translations & duas'),
+			tr("Terjemahan ayat Al-Qur'an, dan doa tambahan dari buku Kumpulan Doa Sehari-hari (2013).", "Qur'an translation, plus extra duas from the book Kumpulan Doa Sehari-hari (2013).")
+		]
+	]);
 
 	let dlg = $state<HTMLDialogElement>();
 </script>
@@ -22,15 +41,15 @@
 			<img src="/icons/icon-192.png" alt="" width="36" height="36" />
 			<div>
 				<b class="disp">Muslims Daily</b>
-				<p>Open source, lisensi MIT.</p>
+				<p>{tr('Open source, lisensi MIT.', 'Open source, MIT license.')}</p>
 			</div>
 		</div>
-		<nav aria-label="Tautan footer">
+		<nav aria-label={tr('Tautan footer', 'Footer links')}>
 			<a href={APP_URL}>App</a>
-			<a href="#privasi">Privasi</a>
+			<a href="#privasi">{tr('Privasi', 'Privacy')}</a>
 			<a href="#install">Install</a>
 			<a href={REPO_URL}>GitHub</a>
-			<button type="button" onclick={() => dlg?.showModal()}>Kredit</button>
+			<button type="button" onclick={() => dlg?.showModal()}>{tr('Kredit', 'Credits')}</button>
 		</nav>
 	</div>
 </footer>
@@ -38,8 +57,8 @@
 <dialog bind:this={dlg} aria-labelledby="credits-h" onclick={(e) => e.target === dlg && dlg?.close()}>
 	<div class="sheet">
 		<header>
-			<h2 id="credits-h" class="disp">Kredit</h2>
-			<button type="button" class="x" aria-label="Tutup" onclick={() => dlg?.close()}>
+			<h2 id="credits-h" class="disp">{tr('Kredit', 'Credits')}</h2>
+			<button type="button" class="x" aria-label={tr('Tutup', 'Close')} onclick={() => dlg?.close()}>
 				<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
 			</button>
 		</header>
@@ -54,7 +73,7 @@
 				</li>
 			{/each}
 		</ul>
-		<a class="repo" href={REPO_URL}><Icon name="github" size={16} /> Lihat repo di GitHub</a>
+		<a class="repo" href={REPO_URL}><Icon name="github" size={16} /> {tr('Lihat repo di GitHub', 'See the repo on GitHub')}</a>
 	</div>
 </dialog>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { APP_URL, REPO_URL } from '#lib/config.ts';
+	import { isEn, toggleLang, tr } from '#lib/i18n.svelte.ts';
 	import { onFrame } from '#lib/scroll.ts';
 	import Icon from './Icon.svelte';
 
@@ -28,23 +29,31 @@
 	}
 </script>
 
-<nav class:scrolled aria-label="Navigasi utama">
+<nav class:scrolled aria-label={tr('Navigasi utama', 'Main navigation')}>
 	<div class="bar">
-		<a class="brand" href="/" aria-label="Muslims Daily, ke atas">
+		<a class="brand" href="/" aria-label={tr('Muslims Daily, ke atas', 'Muslims Daily, back to top')}>
 			<img src="/icons/icon-192.png" alt="" width="34" height="34" />
 			<span class="disp">Muslims Daily</span>
 		</a>
 		<div class="links">
-			<a href="#fitur">Fitur</a>
-			<a href="#privasi">Privasi</a>
+			<a href="#fitur">{tr('Fitur', 'Features')}</a>
+			<a href="#privasi">{tr('Privasi', 'Privacy')}</a>
 			<a href="#install">Install</a>
 			<a href={REPO_URL}>GitHub</a>
 		</div>
 		<div class="actions">
-			<button class="theme" onclick={toggleTheme} aria-label={dark ? 'Ganti ke light mode' : 'Ganti ke dark mode'}>
+			<!-- Seperti tombol tema: yang tampil adalah tujuan gantinya. -->
+			<button class="round lang" onclick={toggleLang} aria-label={tr('Switch to English', 'Ganti ke Bahasa Indonesia')}>
+				{isEn() ? 'ID' : 'EN'}
+			</button>
+			<button
+				class="round"
+				onclick={toggleTheme}
+				aria-label={dark ? tr('Ganti ke light mode', 'Switch to light mode') : tr('Ganti ke dark mode', 'Switch to dark mode')}
+			>
 				<Icon name={dark ? 'sun' : 'moon'} size={18} />
 			</button>
-			<a class="go" href={APP_URL}><span class="long">Buka aplikasi</span><span class="short">Buka app</span></a>
+			<a class="go" href={APP_URL}><span class="long">{tr('Buka aplikasi', 'Open app')}</span><span class="short">{tr('Buka app', 'Open app')}</span></a>
 		</div>
 	</div>
 </nav>
@@ -121,7 +130,7 @@
 		align-items: center;
 		gap: 8px;
 	}
-	.theme {
+	.round {
 		display: grid;
 		place-items: center;
 		width: 40px;
@@ -130,6 +139,11 @@
 		color: var(--ink);
 		background: var(--card);
 		box-shadow: var(--shadow);
+	}
+	.lang {
+		font-size: 12.5px;
+		font-weight: 800;
+		letter-spacing: 0.02em;
 	}
 	.go {
 		display: inline-flex;
@@ -155,14 +169,28 @@
 			display: inline;
 		}
 	}
-	/* Blur lebih ringan di HP. */
+	/* Tanpa blur di HP: nav menempel di atas adegan yang terus bergerak, dan blur dihitung ulang tiap frame. */
 	@media (max-width: 899px) {
 		nav.scrolled .bar {
-			-webkit-backdrop-filter: blur(10px);
-			backdrop-filter: blur(10px);
+			background: var(--paper);
+			-webkit-backdrop-filter: none;
+			backdrop-filter: none;
 		}
 	}
-	@media (max-width: 340px) {
+	/* Tiga kontrol plus nama aplikasi: di HP kecil dirapatkan, di yang paling sempit cukup ikonnya. */
+	@media (max-width: 430px) {
+		.actions {
+			gap: 6px;
+		}
+		.round {
+			width: 36px;
+			height: 36px;
+		}
+		.brand span {
+			font-size: 17px;
+		}
+	}
+	@media (max-width: 386px) {
 		.brand span {
 			display: none;
 		}
