@@ -71,7 +71,8 @@ src/
     doa/                daftar doa dan halaman baca per doa
     dzikir/             dzikir setelah salat dan pagi petang, dengan penghitung
     kiblat/             arah kiblat dan kompas
-    lainnya/            pengaturan, koreksi jadwal, tampilan, cadangan data
+    lainnya/            daftar pengaturan, tampilan, kredit
+      lokasi/ metode/ koreksi/ cadangan/   layar tiap pengaturan
 design/prototype/       prototipe desain awal (HTML statis)
 ```
 

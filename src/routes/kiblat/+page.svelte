@@ -120,7 +120,7 @@
 
 <div class="bar">
 	<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
-	<a class="loc press" href="/lainnya#lokasi"><Icon name="pin" size={15} />{s.label}</a>
+	<a class="loc press" href="/lainnya/lokasi"><Icon name="pin" size={15} />{s.label}</a>
 </div>
 
 <header class="page-head">

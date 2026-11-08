@@ -1,47 +1,41 @@
 <script lang="ts">
-	import AdjustCard from '#lib/components/AdjustCard.svelte';
-	import BackupCard from '#lib/components/BackupCard.svelte';
-	import Icon from '#lib/components/Icon.svelte';
-	import Picker from '#lib/components/Picker.svelte';
+	import Icon, { type IconName } from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
-	import { CITIES } from '#lib/cities.ts';
-	import { METHODS, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
-	import { settings, theme, toast, type ThemeMode } from '#lib/state/app.svelte.ts';
+	import { trackerSummary } from '#lib/backup.ts';
+	import { formatLong } from '#lib/date.ts';
+	import { METHODS, PRAYERS } from '#lib/prayer.ts';
+	import { backupMeta, settings, theme, tracker, type ThemeMode } from '#lib/state/app.svelte.ts';
 
 	const s = $derived(settings.value);
-	let locating = $state(false);
 
-	function pickCity(id: string) {
-		const c = CITIES.find((x) => x.id === id);
-		if (!c) return;
-		settings.value = { ...s, place: c.id, label: c.name, lat: c.lat, lng: c.lng };
-		toast.say(`Lokasi diganti ke ${c.name}`);
-	}
+	// Ringkasan pengaturan saat ini, ditampilkan sebagai subjudul tiap baris.
+	const method = $derived(METHODS.find((m) => m.key === s.method)?.name ?? '');
+	const adjusted = $derived(PRAYERS.filter((p) => s.adjust[p.key]));
+	const adjustSum = $derived(
+		adjusted.length
+			? adjusted.map((p) => `${p.name} ${s.adjust[p.key]! > 0 ? '+' : '−'}${Math.abs(s.adjust[p.key]!)}`).join(', ')
+			: 'Tanpa koreksi'
+	);
+	const lastBackup = $derived(backupMeta.value.lastAt ? new Date(backupMeta.value.lastAt) : null);
+	const neverBackedUp = $derived(!lastBackup && trackerSummary(tracker.value).days > 0);
 
-	// Lokasi GPS hanya dipakai untuk menghitung jadwal di perangkat. Tidak dikirim ke mana pun.
-	function useGps() {
-		if (!navigator.geolocation) return toast.say('Browser ini tidak mendukung lokasi');
-		locating = true;
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				locating = false;
-				const lat = Math.round(pos.coords.latitude * 1e4) / 1e4;
-				const lng = Math.round(pos.coords.longitude * 1e4) / 1e4;
-				settings.value = { ...s, place: 'gps', label: 'Lokasi saya', lat, lng };
-				toast.say('Jadwal memakai lokasi kamu');
-			},
-			() => {
-				locating = false;
-				toast.say('Izin lokasi ditolak. Pilih kota dari daftar.');
-			},
-			{ enableHighAccuracy: false, timeout: 10000, maximumAge: 3600000 }
-		);
-	}
-
-	const cityOptions = CITIES.map((c) => ({ value: c.id, label: c.name }));
-
-	const setMethod = (m: MethodKey) => (settings.value = { ...s, method: m });
-	const setMadhab = (m: MadhabKey) => (settings.value = { ...s, madhab: m });
+	const ROWS: { href: string; icon: IconName; title: string; sub: string; warn?: boolean }[] = $derived([
+		{ href: '/lainnya/lokasi', icon: 'pin', title: 'Lokasi jadwal salat', sub: s.place === 'gps' ? 'Lokasi saya (GPS)' : s.label },
+		{
+			href: '/lainnya/metode',
+			icon: 'sun',
+			title: 'Metode perhitungan',
+			sub: `${method} · Ashar ${s.madhab === 'hanafi' ? 'Hanafi' : "Syafi'i"}`
+		},
+		{ href: '/lainnya/koreksi', icon: 'sliders', title: 'Koreksi jadwal', sub: `${adjustSum} · imsak ${s.imsak} menit` },
+		{
+			href: '/lainnya/cadangan',
+			icon: 'download',
+			title: 'Cadangan data',
+			sub: lastBackup ? `Terakhir ${formatLong(lastBackup)}` : 'Belum pernah dicadangkan',
+			warn: neverBackedUp
+		}
+	]);
 
 	const THEMES: [ThemeMode, string, 'device' | 'sun' | 'moon'][] = [
 		['system', 'Device', 'device'],
@@ -68,52 +62,18 @@
 	<h1>Lainnya</h1>
 </header>
 
-<section id="lokasi" class="card group">
-	<div class="label">Lokasi jadwal salat</div>
-	<div class="loc">
-		<Icon name="pin" />
-		<div class="grow">
-			<div class="v">{s.label}</div>
-			<div class="sub num">{s.lat.toFixed(4)}, {s.lng.toFixed(4)}</div>
-		</div>
-	</div>
-	<button class="btn press" onclick={useGps} disabled={locating}>
-		<Icon name="locate" size={18} />{locating ? 'Mencari lokasi…' : 'Gunakan lokasi saya'}
-	</button>
-	<div class="field">
-		<span class="label">Atau pilih kota</span>
-		<Picker
-			label="Kota"
-			options={cityOptions}
-			value={s.place === 'gps' ? '' : s.place}
-			placeholder="Lokasi saya (GPS)"
-			searchable
-			searchPlaceholder="Cari kota"
-			onchange={pickCity}
-		/>
-	</div>
-	<p class="hint">Lokasi hanya dipakai menghitung jadwal di HP kamu. Tidak dikirim ke server mana pun.</p>
-</section>
-
-<section class="card group">
-	<div class="label">Metode perhitungan</div>
-	<div class="opts">
-		{#each METHODS as m (m.key)}
-			<button class="opt" aria-pressed={s.method === m.key} onclick={() => setMethod(m.key)}>
-				<span class="radio"></span>
-				<span class="grow"><span class="v">{m.name}</span><span class="sub">{m.note}</span></span>
-			</button>
-		{/each}
-	</div>
-	<div class="label mt">Waktu Ashar</div>
-	<div class="seg wide" role="group" aria-label="Mazhab untuk waktu Ashar">
-		<button aria-pressed={s.madhab === 'syafii'} onclick={() => setMadhab('syafii')}>Syafi'i</button>
-		<button aria-pressed={s.madhab === 'hanafi'} onclick={() => setMadhab('hanafi')}>Hanafi</button>
-	</div>
-	<p class="hint">Pilihan Syafi'i juga sesuai untuk Maliki dan Hanbali. Hanafi membuat Ashar lebih lambat.</p>
-</section>
-
-<AdjustCard />
+<nav class="card list" aria-label="Pengaturan jadwal dan data">
+	{#each ROWS as r (r.href)}
+		<a class="row press" href={r.href}>
+			<span class="ico"><Icon name={r.icon} size={19} /></span>
+			<span class="grow">
+				<span class="rt">{r.title}</span>
+				<span class="rs" class:warn={r.warn}>{r.sub}</span>
+			</span>
+			<span class="go"><Icon name="chevron" size={16} stroke={2.2} /></span>
+		</a>
+	{/each}
+</nav>
 
 <section class="card group">
 	<div class="label">Tampilan</div>
@@ -124,8 +84,6 @@
 	</div>
 	<p class="hint">Mode gelap nyaman untuk tahajud dan membaca doa di malam hari.</p>
 </section>
-
-<BackupCard />
 
 <div class="sec-h"><h2>Segera hadir</h2></div>
 <section class="card soon">
@@ -171,6 +129,64 @@
 </dialog>
 
 <style>
+	.list {
+		padding: 4px 0;
+		margin-bottom: 12px;
+	}
+	.row {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 12px 14px 12px 16px;
+		color: inherit;
+		text-decoration: none;
+		position: relative;
+	}
+	/* garis pemisah mulai setelah ikon, seperti daftar pengaturan di HP */
+	.row + .row::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 66px;
+		right: 0;
+		border-top: 1px solid var(--line);
+	}
+	.row:active {
+		background: var(--sunk);
+	}
+	.ico {
+		width: 36px;
+		height: 36px;
+		flex: none;
+		border-radius: 11px;
+		display: grid;
+		place-items: center;
+		background: var(--navy-soft);
+		color: var(--navy);
+	}
+	.rt {
+		display: block;
+		font-weight: 700;
+		font-size: 14.5px;
+		color: var(--ink);
+	}
+	.rs {
+		display: block;
+		margin-top: 2px;
+		font-size: 12.5px;
+		color: var(--ink2);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rs.warn {
+		color: var(--peach-ink);
+		font-weight: 600;
+	}
+	.go {
+		display: inline-grid;
+		color: var(--ink3);
+	}
 	.group {
 		padding: 16px;
 		margin-bottom: 12px;
@@ -178,13 +194,6 @@
 	.grow {
 		flex: 1;
 		min-width: 0;
-	}
-	.loc {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		margin: 12px 0;
-		color: var(--navy);
 	}
 	.v {
 		font-weight: 700;
@@ -198,76 +207,11 @@
 		margin-top: 2px;
 		line-height: 1.5;
 	}
-	.btn {
-		width: 100%;
-		height: 46px;
-		border-radius: 14px;
-		background: var(--navy);
-		color: var(--on-navy);
-		font-weight: 700;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-	}
-	.btn:disabled {
-		opacity: 0.6;
-	}
-	.field {
-		display: block;
-		margin-top: 14px;
-	}
-	.field .label {
-		display: block;
-		margin-bottom: 6px;
-	}
 	.hint {
 		font-size: 12px;
 		color: var(--ink3);
 		margin: 12px 0 0;
 		line-height: 1.5;
-	}
-	.opts {
-		display: grid;
-		gap: 6px;
-		margin-top: 10px;
-	}
-	.opt {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 10px 12px;
-		border-radius: 12px;
-		text-align: left;
-		border: 1px solid var(--line);
-		transition: all 0.2s var(--ease);
-	}
-	.opt[aria-pressed='true'] {
-		border-color: var(--navy);
-		background: var(--navy-soft);
-	}
-	.radio {
-		width: 18px;
-		height: 18px;
-		border-radius: 50%;
-		border: 1.6px solid var(--line-strong);
-		flex: none;
-		display: grid;
-		place-items: center;
-	}
-	.opt[aria-pressed='true'] .radio {
-		border-color: var(--navy);
-	}
-	.opt[aria-pressed='true'] .radio::after {
-		content: '';
-		width: 9px;
-		height: 9px;
-		border-radius: 50%;
-		background: var(--navy);
-	}
-	.mt {
-		margin-top: 16px;
 	}
 	.wide {
 		display: flex;

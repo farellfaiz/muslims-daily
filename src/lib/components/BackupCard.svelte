@@ -65,9 +65,7 @@
 	}
 </script>
 
-<section id="cadangan" class="card group">
-	<div class="label">Cadangan data</div>
-
+<section class="card group">
 	<div class="stats">
 		<div class="stat">
 			<span class="n num">{sum.days}</span><span class="u">hari tercatat</span>

@@ -31,7 +31,7 @@
 			<div class="disp date">{greg}</div>
 		</div>
 	</div>
-	<a class="loc press" href="/lainnya#lokasi"><Icon name="pin" size={15} />{settings.value.label}</a>
+	<a class="loc press" href="/lainnya/lokasi"><Icon name="pin" size={15} />{settings.value.label}</a>
 </header>
 
 <Hero {now} yesterday={times?.yesterday ?? null} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />

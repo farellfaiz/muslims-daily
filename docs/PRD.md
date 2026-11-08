@@ -78,8 +78,9 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 - **Status konten**: 9 doa contoh, semuanya `verified: false` dan diberi label "Draf, belum diverifikasi".
 
 ### 4.6 Lainnya (Selesai)
-- Pengaturan lokasi, metode hitung, dan mazhab.
-- **Koreksi jadwal** (bisa dibuka-tutup, tertutup bawaan): geser tiap salat per menit, maksimal 30 menit ke depan atau ke belakang, dengan jam hari ini yang langsung terlihat untuk dicocokkan dengan jadwal masjid. Ringkasan di judul kartu ("Tanpa koreksi" atau "Maghrib +2"). Koreksi dipakai di semua tempat: hero, catatan salat, hari-hari lalu.
+- Halaman utama berupa daftar pengaturan seperti aplikasi pada umumnya: ikon, judul, dan subjudul berisi nilai saat ini. Mengetuk satu baris membuka layarnya sendiri (`/lainnya/lokasi`, `/metode`, `/koreksi`, `/cadangan`) dengan tombol kembali.
+- **Lokasi** (GPS atau kota) dan **metode hitung** dengan mazhab Ashar.
+- **Koreksi jadwal**: geser tiap salat per menit, maksimal 30 menit ke depan atau ke belakang, dengan jam hari ini yang langsung terlihat untuk dicocokkan dengan jadwal masjid. Ringkasan tampil di subjudul daftar ("Tanpa koreksi" atau "Maghrib +2"). Koreksi dipakai di semua tempat: hero, catatan salat, hari-hari lalu.
 - **Imsak**: 5, 10 (bawaan), atau 15 menit sebelum Subuh.
 - **Tampilan**: Device (ikut pengaturan HP), Terang, atau Gelap. Bawaannya Terang.
 - **Cadangan data**: ringkasan (hari tercatat, jumlah salat, doa favorit) dan kapan terakhir dicadangkan; penanda peach bila sudah ada catatan tapi belum pernah dicadangkan.
