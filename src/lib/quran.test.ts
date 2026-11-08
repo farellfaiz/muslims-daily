@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { BISMILLAH, arabicNum, hasBismillah, searchSurat, type Surat, type SuratData } from './quran.ts';
+import { BISMILLAH, arabicNum, hasBismillah, juzOf, juzStarts, parseJump, searchSurat, type Juz, type Surat, type SuratData } from './quran.ts';
+import juzRaw from '../../static/data/juz.json';
 import fatihah from '../../static/data/quran/1.json';
 import raw from '../../static/data/surat.json';
 
 const list = raw as Surat[];
+const juz = juzRaw as Juz[];
 
 describe('daftar surat', () => {
 	it('114 surat, 6236 ayat', () => {
@@ -50,5 +52,55 @@ describe('bantuan', () => {
 		expect(hasBismillah(1)).toBe(false);
 		expect(hasBismillah(9)).toBe(false);
 		expect(hasBismillah(2)).toBe(true);
+	});
+});
+
+describe('juz', () => {
+	it('30 juz menutup semua ayat tanpa celah', () => {
+		expect(juz.map((z) => z.j)).toEqual(Array.from({ length: 30 }, (_, i) => i + 1));
+		const total = juz.reduce((a, z) => a + z.s.reduce((b, [, f, t]) => b + t - f + 1, 0), 0);
+		expect(total).toBe(6236);
+	});
+
+	it('awal juz di dalam surat', () => {
+		// Juz 1 dimulai di Al-Fatihah, jadi Al-Baqarah hanya memuat awal juz 2 dan 3
+		expect([...juzStarts(juz, 1)]).toEqual([[1, 1]]);
+		expect([...juzStarts(juz, 2)]).toEqual([
+			[142, 2],
+			[253, 3]
+		]);
+		expect(juzStarts(juz, 112).size).toBe(0);
+	});
+
+	it('juz sebuah ayat', () => {
+		expect(juzOf(juz, 2, 255)).toBe(3);
+		expect(juzOf(juz, 36, 1)).toBe(22);
+		expect(juzOf(juz, 114, 6)).toBe(30);
+	});
+});
+
+describe('lompat ke ayat', () => {
+	const jump = (q: string) => {
+		const r = parseJump(list, q);
+		return r && `${r.surat.n}:${r.ayat}`;
+	};
+
+	it('nomor surat dan ayat', () => {
+		expect(jump('2:255')).toBe('2:255');
+		expect(jump('2 255')).toBe('2:255');
+		expect(jump('18.10')).toBe('18:10');
+	});
+
+	it('nama surat dan ayat', () => {
+		expect(jump('baqarah 255')).toBe('2:255');
+		expect(jump('al-kahfi:10')).toBe('18:10');
+		expect(jump('yasin 1')).toBe('36:1');
+	});
+
+	it('bukan lompatan', () => {
+		expect(jump('2:300')).toBeNull(); // Al-Baqarah hanya 286 ayat
+		expect(jump('baqarah')).toBeNull();
+		expect(jump('36')).toBeNull();
+		expect(jump('xyz 5')).toBeNull();
 	});
 });

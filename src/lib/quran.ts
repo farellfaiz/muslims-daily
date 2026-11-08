@@ -83,3 +83,35 @@ export function searchSurat(list: Surat[], query: string): Surat[] {
 	}
 	return exact.concat(first, rest);
 }
+
+/** Juz: daftar bagian [surat, ayat awal, ayat akhir]. */
+export interface Juz {
+	j: number;
+	s: [surat: number, dari: number, sampai: number][];
+}
+
+export const JUZ_URL = '/data/juz.json';
+
+/** Juz yang dimulai di dalam surat ini: ayat awal -> nomor juz. */
+export function juzStarts(juz: Juz[], surat: number): Map<number, number> {
+	const out = new Map<number, number>();
+	for (const z of juz) if (z.s[0][0] === surat) out.set(z.s[0][1], z.j);
+	return out;
+}
+
+/** Juz tempat sebuah ayat berada. */
+export function juzOf(juz: Juz[], surat: number, ayat: number): number {
+	return juz.find((z) => z.s.some(([n, a, b]) => n === surat && ayat >= a && ayat <= b))?.j ?? 0;
+}
+
+/**
+ * Pencarian langsung ke ayat: "2:255", "2 255", "baqarah 255", "al-baqarah:255".
+ * Hanya mengembalikan hasil bila suratnya ketemu dan nomor ayatnya ada.
+ */
+export function parseJump(list: Surat[], query: string): { surat: Surat; ayat: number } | null {
+	const m = query.trim().match(/^(.+?)\s*[:\s.]\s*(\d{1,3})$/);
+	if (!m) return null;
+	const ayat = Number(m[2]);
+	const surat = /^\d+$/.test(m[1]) ? list[Number(m[1]) - 1] : searchSurat(list, m[1])[0];
+	return surat && ayat >= 1 && ayat <= surat.ayat ? { surat, ayat } : null;
+}

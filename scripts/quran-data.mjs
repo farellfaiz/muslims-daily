@@ -1,8 +1,10 @@
 // Unduh data Al-Qur'an dari quran.com lalu simpan sebagai file statis.
-//   node scripts/quran-data.mjs
+//   node scripts/quran-data.mjs          semua data
+//   node scripts/quran-data.mjs --juz    hanya juz.json
 //
 // Hasil:
 //   static/data/surat.json        daftar 114 surat (kecil, ikut precache)
+//   static/data/juz.json          30 juz: [surat, ayat awal, ayat akhir] per bagian (kecil, ikut precache)
 //   static/data/quran/<n>.json    isi tiap surat: teks Utsmani per kata, transliterasi,
 //                                 arti per kata, dan terjemahan Kemenag per ayat
 //                                 (diunduh saat surat dibuka, lalu disimpan untuk offline)
@@ -64,33 +66,54 @@ async function surah(n) {
 	return ayat;
 }
 
-const { chapters } = await get(`${API}/chapters?language=id`);
-if (chapters.length !== 114) throw new Error(`jumlah surat ${chapters.length}`);
+// ---- juz: API mengembalikan entri ganda, ambil satu per nomor juz ----
+const { juzs } = await get(`${API}/juzs`);
+const byNo = new Map();
+for (const z of juzs) byNo.set(z.juz_number, z.verse_mapping);
+if (byNo.size !== 30) throw new Error(`jumlah juz ${byNo.size}`);
+const juz = [...byNo]
+	.sort((a, b) => a[0] - b[0])
+	.map(([j, map]) => ({
+		j,
+		s: Object.entries(map)
+			.map(([n, range]) => [Number(n), ...range.split('-').map(Number)])
+			.sort((a, b) => a[0] - b[0])
+	}));
+mkdirSync(OUT, { recursive: true });
+writeFileSync(join(OUT, 'juz.json'), JSON.stringify(juz));
+console.log('juz.json: 30 juz');
+// --juz: cukup juz.json, tidak mengunduh ulang 114 surat
+if (!process.argv.includes('--juz')) await all();
 
-const list = chapters.map((c) => ({
-	n: c.id,
-	nama: c.name_simple,
-	arab: c.name_arabic,
-	arti: c.translated_name.name,
-	ayat: c.verses_count,
-	tempat: c.revelation_place === 'makkah' ? 'Makkiyah' : 'Madaniyah'
-}));
+async function all() {
+	const { chapters } = await get(`${API}/chapters?language=id`);
+	if (chapters.length !== 114) throw new Error(`jumlah surat ${chapters.length}`);
 
-mkdirSync(join(OUT, 'quran'), { recursive: true });
-writeFileSync(join(OUT, 'surat.json'), JSON.stringify(list));
+	const list = chapters.map((c) => ({
+		n: c.id,
+		nama: c.name_simple,
+		arab: c.name_arabic,
+		arti: c.translated_name.name,
+		ayat: c.verses_count,
+		tempat: c.revelation_place === 'makkah' ? 'Makkiyah' : 'Madaniyah'
+	}));
 
-// beberapa surat sekaligus, tidak membanjiri API
-let next = 0;
-let words = 0;
-async function worker() {
-	while (next < list.length) {
-		const s = list[next++];
-		const ayat = await surah(s.n);
-		if (ayat.length !== s.ayat) throw new Error(`${s.nama}: ${ayat.length} ayat, seharusnya ${s.ayat}`);
-		words += ayat.reduce((a, v) => a + v.w.length, 0);
-		writeFileSync(join(OUT, 'quran', `${s.n}.json`), JSON.stringify({ n: s.n, ayat }));
-		process.stdout.write(`${s.n} `);
+	mkdirSync(join(OUT, 'quran'), { recursive: true });
+	writeFileSync(join(OUT, 'surat.json'), JSON.stringify(list));
+
+	// beberapa surat sekaligus, tidak membanjiri API
+	let next = 0;
+	let words = 0;
+	async function worker() {
+		while (next < list.length) {
+			const s = list[next++];
+			const ayat = await surah(s.n);
+			if (ayat.length !== s.ayat) throw new Error(`${s.nama}: ${ayat.length} ayat, seharusnya ${s.ayat}`);
+			words += ayat.reduce((a, v) => a + v.w.length, 0);
+			writeFileSync(join(OUT, 'quran', `${s.n}.json`), JSON.stringify({ n: s.n, ayat }));
+			process.stdout.write(`${s.n} `);
+		}
 	}
+	await Promise.all(Array.from({ length: 4 }, worker));
+	console.log(`\nselesai: 114 surat, ${list.reduce((a, s) => a + s.ayat, 0)} ayat, ${words} kata`);
 }
-await Promise.all(Array.from({ length: 4 }, worker));
-console.log(`\nselesai: 114 surat, ${list.reduce((a, s) => a + s.ayat, 0)} ayat, ${words} kata`);
