@@ -111,19 +111,60 @@
 		);
 	});
 
+	// Bacaan aktif untuk tombol hitung mengambang: kartu yang sedang berada di tengah layar.
+	// Sebelum ada kartu yang lewat garis itu, pakai bacaan pertama yang belum selesai.
+	let activeId = $state<number | null>(null);
+	// Sesaat setelah geser otomatis, abaikan pelacak gulir: kartu tujuan yang pendek bisa saja
+	// tidak menyentuh pita tengah, dan kartu di bawahnya jangan sampai ikut terpilih.
+	let lockUntil = 0;
+	$effect(() => {
+		void items;
+		const io = new IntersectionObserver(
+			(entries) => {
+				if (performance.now() < lockUntil) return;
+				const hit = entries.filter((e) => e.isIntersecting).at(-1);
+				if (hit) activeId = Number((hit.target as HTMLElement).dataset.id);
+			},
+			// pita tipis di sekitar tengah layar, sedikit di atas tombol
+			{ rootMargin: '-35% 0px -50% 0px' }
+		);
+		for (const el of document.querySelectorAll('.dz[data-id]')) io.observe(el);
+		return () => io.disconnect();
+	});
+	const firstOpen = $derived(items.find((d) => (n[d.id] ?? 0) < d.count));
+	const active = $derived(items.find((d) => d.id === activeId) ?? firstOpen);
+	const activeIdx = $derived(active ? items.indexOf(active) : -1);
+	const activeC = $derived(active ? (n[active.id] ?? 0) : 0);
+	const activeOk = $derived(!!active && activeC >= active.count);
+
+	/** Ketuk tombol mengambang: hitung bacaan aktif, atau bila sudah selesai, pindah ke bacaan berikutnya. */
+	function tapActive() {
+		if (!active) return;
+		if (!activeOk) return count(active, activeIdx);
+		goNext(activeIdx);
+	}
+
+	function goNext(i: number) {
+		const next = items.slice(i + 1).find((x) => (n[x.id] ?? 0) < x.count) ?? items.find((x) => (n[x.id] ?? 0) < x.count);
+		if (next) activeId = next.id;
+		lockUntil = performance.now() + 1000;
+		const target = document.getElementById(next ? `dz-${next.id}` : 'dz-end');
+		target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
+
 	async function count(d: Item, i: number) {
 		if (!date || (n[d.id] ?? 0) >= d.count) return;
+		// tetap pada bacaan ini sampai pindah sendiri, supaya "Selesai" sempat terlihat
+		activeId = d.id;
 		dzikirProgress.value = tap(dzikirProgress.value, session, date, d.id, d.count);
 		if ((counts(dzikirProgress.value, session, date)[d.id] ?? 0) < d.count) {
 			navigator.vibrate?.(8);
 			return;
 		}
 		navigator.vibrate?.([20, 40, 20]);
-		// Bacaan selesai: geser ke bacaan berikutnya yang belum selesai.
+		// Bacaan selesai: sebentar tampilkan "Selesai", lalu geser ke bacaan berikutnya yang belum selesai.
 		await tick();
-		const next = items.slice(i + 1).find((x) => (n[x.id] ?? 0) < x.count);
-		const target = document.getElementById(next ? `dz-${next.id}` : 'dz-end');
-		setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
+		setTimeout(() => goNext(i), 450);
 	}
 
 	function restart() {
@@ -232,11 +273,17 @@
 	{#if d.group && d.group !== items[i - 1]?.group}
 		<div class="sec-h"><h2>{d.group === 'dzikir' ? 'Dzikir' : 'Doa'}</h2></div>
 	{/if}
-	<article class="card dz" class:ok id="dz-{d.id}">
+	<article class="card dz" class:ok class:on={active?.id === d.id && !allDone} id="dz-{d.id}" data-id={d.id}>
 		<div class="dh">
 			<StarNum n={i + 1} />
 			<h3 class="disp">{d.title}</h3>
-			{#if d.count > 1}<span class="times num">{d.count}×</span>{/if}
+			{#if ok}
+				<span class="times done"><Icon name="check" size={13} stroke={2.6} />Selesai</span>
+			{:else if c > 0}
+				<span class="times num">{c}/{d.count}</span>
+			{:else if d.count > 1}
+				<span class="times num">{d.count}×</span>
+			{/if}
 		</div>
 
 		{#if pk}
@@ -264,28 +311,46 @@
 			<p class="note">{d.note}</p>
 		{/if}
 
-		<button
-			class="counter"
-			class:ok
-			aria-label={ok ? `${d.title} selesai` : `Hitung ${d.title}, ${c} dari ${d.count}`}
-			onclick={() => count(d, i)}
-		>
-			{#if ok}
-				<Icon name="check" size={18} stroke={2.4} />Selesai
-			{:else if d.count === 1}
-				<span class="ct">Ketuk bila sudah dibaca</span>
-			{:else if d.count <= 10}
-				<span class="pips">
-					{#each Array(d.count) as _, k (k)}<span class="pip" class:on={k < c}></span>{/each}
-				</span>
-				<span class="ct">{c === 0 ? 'Ketuk tiap selesai membaca' : `${c} dari ${d.count}`}</span>
-			{:else}
-				<span class="big num">{c}</span><span class="ct">dari {d.count}, ketuk tiap bacaan</span>
-			{/if}
-			{#if d.count > 10 && !ok}<span class="fill" style:width="{(c / d.count) * 100}%"></span>{/if}
-		</button>
 	</article>
 {/each}
+
+{#if active && !allDone}
+	<div class="fab-wrap">
+		<button
+			class="fab"
+			class:ok={activeOk}
+			aria-label={activeOk
+				? `${active.title} selesai. Ketuk untuk bacaan berikutnya`
+				: `Hitung ${active.title}, ${activeC} dari ${active.count}`}
+			onclick={tapActive}
+		>
+			{#if active.count > 10 && !activeOk}<span class="fill" style:width="{(activeC / active.count) * 100}%"></span>{/if}
+			<span class="fno num">{activeIdx + 1}</span>
+			<span class="fmain">
+				<span class="fti">{active.title}</span>
+				<span class="fsub">
+					{#if activeOk}Selesai · ketuk untuk lanjut
+					{:else if active.count === 1}Ketuk bila sudah dibaca
+					{:else if activeC === 0}Ketuk tiap selesai membaca
+					{:else}<span class="num">{activeC}</span> dari <span class="num">{active.count}</span>{/if}
+				</span>
+			</span>
+			<span class="fct">
+				{#if activeOk}
+					<Icon name="check" size={22} stroke={2.4} />
+				{:else if active.count === 1}
+					<span class="pip"></span>
+				{:else if active.count <= 10}
+					<span class="pips">
+						{#each Array(active.count) as _, k (k)}<span class="pip" class:on={k < activeC}></span>{/each}
+					</span>
+				{:else}
+					<span class="big num">{activeC}</span>
+				{/if}
+			</span>
+		</button>
+	</div>
+{/if}
 
 <div id="dz-end" class="end">
 	{#if allDone}
@@ -620,12 +685,109 @@
 		letter-spacing: -0.01em;
 	}
 	.times {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
 		font-size: 12px;
 		font-weight: 800;
 		color: var(--peach-ink);
 		background: var(--peach-soft);
 		padding: 4px 10px;
 		border-radius: 999px;
+	}
+	.times.done {
+		color: var(--navy);
+		background: var(--navy-soft);
+	}
+	/* kartu yang sedang dihitung tombol mengambang */
+	.dz.on {
+		box-shadow:
+			0 0 0 1.5px var(--navy-2),
+			var(--shadow);
+	}
+	.fab-wrap {
+		position: fixed;
+		z-index: 19;
+		/* ditengahkan dengan margin, bukan transform, supaya tidak bentrok dengan animasi masuk */
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+		bottom: calc(14px + var(--nav-h) + 10px + var(--safe-b));
+		width: calc(min(430px, 100%) - 28px);
+		animation: rise 0.35s var(--ease) both;
+	}
+	.fab {
+		position: relative;
+		overflow: hidden;
+		width: 100%;
+		min-height: 64px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 16px 10px 12px;
+		border-radius: 20px;
+		background: var(--card);
+		border: 1px solid var(--line);
+		box-shadow: 0 16px 36px -14px var(--nav-shadow);
+		text-align: left;
+		color: var(--navy);
+		transition:
+			background 0.3s var(--ease),
+			transform 0.12s var(--ease);
+		touch-action: manipulation;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+	.fab:active:not(.ok) {
+		transform: scale(0.98);
+	}
+	.fab.ok {
+		background: var(--peach-wash);
+		border-color: var(--peach-line);
+	}
+	.fab > :not(.fill) {
+		position: relative;
+		z-index: 1;
+	}
+	.fno {
+		width: 30px;
+		height: 30px;
+		flex: none;
+		border-radius: 10px;
+		display: grid;
+		place-items: center;
+		background: var(--navy-soft);
+		font-size: 12px;
+		font-weight: 800;
+	}
+	.fmain {
+		flex: 1;
+		min-width: 0;
+	}
+	.fti {
+		display: block;
+		font-weight: 700;
+		font-size: 13.5px;
+		color: var(--ink);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.fsub {
+		display: block;
+		margin-top: 1px;
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--ink2);
+	}
+	.fab.ok .fsub,
+	.fab.ok .fct {
+		color: var(--peach-ink);
+	}
+	.fct {
+		flex: none;
+		display: flex;
+		align-items: center;
 	}
 	.ar {
 		margin: 14px 0 4px;
@@ -684,38 +846,6 @@
 	.note {
 		color: var(--ink3);
 	}
-	.counter {
-		position: relative;
-		overflow: hidden;
-		width: 100%;
-		min-height: 56px;
-		margin-top: 14px;
-		border-radius: 16px;
-		background: var(--sunk);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 10px;
-		font-weight: 700;
-		font-size: 13px;
-		color: var(--navy);
-		transition:
-			background 0.3s var(--ease),
-			transform 0.12s var(--ease);
-		touch-action: manipulation;
-		user-select: none;
-	}
-	.counter:active:not(.ok) {
-		transform: scale(0.98);
-	}
-	.counter.ok {
-		background: var(--peach-soft);
-		color: var(--peach-ink);
-	}
-	.counter > :not(.fill) {
-		position: relative;
-		z-index: 1;
-	}
 	.fill {
 		position: absolute;
 		left: 0;
@@ -741,11 +871,6 @@
 		background: var(--navy);
 		transform: scale(1.1);
 	}
-	.ct {
-		font-size: 12.5px;
-		color: var(--ink2);
-		font-weight: 600;
-	}
 	.big {
 		font-family: var(--f-disp);
 		font-size: 26px;
@@ -753,7 +878,8 @@
 	}
 	.end {
 		scroll-margin-top: 16px;
-		min-height: 1px;
+		/* ruang supaya kartu terakhir tidak tertutup tombol mengambang */
+		min-height: 84px;
 	}
 	.fin {
 		margin-top: 14px;
