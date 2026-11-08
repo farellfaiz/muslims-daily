@@ -8,6 +8,8 @@
 	import { clock, schedule, settings, tracker } from '#lib/state/app.svelte.ts';
 	import { currentStreak } from '#lib/tracker.ts';
 
+	let { data } = $props();
+
 	const now = $derived(clock.now);
 	const times = $derived(now ? schedule(now) : null);
 	const streak = $derived(now ? currentStreak(tracker.value, now) : 0);
@@ -15,7 +17,7 @@
 	const dayStr = $derived(now?.toDateString());
 	const greg = $derived(dayStr ? formatLong(new Date(dayStr)) : ' ');
 	const hijri = $derived(dayStr ? (formatHijri(new Date(dayStr)) ?? '') : ' ');
-	const featured = $derived(doaOfTheDay(dayStr ? new Date(dayStr) : new Date(2026, 0, 1)));
+	const featured = $derived(doaOfTheDay(data.daily, dayStr ? new Date(dayStr) : new Date(2026, 0, 1)));
 </script>
 
 <svelte:head>
@@ -44,19 +46,21 @@
 
 <div class="sec-h"><h2>Menu</h2></div>
 <nav class="quick" aria-label="Menu cepat">
-	<a href="/doa" class="press"><span class="ico"><Icon name="bookmark" /></span>Doa</a>
-	<a href="/dzikir" class="press"><span class="ico"><Icon name="beads" /></span>Dzikir</a>
-	<a href="/quran" class="press"><span class="ico"><Icon name="book" /></span>Al-Qur'an</a>
-	<a href="/kiblat" class="press"><span class="ico"><Icon name="compass" /></span>Kiblat</a>
+	<a href="/doa" class="press t-navy"><span class="ico"><Icon name="bookmark" size={22} /></span>Doa</a>
+	<a href="/dzikir" class="press t-peach"><span class="ico"><Icon name="beads" size={22} /></span>Dzikir</a>
+	<a href="/quran" class="press t-gold"><span class="ico"><Icon name="book" size={22} /></span>Al-Qur'an</a>
+	<a href="/kiblat" class="press t-rose"><span class="ico"><Icon name="compass" size={22} /></span>Kiblat</a>
 </nav>
 
 <div class="sec-h"><h2>Doa pilihan</h2><a href="/doa" class="label more">Lihat semua</a></div>
-<a class="card feature press" href="/doa/{featured.slug}">
-	<div class="label">{featured.category}</div>
-	<p class="ar">{featured.arabic}</p>
-	<div class="disp ft">{featured.title}</div>
-	<p class="tr">{featured.translation}</p>
-</a>
+{#if featured}
+	<a class="card feature press" href={featured.href}>
+		<div class="label">{featured.category}</div>
+		<p class="ar" lang="ar">{featured.arabic}</p>
+		<div class="disp ft">{featured.title}</div>
+		<p class="tr">{featured.translation}</p>
+	</a>
+{/if}
 
 <style>
 	.top {
@@ -132,22 +136,53 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 7px;
-		font-size: 11.5px;
+		gap: 8px;
+		font-size: 12px;
 		font-weight: 700;
-		color: var(--ink2);
+		color: var(--ink);
 		text-decoration: none;
+		--tint: var(--navy-soft);
+		--tint-ink: var(--navy);
 	}
+	.quick .t-peach {
+		--tint: var(--peach-soft);
+		--tint-ink: var(--peach-ink);
+	}
+	.quick .t-gold {
+		--tint: var(--gold-soft);
+		--tint-ink: var(--gold-ink);
+	}
+	.quick .t-rose {
+		--tint: var(--rose-soft);
+		--tint-ink: var(--rose);
+	}
+	/* Ubin berbentuk pintu lengkung seperti ikon aplikasi, dengan garis lengkung tipis di dalamnya. */
 	.ico {
+		position: relative;
 		width: 100%;
-		aspect-ratio: 1;
-		border-radius: 20px;
+		max-width: 76px;
+		aspect-ratio: 1 / 1.12;
+		border-radius: 999px 999px 18px 18px;
 		display: grid;
 		place-items: center;
-		background: var(--card);
-		box-shadow: var(--shadow);
+		padding-top: 6px;
+		background: linear-gradient(180deg, var(--card) -30%, var(--tint) 85%);
 		border: 1px solid var(--line);
-		color: var(--navy);
+		box-shadow: var(--shadow);
+		color: var(--tint-ink);
+		transition: transform 0.25s var(--ease);
+	}
+	.ico::after {
+		content: '';
+		position: absolute;
+		inset: 5px;
+		border-radius: inherit;
+		border: 1px solid currentColor;
+		opacity: 0.16;
+		pointer-events: none;
+	}
+	.quick a:hover .ico {
+		transform: translateY(-2px);
 	}
 	.more {
 		color: var(--navy);

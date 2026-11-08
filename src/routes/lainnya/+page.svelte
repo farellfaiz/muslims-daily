@@ -46,6 +46,7 @@
 	let creditsDlg: HTMLDialogElement | undefined = $state();
 	const CREDITS = [
 		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
+		['NU Online', 'quran.nu.or.id/doa', 'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangan sumbernya.'],
 		['adhan', 'Pustaka perhitungan', 'Menghitung jadwal salat dan arah kiblat.'],
 		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.'],
 		['Kementerian Agama RI', 'Terjemahan', "Terjemahan ayat Al-Qur'an."]

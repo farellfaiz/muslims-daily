@@ -18,7 +18,7 @@
 - **Jadwal salat** dihitung langsung di perangkat (library [adhan](https://github.com/batoulapps/adhan-js)), tanpa API dan tanpa internet. Metode Kemenag RI (Subuh 20°, Isya 18°, ihtiyat 2 menit), MUIS, MWL, atau Umm al-Qura, plus pilihan mazhab untuk waktu Ashar.
 - **Langit yang hidup**: hero beranda berubah warna mengikuti waktu salat, dengan matahari dan bulan yang bergerak di busur jadwal.
 - **Tracker salat**: ketuk untuk menandai sudah salat, streak harian, jejak 6 bulan ala kontribusi GitHub, konsistensi per salat, dan mode udzur (haid atau nifas) yang menjeda streak tanpa memutusnya.
-- **Kumpulan doa**: tampilan kartu atau daftar, filter kategori, urutan, pencarian toleran ejaan (dhuha = duha), favorit, dan halaman baca sendiri dengan teks Arab, transliterasi, terjemahan, serta **arti per kata**.
+- **Kumpulan doa** (180 doa dari [NU Online](https://quran.nu.or.id/doa)): layar awal berisi kartu 16 kategori dan kartu **Semua doa** (satu daftar tanpa kategori), pencarian toleran ejaan (dhuha = duha, shalat = salat), urutan, tampilan kartu atau daftar, favorit, dan halaman baca sendiri dengan teks Arab, transliterasi, terjemahan, serta keterangan sumber tiap doa.
 - **Dzikir dan doa setelah salat** (dari [Dzikir & Doa Setelah Sholat](https://farellfaiz.github.io/dzikr-and-duas/)) serta **dzikir pagi dan petang**, dengan penghitung ketuk per bacaan (tasbih 33×), lafaz pagi atau petang yang otomatis menyesuaikan, dan progres per salat.
 - **Ceklis salat**: salat yang belum masuk waktunya dikunci, yang sudah lewat tetap bisa dicentang kapan saja.
 - **Kiblat**: arah dan jarak ke Ka'bah dari lokasimu, dengan kompas di HP yang menyala saat sudah sejajar.
@@ -60,7 +60,9 @@ src/
     qibla.ts            arah kiblat, jarak, dan pembacaan kompas
     backup.ts           ekspor, validasi, dan penggabungan cadangan
     dzikirProgress.ts   hitungan dzikir harian
-    data/doa.ts         data doa
+    data/doa.json       kumpulan doa dari NU Online (dibuat oleh scripts/doa-data.mjs)
+    data/doa.ts         tipe dan fungsi bantu doa
+    server/doa.ts       pembaca doa.json, hanya dipakai saat prerender
     data/dzikir.ts      data dzikir pagi dan petang
     data/salat.ts       data dzikir dan doa setelah salat
     perKata.ts          pemuat arti per kata (data: static/data/per-kata.json)
@@ -69,7 +71,7 @@ src/
   routes/
     +page.svelte        beranda
     tracker/            tracker salat
-    doa/                daftar doa dan halaman baca per doa
+    doa/                kartu kategori, semua/, favorit/, [kategori]/, [kategori]/[slug]/ (halaman baca)
     dzikir/             dzikir setelah salat dan pagi petang, dengan penghitung
     kiblat/             arah kiblat dan kompas
     data/dzikir.json/   teks dzikir sebagai file statis saat build (tidak ikut JavaScript)
@@ -80,18 +82,19 @@ design/prototype/       prototipe desain awal (HTML statis)
 
 ## Kontribusi konten doa dan dzikir
 
-Konten doa dan dzikir adalah bagian paling sensitif dari aplikasi ini. Aturan untuk setiap entri di `src/lib/data/doa.ts` dan `src/lib/data/dzikir.ts`:
+Konten doa dan dzikir adalah bagian paling sensitif dari aplikasi ini. Kumpulan doa diambil utuh dari NU Online: jangan sunting `src/lib/data/doa.json` dengan tangan, tetapi jalankan ulang `node scripts/doa-data.mjs` (perbaikan teks sebaiknya dilaporkan ke NU Online). Aturan untuk setiap entri di `src/lib/data/dzikir.ts`:
 
 1. **Wajib ada sumber.** Ayat: nama surah dan nomor ayat. Hadis: perawi (HR. Bukhari, Muslim, dll).
 2. **Cek teks dari rujukan**, bukan dari ingatan atau situs acak: mushaf Kemenag untuk ayat, kitab hadis atau Hisnul Muslim untuk doa ma'tsur.
 3. Doa yang bukan dari Al-Qur'an atau hadis tetap boleh dimuat, tetapi diberi `warn: true` dan keterangan sumber yang jujur.
 4. Ubah `verified` menjadi `true` hanya setelah dicek oleh orang yang paham.
 
-> Status saat ini: semua doa dan dzikir masih **draf dan belum diverifikasi**. Jangan dirilis ke publik sebelum dicek.
+> Status saat ini: dzikir masih **draf dan belum diverifikasi**. Jangan dirilis ke publik sebelum dicek.
 
 ## Kredit
 
 - Desain terinspirasi dari **Pillars** (Prayer Times & Qibla).
+- Kumpulan doa (teks Arab, transliterasi, terjemahan, dan keterangan sumber) dari [NU Online](https://quran.nu.or.id/doa).
 - Dzikir dan doa setelah salat dari [Dzikir & Doa Setelah Sholat](https://farellfaiz.github.io/dzikr-and-duas/).
 - Jadwal salat dan arah kiblat dihitung dengan [adhan](https://github.com/batoulapps/adhan-js).
 

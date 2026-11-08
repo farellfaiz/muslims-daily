@@ -1,68 +1,16 @@
 <script lang="ts">
+	import CatIcon from '#lib/components/CatIcon.svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import Picker from '#lib/components/Picker.svelte';
-	import { withTransition } from '#lib/transition.ts';
-	import StarNum from '#lib/components/StarNum.svelte';
-	import { CATEGORIES, DOA, normalize, searchText, type Doa } from '#lib/data/doa.ts';
-	import { dateKey } from '#lib/date.ts';
-	import { clock, doaPrefs, toast, type DoaPrefs } from '#lib/state/app.svelte.ts';
+	import { SOURCE_NAME, SOURCE_URL } from '#lib/data/doa.ts';
+	import { doaPrefs } from '#lib/state/app.svelte.ts';
 
-	type Filter = 'Semua' | (typeof CATEGORIES)[number] | 'Favorit';
-	const FILTERS: Filter[] = ['Semua', ...CATEGORIES, 'Favorit'];
-
-	let filter = $state<Filter>('Semua');
-	let q = $state('');
-
-	const INDEX = DOA.map((d) => ({ d, text: searchText(d) }));
-	const prefs = $derived(doaPrefs.value);
-	const favs = $derived(new Set(prefs.favs));
-	const todayKey = $derived(clock.now ? dateKey(clock.now) : '');
-	const readToday = $derived(new Set(prefs.readOn === todayKey ? prefs.read : []));
-
-	const SORTS: Record<DoaPrefs['sort'], (a: Doa, b: Doa) => number> = {
-		kat: (a, b) => CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category) || a.id - b.id,
-		az: (a, b) => a.title.localeCompare(b.title, 'id'),
-		short: (a, b) => a.wordCount - b.wordCount,
-		long: (a, b) => b.wordCount - a.wordCount
-	};
-
-	const results = $derived.by(() => {
-		const nq = normalize(q.trim());
-		return INDEX.filter(
-			({ d, text }) =>
-				(filter === 'Semua' || (filter === 'Favorit' ? favs.has(d.id) : d.category === filter)) &&
-				(!nq || text.includes(nq))
-		)
-			.map(({ d }) => d)
-			.sort(SORTS[prefs.sort]);
-	});
-
-	// Ganti tampilan / filter dengan transisi halus bila browser mendukung.
-	const vt = withTransition;
-
-	const SORT_OPTIONS: { value: DoaPrefs['sort']; label: string }[] = [
-		{ value: 'kat', label: 'Urut kategori' },
-		{ value: 'az', label: 'Urut A sampai Z' },
-		{ value: 'short', label: 'Terpendek dulu' },
-		{ value: 'long', label: 'Terpanjang dulu' }
-	];
-
-	function setPrefs(p: Partial<DoaPrefs>) {
-		vt(() => (doaPrefs.value = { ...doaPrefs.value, ...p }));
-	}
-
-	function fav(e: Event, id: number) {
-		e.preventDefault();
-		e.stopPropagation();
-		const has = favs.has(id);
-		doaPrefs.value = { ...prefs, favs: has ? prefs.favs.filter((x) => x !== id) : [...prefs.favs, id] };
-		toast.say(has ? 'Dihapus dari favorit' : 'Disimpan ke favorit');
-	}
+	let { data } = $props();
+	const favCount = $derived(doaPrefs.value.favs.length);
 </script>
 
 <svelte:head>
 	<title>Kumpulan doa · Muslims Daily</title>
-	<meta name="description" content="Kumpulan doa harian lengkap dengan teks Arab, transliterasi, terjemahan, dan arti per kata." />
+	<meta name="description" content="{data.total} doa harian dalam {data.categories.length} kategori, lengkap dengan teks Arab, transliterasi, dan terjemahan." />
 </svelte:head>
 
 <header class="page-head">
@@ -70,84 +18,57 @@
 	<h1>Doa harian</h1>
 </header>
 
-<a class="card salat press" href="/dzikir?set=salat">
-	<span class="sico" aria-hidden="true"></span>
-	<span class="sgrow">
-		<span class="st">Dzikir &amp; doa setelah salat</span>
-		<span class="ss">Urutan lengkap dengan penghitung tasbih</span>
-	</span>
-	<Icon name="chevron" size={18} />
+<a class="search press" href="/doa/semua?cari">
+	<Icon name="search" />
+	<span>Cari di {data.total} doa</span>
 </a>
 
-<label class="search">
-	<Icon name="search" />
-	<span class="sr-only">Cari doa</span>
-	<input bind:value={q} placeholder="Cari doa: dhuha, rezeki, tidur" autocomplete="off" type="search" />
-</label>
+<a class="all press" href="/doa/semua">
+	<svg class="deco" viewBox="0 0 120 140" aria-hidden="true">
+		<path d="M10 140V62C10 32 32 10 60 10s50 22 50 52v78" />
+		<path d="M26 140V66c0-20 15-38 34-38s34 18 34 38v74" />
+		<circle cx="60" cy="96" r="13" />
+	</svg>
+	<span class="label">Tanpa kategori</span>
+	<span class="big disp num">{data.total}</span>
+	<span class="at disp">Semua doa</span>
+	<span class="as">Satu daftar utuh, bisa dicari dan diurutkan</span>
+	<span class="go"><Icon name="chevron" size={18} stroke={2.2} /></span>
+</a>
 
-<div class="chips" role="group" aria-label="Filter kategori">
-	{#each FILTERS as f (f)}
-		<button class="chip" aria-pressed={filter === f} onclick={() => vt(() => (filter = f))}>
-			{f}{f === 'Favorit' && prefs.favs.length ? ` · ${prefs.favs.length}` : ''}
-		</button>
-	{/each}
+<div class="duo">
+	<a class="card mini press" href="/doa/favorit">
+		<span class="mico fav"><Icon name="heart" size={19} /></span>
+		<span class="mt">Favorit</span>
+		<span class="ms">{favCount ? `${favCount} doa` : 'Belum ada'}</span>
+	</a>
+	<a class="card mini press" href="/dzikir?set=salat">
+		<span class="mico arch" aria-hidden="true"></span>
+		<span class="mt">Setelah salat</span>
+		<span class="ms">Dzikir &amp; doa</span>
+	</a>
 </div>
 
-<div class="toolbar">
-	<Picker
-		label="Urutkan"
-		size="sm"
-		options={SORT_OPTIONS}
-		value={prefs.sort}
-		onchange={(v) => setPrefs({ sort: v as DoaPrefs['sort'] })}
-	/>
-	<div class="seg vt" role="group" aria-label="Tampilan">
-		<button aria-pressed={prefs.view === 'card'} aria-label="Tampilan kartu" onclick={() => setPrefs({ view: 'card' })}><Icon name="cards" size={17} /></button>
-		<button aria-pressed={prefs.view === 'list'} aria-label="Tampilan daftar" onclick={() => setPrefs({ view: 'list' })}><Icon name="list" size={17} /></button>
-	</div>
+<div class="sec-h">
+	<h2>Kategori</h2>
+	<span class="label">{data.categories.length} kategori</span>
 </div>
 
-<div class="label count">{results.length} doa</div>
-
-{#if !results.length}
-	<p class="empty">
-		{filter === 'Favorit' && !q ? 'Belum ada favorit. Ketuk ikon hati di doa yang sering kamu baca.' : 'Belum ada doa yang cocok. Coba kata lain atau pilih Semua.'}
-	</p>
-{:else if prefs.view === 'card'}
-	{#each results as d, i (d.id)}
-		<a class="card dcard" href="/doa/{d.slug}" style:animation-delay="{Math.min(i, 8) * 45}ms">
-			<div class="head">
-				<StarNum n={d.id} />
-				<span class="label grow">{d.category}</span>
-				<button class="fav" class:on={favs.has(d.id)} aria-label="Favorit" aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
-					<Icon name="heart" />
-				</button>
-			</div>
-			<p class="ar">{d.arabic}</p>
-			<h2 class="t disp">{d.title}</h2>
-			<div class="meta">
-				<span class:warn={d.warn}>{d.source}</span>
-				<span class="dot"></span><span class="num">{d.wordCount} kata</span>
-				{#if readToday.has(d.id)}<span class="dot"></span><span class="read">Dibaca</span>{/if}
-			</div>
+<nav class="grid" aria-label="Kategori doa">
+	{#each data.categories as c, i (c.slug)}
+		<a class="card cat press" class:alt={i % 4 === 1 || i % 4 === 2} href="/doa/{c.slug}" style:animation-delay="{Math.min(i, 12) * 30}ms">
+			<span class="cico"><CatIcon slug={c.slug} /></span>
+			<span class="ct">{c.short}</span>
+			<span class="cs num">{c.count} doa</span>
 		</a>
 	{/each}
-{:else}
-	<div class="card rows">
-		{#each results as d, i (d.id)}
-			<a class="drow" href="/doa/{d.slug}" style:animation-delay="{Math.min(i, 10) * 30}ms">
-				<StarNum n={d.id} />
-				<div class="grow min">
-					<p class="t">{d.title}</p>
-					<div class="meta"><span>{d.category}</span><span class="dot"></span><span class="ell" class:warn={d.warn}>{d.source}</span></div>
-				</div>
-				<button class="fav" class:on={favs.has(d.id)} aria-label="Favorit" aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
-					<Icon name="heart" />
-				</button>
-			</a>
-		{/each}
-	</div>
-{/if}
+</nav>
+
+<p class="credit">
+	Teks doa, transliterasi, dan terjemahan dari
+	<a href={SOURCE_URL} target="_blank" rel="noopener">{SOURCE_NAME}</a>.
+	Keterangan sumber tiap doa ada di halaman bacaannya.
+</p>
 
 <style>
 	.search {
@@ -161,212 +82,178 @@
 		box-shadow: var(--shadow);
 		border: 1px solid var(--line);
 		color: var(--ink3);
-	}
-	.search input {
-		flex: 1;
-		border: 0;
-		background: none;
-		font: inherit;
 		font-size: 14px;
-		color: var(--ink);
-		outline: none;
-		min-width: 0;
-	}
-	.chips {
-		display: flex;
-		gap: 7px;
-		overflow-x: auto;
-		margin: 12px -18px 0;
-		padding: 2px 18px 4px;
-		scrollbar-width: none;
-	}
-	.chips::-webkit-scrollbar {
-		display: none;
-	}
-	.chip {
-		flex: none;
-		height: 34px;
-		padding: 0 14px;
-		border-radius: 999px;
-		font-size: 12.5px;
-		font-weight: 700;
-		color: var(--ink2);
-		border: 1px solid var(--line-strong);
-		transition: all 0.25s var(--ease);
-	}
-	.chip[aria-pressed='true'] {
-		background: var(--ink);
-		color: var(--paper);
-		border-color: var(--ink);
-	}
-	.toolbar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin: 14px 2px 10px;
-	}
-	.vt button {
-		width: 36px;
-		height: 28px;
-		display: grid;
-		place-items: center;
-		padding: 0;
-	}
-	.count {
-		margin: 0 2px 10px;
-	}
-	.empty {
-		text-align: center;
-		padding: 40px 10px;
-		color: var(--ink2);
-		font-size: 13.5px;
-		line-height: 1.6;
-	}
-	.dcard {
-		display: block;
-		padding: 16px 16px 14px;
-		margin-bottom: 12px;
 		text-decoration: none;
-		animation: rise 0.4s var(--ease) both;
-		transition:
-			transform 0.25s var(--ease),
-			box-shadow 0.25s;
 	}
-	.dcard:hover {
-		transform: translateY(-2px);
-	}
-	.dcard:active {
-		transform: scale(0.985);
-	}
-	.head {
+	.all {
+		position: relative;
+		overflow: hidden;
 		display: flex;
-		align-items: center;
-		gap: 10px;
+		flex-direction: column;
+		margin-top: 12px;
+		padding: 18px 20px 20px;
+		border-radius: var(--r-lg);
+		background: var(--navy);
+		color: var(--on-navy);
+		text-decoration: none;
+		box-shadow: 0 18px 36px -20px var(--frame-shadow);
+		animation: rise 0.45s var(--ease) both;
 	}
-	.grow {
-		flex: 1;
+	.all .label {
+		color: inherit;
+		opacity: 0.7;
 	}
-	.min {
-		min-width: 0;
+	.deco {
+		position: absolute;
+		right: 18px;
+		bottom: -6px;
+		width: 104px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.4;
+		opacity: 0.22;
 	}
-	.dcard .ar {
+	.deco circle {
+		fill: var(--peach-sun);
+		stroke: none;
+		opacity: 0.9;
+	}
+	.big {
+		font-size: 52px;
+		font-weight: 400;
+		line-height: 1;
+		margin-top: 10px;
+		letter-spacing: -0.03em;
+	}
+	.at {
 		font-size: 22px;
-		margin: 10px 0 6px;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-	.t {
-		margin: 0;
-	}
-	.dcard .t {
 		font-weight: 500;
-		font-size: 18px;
-		letter-spacing: -0.01em;
+		margin-top: 4px;
 	}
-	.meta {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 11.5px;
-		color: var(--ink2);
-		font-weight: 600;
-		margin-top: 6px;
+	.as {
+		font-size: 12.5px;
+		opacity: 0.75;
+		margin-top: 3px;
+		max-width: 62%;
+		line-height: 1.45;
 	}
-	.drow .meta {
-		margin-top: 2px;
-	}
-	.dot {
-		width: 3px;
-		height: 3px;
-		border-radius: 50%;
-		background: var(--ink3);
-		flex: none;
-	}
-	.warn {
-		color: var(--peach-ink);
-	}
-	.read {
-		color: var(--navy);
-	}
-	.ell {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	.rows {
-		padding: 4px 12px;
-	}
-	.drow {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px 4px;
-		border-bottom: 1px solid var(--line);
-		text-decoration: none;
-		animation: rise 0.35s var(--ease) both;
-	}
-	.drow:last-child {
-		border-bottom: 0;
-	}
-	.drow .t {
-		font-weight: 700;
-		font-size: 14.5px;
-	}
-	.fav {
-		width: 36px;
-		height: 36px;
-		flex: none;
+	.go {
+		position: absolute;
+		top: 18px;
+		right: 18px;
+		width: 34px;
+		height: 34px;
 		border-radius: 50%;
 		display: grid;
 		place-items: center;
-		color: var(--ink3);
-		transition:
-			transform 0.25s var(--ease),
-			color 0.25s;
+		background: color-mix(in srgb, currentColor 14%, transparent);
 	}
-	.fav.on {
+	.duo {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+		margin-top: 10px;
+	}
+	.mini {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		grid-template-rows: auto auto;
+		column-gap: 11px;
+		align-items: center;
+		padding: 12px 12px;
+		text-decoration: none;
+	}
+	.mico {
+		grid-row: span 2;
+		width: 38px;
+		height: 38px;
+		border-radius: 13px;
+		display: grid;
+		place-items: center;
+	}
+	.mico.fav {
+		background: var(--rose-soft);
 		color: var(--rose);
 	}
-	.fav.on :global(svg) {
-		fill: var(--rose);
-	}
-	.fav:active {
-		transform: scale(1.25);
-	}
-	.salat {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 12px 14px;
-		margin-bottom: 12px;
-		text-decoration: none;
-		color: var(--ink3);
-	}
-	.sico {
+	.mico.arch {
 		width: 30px;
-		height: 34px;
-		flex: none;
+		height: 36px;
+		margin: 0 4px;
 		border-radius: 50% 50% 6px 6px / 60% 60% 6px 6px;
 		background: var(--arch);
 		box-shadow: inset 0 -12px 0 var(--cream);
 	}
-	.sgrow {
-		flex: 1;
-		min-width: 0;
+	.mt {
+		font-weight: 700;
+		font-size: 13.5px;
+		color: var(--ink);
+		align-self: end;
+	}
+	.ms {
+		font-size: 11.5px;
+		color: var(--ink2);
+		font-weight: 600;
+		align-self: start;
+		margin-top: 1px;
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
+	.cat {
 		display: flex;
 		flex-direction: column;
+		min-height: 118px;
+		padding: 14px 14px 13px;
+		text-decoration: none;
+		animation: rise 0.4s var(--ease) both;
+		transition:
+			transform 0.25s var(--ease),
+			border-color 0.25s;
 	}
-	.st {
-		font-weight: 700;
-		font-size: 14px;
+	.cat:hover {
+		transform: translateY(-2px);
+		border-color: var(--line-strong);
+	}
+	.cico {
+		width: 40px;
+		height: 40px;
+		border-radius: 14px;
+		display: grid;
+		place-items: center;
+		background: var(--navy-soft);
+		color: var(--navy);
+	}
+	.alt .cico {
+		background: var(--peach-soft);
+		color: var(--peach-ink);
+	}
+	.ct {
+		margin-top: auto;
+		padding-top: 12px;
+		font-family: var(--f-disp);
+		font-weight: 500;
+		font-size: 16px;
+		line-height: 1.2;
+		letter-spacing: -0.01em;
 		color: var(--ink);
 	}
-	.ss {
-		font-size: 12px;
+	.cs {
+		font-size: 11.5px;
+		font-weight: 600;
 		color: var(--ink2);
-		margin-top: 1px;
+		margin-top: 3px;
+	}
+	.credit {
+		margin: 22px 4px 4px;
+		font-size: 12px;
+		line-height: 1.6;
+		color: var(--ink2);
+		text-align: center;
+	}
+	.credit a {
+		color: var(--navy);
+		font-weight: 700;
 	}
 </style>
