@@ -8,10 +8,17 @@
 
 	// Tawaran: muncul sekali di beranda saat aplikasi pertama dibuka, setelah halaman sempat tampil.
 	let offerOpen = $state(false);
+	// Tunggu splash hilang dulu: lembar <dialog> tampil di lapisan paling atas, bisa menimpa splash.
 	$effect(() => {
 		if (!tour.offer || page.url.pathname !== '/') return;
-		const t = setTimeout(() => (offerOpen = true), 700);
-		return () => clearTimeout(t);
+		let t = 0;
+		const show = () => (t = window.setTimeout(() => (offerOpen = true), 700));
+		if (window.__splashGone) show();
+		else addEventListener('splash:gone', show, { once: true });
+		return () => {
+			clearTimeout(t);
+			removeEventListener('splash:gone', show);
+		};
 	});
 	let wasOpen = false;
 	$effect(() => {

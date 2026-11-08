@@ -25,6 +25,7 @@
 		const stopInstall = install.start();
 		const stopAdzan = adzan.start();
 		tour.ready = true;
+		window.__splashDone?.();
 		// Service worker: aplikasi tersimpan untuk offline dan memperbarui diri diam-diam.
 		import('virtual:pwa-register').then(({ registerSW }) => registerSW({ immediate: true }));
 		return () => {

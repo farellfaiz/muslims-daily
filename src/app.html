@@ -24,8 +24,175 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" />
 		%sveltekit.head%
+		<style>
+			/* Splash: pintu lengkung dari ikon aplikasi, matahari terbit dari balik bukit, lalu "masuk" lewat pintu.
+			   CSS murni di sini supaya tampil seketika, sebelum JavaScript aplikasi selesai dimuat. */
+			#splash {
+				position: fixed;
+				inset: 0;
+				z-index: 100;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 30px;
+				background: var(--paper, #faf6f1);
+				overflow: hidden;
+				cursor: pointer;
+				-webkit-tap-highlight-color: transparent;
+			}
+			#splash .door {
+				--ogee: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V52C0 33 13 23 29 15C39 10 46 6 50 0C54 6 61 10 71 15C87 23 100 33 100 52V100Z'/%3E%3C/svg%3E");
+				position: relative;
+				width: 148px;
+				height: 188px;
+				background: #33506f;
+				-webkit-mask: var(--ogee) 0 0/100% 100% no-repeat;
+				mask: var(--ogee) 0 0/100% 100% no-repeat;
+				border-radius: 0 0 22px 22px;
+				animation: sp-door 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+			}
+			#splash .win {
+				position: absolute;
+				inset: 15px 13px 0 13px;
+				overflow: hidden;
+				background: linear-gradient(#bcd5ec 0%, #d9e6f2 45%, #f6dccb 100%);
+				-webkit-mask: var(--ogee) 0 0/100% 100% no-repeat;
+				mask: var(--ogee) 0 0/100% 100% no-repeat;
+			}
+			#splash .glow {
+				position: absolute;
+				left: 50%;
+				top: 58%;
+				width: 150px;
+				height: 150px;
+				margin: -75px 0 0 -75px;
+				border-radius: 50%;
+				background: radial-gradient(rgba(237, 160, 125, 0.55), rgba(237, 160, 125, 0) 65%);
+				animation: sp-glow 1.3s 0.35s ease-out both;
+			}
+			#splash .sun {
+				position: absolute;
+				left: 50%;
+				top: 58%;
+				width: 46px;
+				height: 46px;
+				margin: -23px 0 0 -23px;
+				border-radius: 50%;
+				background: #eda07d;
+				box-shadow: 0 0 0 9px rgba(237, 160, 125, 0.22);
+				animation: sp-rise 1.1s 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+			}
+			#splash .hill {
+				position: absolute;
+				left: -30%;
+				right: -30%;
+				bottom: -54px;
+				height: 112px;
+				border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+				background: #fdf3ea;
+			}
+			#splash .word {
+				text-align: center;
+				animation: sp-word 0.7s 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+			}
+			#splash .name {
+				font-family: 'Fraunces Variable', Georgia, serif;
+				font-size: 30px;
+				font-weight: 600;
+				letter-spacing: -0.01em;
+				color: var(--ink, #22384f);
+			}
+			#splash .tag {
+				margin-top: 6px;
+				font-family: 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				color: var(--ink2, #5d7187);
+			}
+			/* Keluar: pintu membesar seperti kita melangkah masuk, lalu semuanya memudar ke aplikasi. */
+			#splash.out {
+				animation: sp-out 0.55s 0.15s ease-in both;
+				pointer-events: none;
+			}
+			#splash.out .door {
+				animation: sp-enter 0.7s cubic-bezier(0.6, 0, 0.8, 0.4) both;
+			}
+			#splash.out .word {
+				animation: sp-leave 0.3s ease-in both;
+			}
+			@keyframes sp-door {
+				from { opacity: 0; transform: translateY(14px) scale(0.94); }
+			}
+			@keyframes sp-rise {
+				from { transform: translateY(70px); }
+			}
+			@keyframes sp-glow {
+				from { opacity: 0; transform: scale(0.5); }
+			}
+			@keyframes sp-word {
+				from { opacity: 0; transform: translateY(10px); }
+			}
+			@keyframes sp-enter {
+				to { transform: translateY(40px) scale(7); }
+			}
+			@keyframes sp-leave {
+				to { opacity: 0; transform: translateY(8px); }
+			}
+			@keyframes sp-out {
+				to { opacity: 0; }
+			}
+			@media (prefers-reduced-motion: reduce) {
+				#splash *, #splash.out .door { animation: none !important; }
+				#splash.out { animation-duration: 0.3s; animation-delay: 0s; }
+			}
+		</style>
 	</head>
 	<body data-sveltekit-preload-data="hover">
+		<div id="splash" aria-hidden="true">
+			<div class="door"><div class="win"><div class="glow"></div><div class="sun"></div><div class="hill"></div></div></div>
+			<div class="word"><div class="name">Muslims Daily</div><div class="tag">Your daily Muslim companion</div></div>
+		</div>
+		<script>
+			// Splash sekali per sesi (bukan tiap pindah halaman). Ditutup saat aplikasi siap, minimal sempat
+			// tampil utuh; tap untuk melewati. Pengaman: tetap tertutup sendiri bila JavaScript gagal dimuat.
+			(function () {
+				var s = document.getElementById('splash');
+				var gone = function () {
+					window.__splashGone = true;
+					dispatchEvent(new Event('splash:gone'));
+				};
+				var seen = false;
+				try {
+					seen = !!sessionStorage.getItem('md:splash');
+					sessionStorage.setItem('md:splash', '1');
+				} catch (e) {}
+				if (seen) {
+					s.remove();
+					window.__splashDone = function () {};
+					return gone();
+				}
+				var t0 = Date.now();
+				var min = matchMedia('(prefers-reduced-motion: reduce)').matches ? 500 : 1700;
+				var closed = false;
+				function hide() {
+					if (closed) return;
+					closed = true;
+					s.classList.add('out');
+					setTimeout(function () {
+						s.remove();
+						gone();
+					}, 720);
+				}
+				window.__splashDone = function () {
+					setTimeout(hide, Math.max(0, min - (Date.now() - t0)));
+				};
+				s.addEventListener('click', hide);
+				setTimeout(hide, 5000);
+			})();
+		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
