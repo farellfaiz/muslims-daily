@@ -4,7 +4,6 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { CITIES } from '#lib/cities.ts';
-	import { SOURCE_NAME, SOURCE_URL } from '#lib/data/salat.ts';
 	import { METHODS, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
 	import { settings, theme, toast, type ThemeMode } from '#lib/state/app.svelte.ts';
 
@@ -45,6 +44,12 @@
 		['system', 'Ikuti HP'],
 		['light', 'Terang'],
 		['dark', 'Gelap']
+	];
+
+	let creditsDlg: HTMLDialogElement | undefined = $state();
+	const CREDITS = [
+		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
+		['adhan', 'Pustaka perhitungan', 'Menghitung jadwal salat dan arah kiblat.']
 	];
 
 	const SOON = [
@@ -131,15 +136,31 @@
 		</p>
 	</div>
 </section>
-<section class="card credits">
-	<div class="label">Kredit</div>
-	<p>Desain terinspirasi dari <b>Pillars</b> (Prayer Times &amp; Qibla).</p>
-	<p>
-		Dzikir dan doa setelah salat dari
-		<a href={SOURCE_URL} target="_blank" rel="noopener">{SOURCE_NAME}</a>.
-	</p>
-	<p>Jadwal salat dan arah kiblat dihitung dengan pustaka <b>adhan</b>.</p>
-</section>
+<button class="card credits-btn press" onclick={() => creditsDlg?.showModal()}>
+	<Icon name="heart" size={18} />
+	<span class="grow">Kredit</span>
+	<Icon name="chevron" size={16} />
+</button>
+
+<dialog
+	bind:this={creditsDlg}
+	class="sheet"
+	aria-labelledby="credits-title"
+	onclick={(e) => e.target === creditsDlg && creditsDlg?.close()}
+>
+	<div class="sheet-in">
+		<div class="sheet-h">
+			<h2 id="credits-title">Kredit</h2>
+			<button class="x press" aria-label="Tutup" onclick={() => creditsDlg?.close()}><Icon name="x" size={18} /></button>
+		</div>
+		{#each CREDITS as [name, kind, desc] (name)}
+			<div class="crow">
+				<div class="v">{name} <span class="kind">{kind}</span></div>
+				<div class="sub">{desc}</div>
+			</div>
+		{/each}
+	</div>
+</dialog>
 
 <style>
 	.group {
@@ -277,22 +298,97 @@
 		align-items: center;
 		padding: 16px;
 	}
-	.credits {
+	.credits-btn {
 		margin-top: 12px;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		padding: 14px 16px;
-	}
-	.credits p {
-		margin: 8px 0 0;
-		font-size: 12.5px;
-		line-height: 1.5;
-		color: var(--ink2);
-	}
-	.credits b {
-		color: var(--ink);
-	}
-	.credits a {
+		text-align: left;
 		color: var(--navy);
 		font-weight: 700;
+		font-size: 14.5px;
+	}
+	.credits-btn .grow {
+		color: var(--ink);
+	}
+	.credits-btn :global(svg:last-child) {
+		color: var(--ink3);
+	}
+	.sheet {
+		margin: auto auto 0;
+		width: 100%;
+		max-width: 430px;
+		max-height: 80dvh;
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-lg) var(--r-lg) 0 0;
+		background: var(--card);
+		color: var(--ink);
+		border-top: 1px solid var(--line-strong);
+		box-shadow: 0 -10px 40px -20px var(--frame-shadow);
+	}
+	.sheet[open] {
+		animation: sheet-up 0.32s var(--ease);
+	}
+	.sheet::backdrop {
+		background: rgba(15, 26, 38, 0.45);
+		animation: fade 0.25s var(--ease);
+	}
+	@keyframes sheet-up {
+		from {
+			transform: translateY(100%);
+		}
+	}
+	@keyframes fade {
+		from {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.sheet[open],
+		.sheet::backdrop {
+			animation: none;
+		}
+	}
+	.sheet-in {
+		padding: 18px 18px calc(22px + var(--safe-b));
+	}
+	.sheet-h {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 6px;
+	}
+	.sheet-h h2 {
+		margin: 0;
+		font-family: var(--f-disp);
+		font-weight: 500;
+		font-size: 21px;
+		letter-spacing: -0.02em;
+	}
+	.x {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--sunk);
+		color: var(--ink2);
+		display: grid;
+		place-items: center;
+	}
+	.crow {
+		padding: 12px 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.crow:last-child {
+		border-bottom: 0;
+	}
+	.kind {
+		font-weight: 500;
+		font-size: 12px;
+		color: var(--ink3);
+		margin-left: 4px;
 	}
 	.about img {
 		border-radius: 16px;

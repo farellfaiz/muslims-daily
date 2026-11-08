@@ -142,7 +142,7 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 - **Huruf**: Fraunces (judul dan angka besar), Plus Jakarta Sans (isi), Amiri (Arab).
 - **Motif**: lengkung bawang, bintang delapan (penanda nomor doa), langit yang berubah.
 - **Gerak**: halus dan bermakna (transisi halaman, centang dengan percikan, api yang bergoyang), menghormati `prefers-reduced-motion`.
-- **Kredit**: halaman Lainnya mencantumkan "Desain terinspirasi dari Pillars", sumber dzikir setelah salat, dan pustaka adhan.
+- **Kredit**: tombol di halaman Lainnya yang membuka pop up berisi "Desain terinspirasi dari Pillars" dan pustaka adhan. Sumber dzikir setelah salat cukup disebut di halaman Dzikir.
 - **Mode**: terang dan gelap (langit malam). Semua warna lewat token CSS di `src/app.css`; komponen tidak boleh menulis warna langsung.
 - **Tulisan**: bahasa Indonesia santai, label singkat, tanpa em dash, jam ditulis "04.06 WIB".
 
