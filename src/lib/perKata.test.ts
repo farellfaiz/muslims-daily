@@ -1,10 +1,10 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { DZIKIR } from './data/dzikir.ts';
 import { SALAT } from './data/salat.ts';
 import { perKataKey, tokens, type PerKata } from './perKata.ts';
+import raw from '../../static/data/per-kata.json';
 
-const data: PerKata = JSON.parse(readFileSync(new URL('../../static/data/per-kata.json', import.meta.url), 'utf8'));
+const data = raw as unknown as PerKata;
 
 // Semua teks yang tampil di halaman Dzikir, dengan kuncinya.
 const texts: [string, string][] = [
