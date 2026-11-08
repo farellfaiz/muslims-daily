@@ -98,6 +98,8 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 - **Penghitung**: tombol besar di bawah tiap kartu, satu ketukan = satu bacaan. Bacaan pendek (sampai 10x) memakai titik-titik, bacaan panjang (100x) memakai angka dan bilah. HP bergetar halus tiap ketukan. Saat selesai, kartu meredup dan layar bergeser ke bacaan berikutnya.
 - Progres ("5 dari 22 bacaan") tersimpan per sesi (tiap salat, pagi, petang), masing-masing dengan tanggalnya sendiri, dan mulai dari nol saat tanggal berganti. Ada tombol mulai ulang.
 - Halaman Doa punya pintasan "Dzikir & doa setelah salat".
+- **Journey**: kartu di atas progres yang memberi gambaran alur sesi (mis. "6 dzikir lalu 16 doa"), satu ruas per bacaan, bacaan berikutnya, dan daftar langkah lengkap yang bisa dibuka; ketuk langkah untuk melompat ke kartunya.
+- **Per kata** (Draf): tombol di sebelah Latin dan Terjemahan. Teks Arab dipecah per kata dengan transliterasi dan artinya, tanpa mengubah teks Arab (dicek otomatis oleh tes). Ayat Qur'an (Ayat Kursi, Al-Ikhlas, Al-Falaq, An-Nas, dan tiga doa dari ayat) memakai arti per kata quran.com; dzikir dan doa dari hadis masih draf susunan AI yang perlu dicek orang yang paham, dan diberi label begitu di tiap kartu. Datanya file statis `static/data/per-kata.json` (sekitar 9 KB gzip) yang baru diunduh saat tombol dinyalakan dan ikut di-precache untuk offline.
 - Memakai preferensi baca yang sama dengan doa (latin, terjemahan, ukuran huruf Arab).
 
 ### 4.8 Kiblat (Selesai)
@@ -159,7 +161,7 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 - SvelteKit 3 + Svelte 5, `adapter-static`, `@vite-pwa/sveltekit`, `adhan`, Fontsource.
 - Data pengguna di `localStorage` dengan kunci `md:settings`, `md:tracker`, `md:doa`, `md:reading`, `md:backup` (waktu cadangan terakhir), `md:theme`, `md:dzikir` (hitungan dzikir hari ini).
 - Logika jadwal, busur hero, tracker, kiblat, hitungan dzikir, dan cadangan berupa fungsi murni yang diuji dengan Vitest.
-- Anggaran performa: JavaScript di bawah 100 KB gzip (saat ini sekitar 93 KB untuk semua halaman; data dzikir hanya dimuat di halaman dzikir), skor Lighthouse 95 ke atas, jalan penuh offline setelah kunjungan pertama.
+- Anggaran performa: JavaScript di bawah 100 KB gzip (saat ini sekitar 101 KB untuk semua halaman, sedikit melewati anggaran; terbesar adalah teks dzikir yang ikut di JavaScript halaman dzikir, kandidat dipindah ke file data statis), skor Lighthouse 95 ke atas, jalan penuh offline setelah kunjungan pertama.
 
 ## 9. Risiko dan batasan
 

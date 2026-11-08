@@ -5,6 +5,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { forTime } from '#lib/data/dzikir.ts';
+	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
 	import { SALAT, SOURCE_NAME, SOURCE_URL } from '#lib/data/salat.ts';
 	import { dateKey } from '#lib/date.ts';
 	import {
@@ -28,6 +29,8 @@
 	/** Bentuk bersama untuk kartu bacaan, dari data setelah salat maupun pagi petang. */
 	interface Item {
 		id: number;
+		/** kunci data arti per kata */
+		key: string;
 		title: string;
 		count: number;
 		arabic: string;
@@ -62,7 +65,14 @@
 	const date = $derived(!now ? '' : set === 'salat' && last && prayer === last.prayer ? last.date : dateKey(now));
 
 	const items = $derived<Item[]>(
-		set === 'salat' ? SALAT : forTime(time).map((d) => ({ ...d, ...d.text, group: undefined }))
+		set === 'salat'
+			? SALAT.map((d) => ({ ...d, key: perKataKey('salat', d.id) }))
+			: forTime(time).map((d) => ({
+					...d,
+					...d.text,
+					group: undefined,
+					key: perKataKey('dzikir', d.id, time === 'petang' && !!d.petang)
+				}))
 	);
 	const n = $derived(counts(dzikirProgress.value, session, date));
 	const done = $derived(doneCount(dzikirProgress.value, session, date, items));
@@ -73,7 +83,7 @@
 	const heading = $derived(set === 'salat' ? `Setelah ${prayerName}` : time === 'pagi' ? 'Pagi' : 'Petang');
 
 	const opt = $derived(reading.value);
-	const toggle = (k: 'lat' | 'tr') => (reading.value = { ...opt, [k]: !opt[k] });
+	const toggle = (k: 'lat' | 'tr' | 'wbw') => (reading.value = { ...opt, [k]: !opt[k] });
 	const resize = (delta: number) => (reading.value = { ...opt, size: Math.min(46, Math.max(22, opt.size + delta)) });
 
 	// Journey: gambaran alur semua bacaan sesi ini. Tertutup bawaannya supaya tidak mendorong kartu bacaan terlalu jauh.
@@ -89,6 +99,21 @@
 	);
 	const nextItem = $derived(items.find((d) => d.id === nextId));
 	const jump = (id: number) => document.getElementById(`dz-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+	// Arti per kata: file terpisah, baru diunduh saat pertama kali dinyalakan.
+	let perKata = $state<PerKata | null>(null);
+	let perKataFailed = $state(false);
+	$effect(() => {
+		if (!opt.wbw || perKata) return;
+		perKataFailed = false;
+		loadPerKata().then(
+			(d) => (perKata = d),
+			() => {
+				perKataFailed = true;
+				toast.say('Arti per kata gagal dimuat. Coba lagi saat online.');
+			}
+		);
+	});
 
 	async function count(d: Item, i: number) {
 		if (!date || (n[d.id] ?? 0) >= d.count) return;
@@ -122,6 +147,7 @@
 	<div class="opts" role="group" aria-label="Pilihan tampilan bacaan">
 		<button class="opt" aria-pressed={opt.lat} onclick={() => toggle('lat')}>Latin</button>
 		<button class="opt" aria-pressed={opt.tr} onclick={() => toggle('tr')}>Terjemahan</button>
+		<button class="opt" aria-pressed={opt.wbw} onclick={() => toggle('wbw')}>Per kata</button>
 		<span class="fs">
 			<button aria-label="Perkecil huruf Arab" onclick={() => resize(-3)}>A−</button>
 			<button aria-label="Perbesar huruf Arab" onclick={() => resize(3)} class="big">A+</button>
@@ -217,6 +243,7 @@
 {#each items as d, i (d.id)}
 	{@const c = n[d.id] ?? 0}
 	{@const ok = c >= d.count}
+	{@const pk = opt.wbw ? perKata?.[d.key] : undefined}
 	{#if d.group && d.group !== items[i - 1]?.group}
 		<div class="sec-h"><h2>{d.group === 'dzikir' ? 'Dzikir' : 'Doa'}</h2></div>
 	{/if}
@@ -227,9 +254,26 @@
 			{#if d.count > 1}<span class="times num">{d.count}×</span>{/if}
 		</div>
 
-		<p class="ar" style:font-size="{opt.size}px">{d.arabic}</p>
-		{#if opt.lat}<p class="lat">{d.latin}</p>{/if}
-		{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
+		{#if pk}
+			<div class="words" lang="ar" style:--arsize="{opt.size}px">
+				{#each pk.w as w, k (k)}
+					<span class="w">
+						<span class="wa">{w[0]}</span>
+						{#if opt.lat}<span class="wl" lang="id">{w[1]}</span>{/if}
+						<span class="wt" lang="id">{w[2]}</span>
+					</span>
+				{/each}
+			</div>
+			<p class="wsrc">
+				{#if pk.src === 'quran'}Arti per kata dari quran.com{:else}<span class="dot"></span>Arti per kata masih draf, belum diverifikasi{/if}
+			</p>
+			{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
+		{:else}
+			<p class="ar" style:font-size="{opt.size}px">{d.arabic}</p>
+			{#if opt.wbw && !perKataFailed}<p class="wsrc">Memuat arti per kata…</p>{/if}
+			{#if opt.lat}<p class="lat">{d.latin}</p>{/if}
+			{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
+		{/if}
 
 		{#if d.source || d.benefit}
 			<div class="meta">
@@ -287,7 +331,7 @@
 	.bar {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 8px;
 		padding-top: 18px;
 	}
 	.back {
@@ -304,13 +348,17 @@
 	.opts {
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		gap: 5px;
 		flex: 1;
 		min-width: 0;
+		/* layar sangat sempit (320px): tombol bisa digeser, tidak merusak tata letak */
+		overflow-x: auto;
+		scrollbar-width: none;
 	}
 	.opt {
 		height: 30px;
-		padding: 0 11px;
+		padding: 0 9px;
+		white-space: nowrap;
 		border-radius: 999px;
 		font-size: 12px;
 		font-weight: 700;
@@ -329,7 +377,7 @@
 		gap: 2px;
 	}
 	.fs button {
-		width: 32px;
+		width: 27px;
 		height: 30px;
 		border-radius: 10px;
 		font-weight: 800;
@@ -619,6 +667,58 @@
 		border-radius: 50%;
 		background: var(--peach);
 		flex: none;
+	}
+	.words {
+		display: flex;
+		flex-wrap: wrap;
+		direction: rtl;
+		gap: 6px;
+		margin-top: 12px;
+	}
+	.w {
+		direction: ltr;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		padding: 8px 9px 7px;
+		border-radius: 12px;
+		background: var(--paper);
+		border: 1px solid var(--line);
+		min-width: 64px;
+		flex: 1 1 auto;
+		max-width: 100%;
+	}
+	.wa {
+		font-family: var(--f-ar);
+		font-size: calc(var(--arsize) * 0.78);
+		line-height: 1.6;
+		direction: rtl;
+	}
+	.wl {
+		font-size: 11px;
+		font-style: italic;
+		color: var(--navy);
+		margin-top: 1px;
+	}
+	.wt {
+		font-size: 11px;
+		color: var(--ink2);
+		margin-top: 3px;
+		font-weight: 600;
+		line-height: 1.35;
+	}
+	.wsrc {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin: 8px 2px 0;
+		font-size: 11.5px;
+		color: var(--ink3);
+	}
+	.wsrc .dot {
+		width: 6px;
+		height: 6px;
 	}
 	.dz {
 		margin-top: 12px;
