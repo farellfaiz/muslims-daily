@@ -108,10 +108,8 @@
 			<!-- Bukit naik ke kanan seperti ikon; teks rata kanan di bagian bukit yang tinggi. -->
 			<div class="txt">
 				<div class="now">{next ? `Menuju ${next.name}` : 'Memuat jadwal'}</div>
-				<div class="cd num disp">{next ? formatTime(next.at) : '--.--'}<span class="tz">{tz}</span></div>
-				<div class="sub num" aria-live="off">
-					{#if next && now}{countdown(+next.at - +now)}<span class="sep">•</span>{formatTime(now)}{:else}&nbsp;{/if}
-				</div>
+				<div class="cd num disp" aria-live="off">{next && now ? countdown(+next.at - +now) : '--:--:--'}</div>
+				<div class="sub">{next ? `Pukul ${formatTime(next.at)} ${tz}` : ' '}</div>
 			</div>
 		</div>
 	</div>
@@ -261,16 +259,6 @@
 		color: var(--ink2);
 		font-weight: 600;
 		min-height: 1.2em;
-	}
-	.tz {
-		font-size: 0.42em;
-		font-weight: 500;
-		margin-left: 6px;
-		letter-spacing: 0.02em;
-	}
-	.sep {
-		margin: 0 6px;
-		color: var(--ink3);
 	}
 	.info {
 		display: flex;
