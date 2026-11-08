@@ -23,6 +23,14 @@ describe('langkah tour', () => {
 	it('teks tanpa em dash', () => {
 		for (const s of TOUR_STEPS) expect(s.title + s.body).not.toMatch(/—/);
 	});
+
+	it('teks Inggris terisi dan tanpa em dash', () => {
+		for (const s of TOUR_STEPS) {
+			expect(s.titleEn.trim(), s.target).not.toBe('');
+			expect(s.bodyEn.trim(), s.target).not.toBe('');
+			expect(s.titleEn + s.bodyEn, s.target).not.toMatch(/—/);
+		}
+	});
 });
 
 describe('cardTop', () => {

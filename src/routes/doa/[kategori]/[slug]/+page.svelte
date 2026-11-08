@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tr } from '#lib/i18n.svelte.ts';
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from '#lib/components/Icon.svelte';
 	import KoleksiSheet from '#lib/components/KoleksiSheet.svelte';
@@ -14,7 +15,9 @@
 	const readings = $derived(doa.parts.filter(isReading));
 	const src = $derived(SOURCES[doa.source]);
 	const srcLine = $derived(
-		doa.source === 'kemenag' ? `${SOURCES.kemenag.book}${doa.page ? `, hlm. ${doa.page}` : ''}` : `${src.name}, ${doa.url}`
+		doa.source === 'kemenag'
+			? `${tr(SOURCES.kemenag.book, SOURCES.kemenag.bookEn)}${doa.page ? tr(`, hlm. ${doa.page}`, `, p. ${doa.page}`) : ''}`
+			: `${src.name}, ${doa.url}`
 	);
 
 	// Tombol kembali: pakai riwayat bila datang dari dalam aplikasi, selain itu ke kategorinya.
@@ -39,30 +42,30 @@
 	function fav() {
 		const p = doaPrefs.value;
 		doaPrefs.value = { ...p, favs: isFav ? p.favs.filter((x) => x !== doa.id) : [...p.favs, doa.id] };
-		toast.say(isFav ? 'Dihapus dari favorit' : 'Disimpan ke favorit');
+		toast.say(isFav ? tr('Dihapus dari favorit', 'Removed from favorites') : tr('Disimpan ke favorit', 'Saved to favorites'));
 	}
 
 	function markRead() {
 		const p = doaPrefs.value;
 		const read = p.readOn === todayKey ? p.read : [];
 		doaPrefs.value = { ...p, readOn: todayKey, read: isRead ? read.filter((x) => x !== doa.id) : [...read, doa.id] };
-		if (!isRead) toast.say('Alhamdulillah, tercatat');
+		if (!isRead) toast.say(tr('Alhamdulillah, tercatat', 'Alhamdulillah, marked as read'));
 	}
 
 	const shareText = $derived(
 		[
 			doa.title,
 			...doa.parts.map((p) => (isReading(p) ? [p.arabic, p.latin, p.translation && `"${p.translation}"`].filter(Boolean).join('\n\n') : `— ${p.heading} —`)),
-			`Sumber: ${srcLine}`
+			`${tr('Sumber', 'Source')}: ${srcLine}`
 		].join('\n\n')
 	);
 
 	async function copy() {
 		try {
 			await navigator.clipboard.writeText(shareText);
-			toast.say('Doa disalin');
+			toast.say(tr('Doa disalin', 'Dua copied'));
 		} catch {
-			toast.say('Tidak bisa menyalin di browser ini');
+			toast.say(tr('Tidak bisa menyalin di browser ini', "Can't copy in this browser"));
 		}
 	}
 
@@ -85,24 +88,24 @@
 
 <div class="dhead" class:scrolled>
 	<div class="bar">
-		<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
+		<button class="back press" aria-label={tr('Kembali', 'Back')} onclick={back}><Icon name="back" /></button>
 		<a class="label grow catl" href="/doa/{cat.slug}">{cat.short}</a>
-		<button class="fav" class:on={isFav} aria-label="Favorit" aria-pressed={isFav} onclick={fav}><Icon name="heart" /></button>
+		<button class="fav" class:on={isFav} aria-label={tr('Favorit', 'Favorite')} aria-pressed={isFav} onclick={fav}><Icon name="heart" /></button>
 	</div>
-	<div class="opts" role="group" aria-label="Pilihan tampilan bacaan">
+	<div class="opts" role="group" aria-label={tr('Pilihan tampilan bacaan', 'Reading display options')}>
 		<button class="opt" aria-pressed={opt.lat} onclick={() => toggle('lat')}>Latin</button>
-		<button class="opt" aria-pressed={opt.tr} onclick={() => toggle('tr')}>Terjemahan</button>
+		<button class="opt" aria-pressed={opt.tr} onclick={() => toggle('tr')}>{tr('Terjemahan', 'Translation')}</button>
 		<span class="fs">
-			<button aria-label="Perkecil huruf Arab" onclick={() => resize(-3)}>A−</button>
-			<button aria-label="Perbesar huruf Arab" onclick={() => resize(3)} class="big">A+</button>
+			<button aria-label={tr('Perkecil huruf Arab', 'Smaller Arabic text')} onclick={() => resize(-3)}>A−</button>
+			<button aria-label={tr('Perbesar huruf Arab', 'Larger Arabic text')} onclick={() => resize(3)} class="big">A+</button>
 		</span>
 	</div>
 </div>
 
 <h1 class="disp title rise">{doa.title}</h1>
 <div class="meta">
-	{#if readings.length > 1}<span class="num">{readings.length} bacaan</span><span class="dot"></span>{/if}
-	<span class="num">{doa.words} kata</span><span class="dot"></span><span>{src.name}</span>
+	{#if readings.length > 1}<span class="num">{tr(`${readings.length} bacaan`, `${readings.length} readings`)}</span><span class="dot"></span>{/if}
+	<span class="num">{tr(`${doa.words} kata`, `${doa.words} ${doa.words === 1 ? 'word' : 'words'}`)}</span><span class="dot"></span><span>{src.name}</span>
 </div>
 
 <article class="card reading" style:--arsize="{opt.size}px">
@@ -111,10 +114,10 @@
 			<section class="part">
 				<p class="ar" lang="ar">{p.arabic}</p>
 				{#if opt.lat && p.latin}
-					<div class="block"><div class="label">Transliterasi</div><p class="lat">{p.latin}</p></div>
+					<div class="block"><div class="label">{tr('Transliterasi', 'Transliteration')}</div><p class="lat">{p.latin}</p></div>
 				{/if}
 				{#if opt.tr && p.translation}
-					<div class="block"><div class="label">Terjemahan</div><p class="tr">{p.translation}</p></div>
+					<div class="block"><div class="label">{tr('Terjemahan', 'Translation')}</div><p class="tr">{p.translation}</p></div>
 				{/if}
 			</section>
 		{:else}
@@ -126,7 +129,7 @@
 <aside class="card source">
 	<Icon name="info" />
 	<div class="grow">
-		<div class="label">Sumber &amp; keterangan</div>
+		<div class="label">{tr('Sumber & keterangan', 'Source & notes')}</div>
 		{#if doa.note}<p class="note">{doa.note}</p>{/if}
 		{#if doa.team.length}
 			<ul class="team">
@@ -134,23 +137,23 @@
 			</ul>
 		{/if}
 		{#if doa.url}
-			<a class="ext" href={doa.url} target="_blank" rel="noopener">Dari {src.name} · lihat aslinya</a>
+			<a class="ext" href={doa.url} target="_blank" rel="noopener">{tr(`Dari ${src.name} · lihat aslinya`, `From ${src.name} · see the original`)}</a>
 		{:else}
-			<p class="book">Dari buku {srcLine}</p>
+			<p class="book">{tr(`Dari buku ${srcLine}`, `From the book ${srcLine}`)}</p>
 		{/if}
 	</div>
 </aside>
 
 <div class="actions">
-	<button class="press" onclick={copy}><Icon name="copy" />Salin</button>
-	<button class="press" onclick={share}><Icon name="share" />Bagikan</button>
+	<button class="press" onclick={copy}><Icon name="copy" />{tr('Salin', 'Copy')}</button>
+	<button class="press" onclick={share}><Icon name="share" />{tr('Bagikan', 'Share')}</button>
 	<button class="press" class:on={inKoleksi} onclick={() => (koleksiOpen = true)}>
-		<Icon name={inKoleksi ? 'check' : 'plus'} />{inKoleksi ? 'Di koleksi' : 'Koleksi'}
+		<Icon name={inKoleksi ? 'check' : 'plus'} />{inKoleksi ? tr('Di koleksi', 'In collection') : tr('Koleksi', 'Collection')}
 	</button>
 </div>
 <button class="done press" class:ok={isRead} onclick={markRead}>
 	<Icon name="check" stroke={2.4} />
-	{isRead ? 'Sudah dibaca hari ini' : 'Tandai sudah dibaca'}
+	{isRead ? tr('Sudah dibaca hari ini', 'Read today') : tr('Tandai sudah dibaca', 'Mark as read')}
 </button>
 
 <KoleksiSheet bind:open={koleksiOpen} doaId={doa.id} />

@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from './Icon.svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 
 	/** Kerangka layar turunan Lainnya: tombol kembali, judul, lalu isi. */
 	let { title, sub, children }: { title: string; sub?: string; children: Snippet } = $props();
@@ -15,11 +16,11 @@
 <svelte:head><title>{title} · Muslims Daily</title></svelte:head>
 
 <div class="bar">
-	<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
+	<button class="back press" aria-label={tr('Kembali', 'Back')} onclick={back}><Icon name="back" /></button>
 </div>
 
 <header class="page-head">
-	<div class="label">Pengaturan</div>
+	<div class="label">{tr('Pengaturan', 'Settings')}</div>
 	<h1>{title}</h1>
 	{#if sub}<p class="sub">{sub}</p>{/if}
 </header>

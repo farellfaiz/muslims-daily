@@ -1,23 +1,21 @@
 <script lang="ts">
+	import { tr } from '#lib/i18n.svelte.ts';
 	import BackBar from '#lib/components/BackBar.svelte';
-	import DoaList from '#lib/components/DoaList.svelte';
+	import DoaIndexList from '#lib/components/DoaIndexList.svelte';
 
-	let { data } = $props();
 </script>
 
-<svelte:head><title>Doa favorit · Muslims Daily</title></svelte:head>
+<svelte:head><title>{tr('Doa favorit', 'Favorite duas')} · Muslims Daily</title></svelte:head>
 
 <BackBar fallback="/doa" />
 
 <header class="page-head">
-	<div class="label">Kumpulan doa</div>
-	<h1>Favorit</h1>
+	<div class="label">{tr('Kumpulan doa', 'Duas')}</div>
+	<h1>{tr('Favorit', 'Favorites')}</h1>
 </header>
 
-<DoaList
-	items={data.items}
-	categories={data.categories}
+<DoaIndexList
 	searchable={false}
 	onlyFavs
-	empty="Belum ada favorit. Ketuk ikon hati di doa yang sering kamu baca."
+	empty={tr('Belum ada favorit. Ketuk ikon hati di doa yang sering kamu baca.', 'No favorites yet. Tap the heart on the duas you read often.')}
 />

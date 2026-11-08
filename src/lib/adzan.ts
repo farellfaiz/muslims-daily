@@ -1,5 +1,5 @@
 import { formatTime } from './date.ts';
-import { PRAYERS, type DayTimes, type PrayerKey } from './prayer.ts';
+import { PRAYER_EN, PRAYERS, type DayTimes, type PrayerKey } from './prayer.ts';
 
 /**
  * Notifikasi adzan.
@@ -73,8 +73,16 @@ export function alertTag(a: Alert): string {
 	return `adzan-${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${a.key}-${a.kind}`;
 }
 
-export function alertText(a: Alert, place: string, minutesBefore: number): { title: string; body: string } {
+/** Teks notifikasi. Bahasa bawaan Indonesia; lang 'en' untuk bahasa Inggris. */
+export function alertText(a: Alert, place: string, minutesBefore: number, lang: 'id' | 'en' = 'id'): { title: string; body: string } {
 	const time = formatTime(a.prayerAt);
+	if (lang === 'en') {
+		const name = PRAYER_EN[a.key];
+		if (a.kind === 'before') {
+			return { title: `${name} in ${minutesBefore} minutes`, body: `${name} adhan at ${time} · ${place}` };
+		}
+		return { title: `Time for ${name}`, body: `It's time for ${name}, ${time} · ${place}` };
+	}
 	if (a.kind === 'before') {
 		return { title: `${a.name} ${minutesBefore} menit lagi`, body: `Adzan ${a.name} pukul ${time} · ${place}` };
 	}

@@ -10,6 +10,7 @@
 		type ParsedBackup
 	} from '#lib/backup.ts';
 	import { formatFull, fromKey } from '#lib/date.ts';
+	import { isEn, locale, tr } from '#lib/i18n.svelte.ts';
 	import { merge as mergeKoleksi } from '#lib/koleksi.ts';
 	import { backupMeta, doaPrefs, reading, settings, toast, tracker } from '#lib/state/app.svelte.ts';
 
@@ -36,18 +37,18 @@
 		a.remove();
 		setTimeout(() => URL.revokeObjectURL(url), 1000);
 		backupMeta.value = { lastAt: now.toISOString() };
-		toast.say('Cadangan disimpan');
+		toast.say(tr('Cadangan disimpan', 'Backup saved'));
 	}
 
 	async function pick(e: Event & { currentTarget: HTMLInputElement }) {
 		const file = e.currentTarget.files?.[0];
 		e.currentTarget.value = ''; // supaya file yang sama bisa dipilih lagi
 		if (!file) return;
-		if (file.size > 5_000_000) return toast.say('File terlalu besar untuk cadangan');
+		if (file.size > 5_000_000) return toast.say(tr('File terlalu besar untuk cadangan', 'This file is too big to be a backup'));
 		try {
 			pending = parseBackup(await file.text());
 		} catch (err) {
-			toast.say(err instanceof BackupError ? err.message : 'File tidak bisa dibaca');
+			toast.say(err instanceof BackupError ? (isEn() ? err.en : err.message) : tr('File tidak bisa dibaca', "Couldn't read the file"));
 		}
 	}
 
@@ -62,59 +63,70 @@
 			doaPrefs.value = { ...cur, view: p.doa.view, sort: p.doa.sort, favs: [...new Set([...cur.favs, ...p.doa.favs])], koleksi: mergeKoleksi(cur.koleksi, p.doa.koleksi) };
 		}
 		pending = null;
-		toast.say('Data dipulihkan');
+		toast.say(tr('Data dipulihkan', 'Data restored'));
 	}
 </script>
 
 <section class="card group">
 	<div class="stats">
 		<div class="stat">
-			<span class="n num">{sum.days}</span><span class="u">hari tercatat</span>
+			<span class="n num">{sum.days}</span><span class="u">{tr('hari tercatat', sum.days === 1 ? 'day logged' : 'days logged')}</span>
 		</div>
 		<div class="stat">
-			<span class="n num">{sum.prayers}</span><span class="u">salat</span>
+			<span class="n num">{sum.prayers}</span><span class="u">{tr('salat', sum.prayers === 1 ? 'prayer' : 'prayers')}</span>
 		</div>
 		<div class="stat">
-			<span class="n num">{favs}</span><span class="u">doa favorit</span>
+			<span class="n num">{favs}</span><span class="u">{tr('doa favorit', favs === 1 ? 'favorite dua' : 'favorite duas')}</span>
 		</div>
 	</div>
 
 	<div class="last" class:warn={!last && sum.days > 0}>
 		<span class="dot"></span>
-		{#if last}Terakhir dicadangkan {formatFull(last)}{:else}Belum pernah dicadangkan{/if}
+		{#if last}{tr('Terakhir dicadangkan', 'Last backed up')} {formatFull(last, locale())}{:else}{tr('Belum pernah dicadangkan', 'Never backed up')}{/if}
 	</div>
 
 	{#if pending && pSum}
-		<div class="confirm" role="dialog" aria-label="Pulihkan cadangan">
+		<div class="confirm" role="dialog" aria-label={tr('Pulihkan cadangan', 'Restore backup')}>
 			<div class="ct">
-				Cadangan {pending.exportedAt ? formatFull(pending.exportedAt) : 'tanpa tanggal'}
+				{pending.exportedAt
+					? tr(`Cadangan ${formatFull(pending.exportedAt, locale())}`, `Backup from ${formatFull(pending.exportedAt, locale())}`)
+					: tr('Cadangan tanpa tanggal', 'Undated backup')}
 			</div>
 			<div class="cs">
-				<span class="num">{pSum.days}</span> hari, <span class="num">{pSum.prayers}</span> salat{#if pSum.first}, sejak
-					{formatFull(fromKey(pSum.first))}{/if}
+				<span class="num">{pSum.days}</span>
+				{tr('hari', pSum.days === 1 ? 'day' : 'days')}, <span class="num">{pSum.prayers}</span>
+				{tr('salat', pSum.prayers === 1 ? 'prayer' : 'prayers')}{#if pSum.first}, {tr('sejak', 'since')}
+					{formatFull(fromKey(pSum.first), locale())}{/if}
 			</div>
 			<ul>
-				<li><Icon name="check" size={15} />Catatan salat digabung, tidak ada centang yang hilang</li>
+				<li>
+					<Icon name="check" size={15} />{tr(
+						'Catatan salat digabung, tidak ada centang yang hilang',
+						'Prayer logs are merged, so no check marks are lost'
+					)}
+				</li>
 				{#if pending.settings}
-					<li><Icon name="pin" size={15} />Lokasi diganti ke {pending.settings.label}</li>
+					<li><Icon name="pin" size={15} />{tr('Lokasi diganti ke', 'Location changes to')} {pending.settings.place === 'gps' ? tr('Lokasi saya', 'My location') : pending.settings.label}</li>
 				{/if}
 			</ul>
 			<div class="row">
-				<button class="btn ghost press" onclick={() => (pending = null)}>Batal</button>
-				<button class="btn press" onclick={restore}>Pulihkan</button>
+				<button class="btn ghost press" onclick={() => (pending = null)}>{tr('Batal', 'Cancel')}</button>
+				<button class="btn press" onclick={restore}>{tr('Pulihkan', 'Restore')}</button>
 			</div>
 		</div>
 	{:else}
 		<div class="row">
-			<button class="btn press" onclick={save}><Icon name="download" size={18} />Simpan</button>
-			<button class="btn ghost press" onclick={() => input.click()}><Icon name="restore" size={18} />Pulihkan</button>
+			<button class="btn press" onclick={save}><Icon name="download" size={18} />{tr('Simpan', 'Save')}</button>
+			<button class="btn ghost press" onclick={() => input.click()}><Icon name="restore" size={18} />{tr('Pulihkan', 'Restore')}</button>
 		</div>
 	{/if}
 	<input bind:this={input} type="file" accept="application/json,.json" onchange={pick} hidden />
 
 	<p class="hint">
-		Data hanya ada di HP ini. Simpan file cadangan ke Drive atau kirim ke diri sendiri supaya riwayat tidak hilang
-		saat ganti HP.
+		{tr(
+			'Data hanya ada di HP ini. Simpan file cadangan ke Drive atau kirim ke diri sendiri supaya riwayat tidak hilang saat ganti HP.',
+			"Your data only lives on this phone. Save the backup file to Drive or send it to yourself so your history isn't lost when you switch phones."
+		)}
 	</p>
 </section>
 

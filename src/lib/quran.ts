@@ -18,6 +18,9 @@ export interface Surat {
 	tempat: 'Makkiyah' | 'Madaniyah';
 }
 
+/** Nama tempat turun dalam bahasa Inggris, untuk tampilan berbahasa Inggris. */
+export const TEMPAT_EN: Record<Surat['tempat'], string> = { Makkiyah: 'Meccan', Madaniyah: 'Medinan' };
+
 export interface Ayat {
 	/** terjemahan Kemenag */
 	t: string;

@@ -3,6 +3,7 @@
 	import Picker from '#lib/components/Picker.svelte';
 	import SubPage from '#lib/components/SubPage.svelte';
 	import { CITIES } from '#lib/cities.ts';
+	import { tr } from '#lib/i18n.svelte.ts';
 	import { settings, toast } from '#lib/state/app.svelte.ts';
 
 	const s = $derived(settings.value);
@@ -11,12 +12,12 @@
 		const c = CITIES.find((x) => x.id === id);
 		if (!c) return;
 		settings.value = { ...s, place: c.id, label: c.name, lat: c.lat, lng: c.lng };
-		toast.say(`Lokasi diganti ke ${c.name}`);
+		toast.say(tr(`Lokasi diganti ke ${c.name}`, `Location changed to ${c.name}`));
 	}
 
 	// Lokasi GPS hanya dipakai untuk menghitung jadwal di perangkat. Tidak dikirim ke mana pun.
 	function useGps() {
-		if (!navigator.geolocation) return toast.say('Browser ini tidak mendukung lokasi');
+		if (!navigator.geolocation) return toast.say(tr('Browser ini tidak mendukung lokasi', "This browser doesn't support location"));
 		locating = true;
 		navigator.geolocation.getCurrentPosition(
 			(pos) => {
@@ -24,11 +25,11 @@
 				const lat = Math.round(pos.coords.latitude * 1e4) / 1e4;
 				const lng = Math.round(pos.coords.longitude * 1e4) / 1e4;
 				settings.value = { ...s, place: 'gps', label: 'Lokasi saya', lat, lng };
-				toast.say('Jadwal memakai lokasi kamu');
+				toast.say(tr('Jadwal memakai lokasi kamu', 'Prayer times now use your location'));
 			},
 			() => {
 				locating = false;
-				toast.say('Izin lokasi ditolak. Pilih kota dari daftar.');
+				toast.say(tr('Izin lokasi ditolak. Pilih kota dari daftar.', 'Location access was denied. Pick a city from the list.'));
 			},
 			{ enableHighAccuracy: false, timeout: 10000, maximumAge: 3600000 }
 		);
@@ -37,32 +38,40 @@
 	const cityOptions = CITIES.map((c) => ({ value: c.id, label: c.name }));
 </script>
 
-<SubPage title="Lokasi jadwal salat" sub="Jadwal salat dan arah kiblat dihitung dari titik ini.">
+<SubPage
+	title={tr('Lokasi jadwal salat', 'Prayer times location')}
+	sub={tr('Jadwal salat dan arah kiblat dihitung dari titik ini.', 'Prayer times and the qibla direction are calculated from this point.')}
+>
 <section class="card group">
-	<div class="label">Lokasi sekarang</div>
+	<div class="label">{tr('Lokasi sekarang', 'Current location')}</div>
 	<div class="loc">
 		<Icon name="pin" />
 		<div class="grow">
-			<div class="v">{s.label}</div>
+			<div class="v">{s.place === 'gps' ? tr('Lokasi saya', 'My location') : s.label}</div>
 			<div class="sub num">{s.lat.toFixed(4)}, {s.lng.toFixed(4)}</div>
 		</div>
 	</div>
 	<button class="btn press" onclick={useGps} disabled={locating}>
-		<Icon name="locate" size={18} />{locating ? 'Mencari lokasi…' : 'Gunakan lokasi saya'}
+		<Icon name="locate" size={18} />{locating ? tr('Mencari lokasi…', 'Finding your location…') : tr('Gunakan lokasi saya', 'Use my location')}
 	</button>
 	<div class="field">
-		<span class="label">Atau pilih kota</span>
+		<span class="label">{tr('Atau pilih kota', 'Or pick a city')}</span>
 		<Picker
-			label="Kota"
+			label={tr('Kota', 'City')}
 			options={cityOptions}
 			value={s.place === 'gps' ? '' : s.place}
-			placeholder="Lokasi saya (GPS)"
+			placeholder={tr('Lokasi saya (GPS)', 'My location (GPS)')}
 			searchable
-			searchPlaceholder="Cari kota"
+			searchPlaceholder={tr('Cari kota', 'Search cities')}
 			onchange={pickCity}
 		/>
 	</div>
-	<p class="hint">Lokasi hanya dipakai menghitung jadwal di HP kamu. Tidak dikirim ke server mana pun.</p>
+	<p class="hint">
+		{tr(
+			'Lokasi hanya dipakai menghitung jadwal di HP kamu. Tidak dikirim ke server mana pun.',
+			'Your location is only used to calculate prayer times on your phone. It is never sent to any server.'
+		)}
+	</p>
 </section>
 </SubPage>
 

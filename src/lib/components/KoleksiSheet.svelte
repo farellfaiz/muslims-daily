@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tr } from '#lib/i18n.svelte.ts';
 	import Icon from './Icon.svelte';
 	import Sheet from './Sheet.svelte';
 	import { create, has, NAME_MAX, toggle } from '#lib/koleksi.ts';
@@ -26,7 +27,7 @@
 		const k = list.find((x) => x.id === id)!;
 		const inside = has(k, doaId);
 		save(toggle(list, id, doaId));
-		toast.say(inside ? `Dikeluarkan dari ${k.name}` : `Disimpan ke ${k.name}`);
+		toast.say(inside ? tr(`Dikeluarkan dari ${k.name}`, `Removed from ${k.name}`) : tr(`Disimpan ke ${k.name}`, `Saved to ${k.name}`));
 	}
 
 	function make(e: SubmitEvent) {
@@ -34,13 +35,14 @@
 		const r = create(list, name, doaId);
 		if (!r) return input?.focus();
 		save(r.list);
-		toast.say(`Disimpan ke ${r.list.at(-1)!.name}`);
+		const made = r.list.at(-1)!.name;
+		toast.say(tr(`Disimpan ke ${made}`, `Saved to ${made}`));
 		name = '';
 		adding = false;
 	}
 </script>
 
-<Sheet bind:open title="Simpan ke koleksi">
+<Sheet bind:open title={tr('Simpan ke koleksi', 'Save to collection')}>
 	{#if list.length}
 		<div class="opts">
 			{#each list as k (k.id)}
@@ -49,7 +51,7 @@
 					<span class="box" class:on>{#if on}<Icon name="check" size={14} stroke={2.8} />{/if}</span>
 					<span class="grow">
 						<span class="kn">{k.name}</span>
-						<span class="ks num">{k.ids.length} doa</span>
+						<span class="ks num">{tr(`${k.ids.length} doa`, `${k.ids.length} ${k.ids.length === 1 ? 'dua' : 'duas'}`)}</span>
 					</span>
 				</button>
 			{/each}
@@ -58,24 +60,24 @@
 
 	{#if adding}
 		<form class="new" onsubmit={make}>
-			<label class="label" for="koleksi-nama">Nama koleksi baru</label>
+			<label class="label" for="koleksi-nama">{tr('Nama koleksi baru', 'New collection name')}</label>
 			<div class="row">
 				<input
 					id="koleksi-nama"
 					bind:this={input}
 					bind:value={name}
 					maxlength={NAME_MAX}
-					placeholder="Mis. Doa harian anak"
+					placeholder={tr('Mis. Doa harian anak', 'E.g. Duas for kids')}
 					autocomplete="off"
 					enterkeyhint="done"
 				/>
-				<button class="mk press" type="submit" disabled={!name.trim()}>Buat</button>
+				<button class="mk press" type="submit" disabled={!name.trim()}>{tr('Buat', 'Create')}</button>
 			</div>
 		</form>
 	{:else}
-		<button class="add press" onclick={() => (adding = true)}><Icon name="plus" size={18} />Koleksi baru</button>
+		<button class="add press" onclick={() => (adding = true)}><Icon name="plus" size={18} />{tr('Koleksi baru', 'New collection')}</button>
 	{/if}
-	<p class="hint">Koleksi cuma tersimpan di HP ini dan ikut file backup.</p>
+	<p class="hint">{tr('Koleksi cuma tersimpan di HP ini dan ikut file backup.', 'Collections are saved only on this phone and included in your backup file.')}</p>
 </Sheet>
 
 <style>

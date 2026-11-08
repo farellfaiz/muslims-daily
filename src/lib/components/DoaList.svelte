@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tr } from '#lib/i18n.svelte.ts';
 	import { onMount } from 'svelte';
 	import Icon from './Icon.svelte';
 	import Picker from './Picker.svelte';
@@ -19,7 +20,7 @@
 		searchable = true,
 		onlyFavs = false,
 		only = null,
-		empty = 'Belum ada doa yang cocok. Coba kata lain.'
+		empty
 	}: {
 		items: DoaItem[];
 		categories: Category[];
@@ -55,12 +56,17 @@
 		long: (a, b) => b.words - a.words
 	};
 
-	const SORT_OPTIONS: { value: DoaPrefs['sort']; label: string }[] = [
-		{ value: 'kat', label: 'Urutan bawaan' },
-		{ value: 'az', label: 'Urut A sampai Z' },
-		{ value: 'short', label: 'Terpendek dulu' },
-		{ value: 'long', label: 'Terpanjang dulu' }
-	];
+	// $derived supaya label ikut berganti saat bahasa diubah
+	const SORT_OPTIONS: { value: DoaPrefs['sort']; label: string }[] = $derived([
+		{ value: 'kat', label: tr('Urutan bawaan', 'Default order') },
+		{ value: 'az', label: tr('Urut A sampai Z', 'A to Z') },
+		{ value: 'short', label: tr('Terpendek dulu', 'Shortest first') },
+		{ value: 'long', label: tr('Terpanjang dulu', 'Longest first') }
+	]);
+
+	const noMatch = $derived(tr('Belum ada doa yang cocok. Coba kata lain.', 'No matching duas yet. Try another word.'));
+	const readingsLabel = (n: number) => tr(`${n} bacaan`, `${n} ${n === 1 ? 'reading' : 'readings'}`);
+	const wordsLabel = (n: number) => tr(`${n} kata`, `${n} ${n === 1 ? 'word' : 'words'}`);
 
 	const results = $derived.by(() => {
 		const nq = normalize(q.trim());
@@ -81,46 +87,46 @@
 		const apply = () => (doaPrefs.value = { ...prefs, favs: has ? prefs.favs.filter((x) => x !== id) : [...prefs.favs, id] });
 		if (onlyFavs) vt(apply);
 		else apply();
-		toast.say(has ? 'Dihapus dari favorit' : 'Disimpan ke favorit');
+		toast.say(has ? tr('Dihapus dari favorit', 'Removed from favorites') : tr('Disimpan ke favorit', 'Saved to favorites'));
 	}
 </script>
 
 {#if searchable}
 	<label class="search">
 		<Icon name="search" />
-		<span class="sr-only">Cari doa</span>
-		<input bind:this={input} bind:value={q} placeholder="Cari doa: hujan, rezeki, tidur" autocomplete="off" type="search" />
+		<span class="sr-only">{tr('Cari doa', 'Search duas')}</span>
+		<input bind:this={input} bind:value={q} placeholder={tr('Cari doa: hujan, rezeki, tidur', 'Search duas: rain, sustenance, sleep')} autocomplete="off" type="search" />
 	</label>
 {/if}
 
 <div class="toolbar">
-	<Picker label="Urutkan" size="sm" options={SORT_OPTIONS} value={prefs.sort} onchange={(v) => setPrefs({ sort: v as DoaPrefs['sort'] })} />
-	<div class="seg vt" role="group" aria-label="Tampilan">
-		<button aria-pressed={prefs.view === 'card'} aria-label="Tampilan kartu" onclick={() => setPrefs({ view: 'card' })}><Icon name="cards" size={17} /></button>
-		<button aria-pressed={prefs.view === 'list'} aria-label="Tampilan daftar" onclick={() => setPrefs({ view: 'list' })}><Icon name="list" size={17} /></button>
+	<Picker label={tr('Urutkan', 'Sort')} size="sm" options={SORT_OPTIONS} value={prefs.sort} onchange={(v) => setPrefs({ sort: v as DoaPrefs['sort'] })} />
+	<div class="seg vt" role="group" aria-label={tr('Tampilan', 'View')}>
+		<button aria-pressed={prefs.view === 'card'} aria-label={tr('Tampilan kartu', 'Card view')} onclick={() => setPrefs({ view: 'card' })}><Icon name="cards" size={17} /></button>
+		<button aria-pressed={prefs.view === 'list'} aria-label={tr('Tampilan daftar', 'List view')} onclick={() => setPrefs({ view: 'list' })}><Icon name="list" size={17} /></button>
 	</div>
 </div>
 
-<div class="label count">{results.length} doa</div>
+<div class="label count">{tr(`${results.length} doa`, `${results.length} ${results.length === 1 ? 'dua' : 'duas'}`)}</div>
 
 {#if !results.length}
-	<p class="empty">{q ? 'Belum ada doa yang cocok. Coba kata lain.' : empty}</p>
+	<p class="empty">{q ? noMatch : (empty ?? noMatch)}</p>
 {:else if prefs.view === 'card'}
 	{#each results as d, i (d.id)}
 		<a class="card dcard" href={doaHref(d)} style:animation-delay="{Math.min(i, 8) * 45}ms">
 			<div class="head">
 				<StarNum n={i + 1} />
-				<span class="label grow">{showCategory ? catName[d.category] : `${d.readings} bacaan`}</span>
-				<button class="fav" class:on={favs.has(d.id)} aria-label="Favorit" aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
+				<span class="label grow">{showCategory ? catName[d.category] : readingsLabel(d.readings)}</span>
+				<button class="fav" class:on={favs.has(d.id)} aria-label={tr('Favorit', 'Favorite')} aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
 					<Icon name="heart" />
 				</button>
 			</div>
 			<p class="ar" lang="ar">{d.preview}</p>
 			<h2 class="t disp">{d.title}</h2>
 			<div class="meta">
-				{#if showCategory && d.readings > 1}<span>{d.readings} bacaan</span><span class="dot"></span>{/if}
-				<span class="num">{d.words} kata</span>
-				{#if readToday.has(d.id)}<span class="dot"></span><span class="read">Dibaca</span>{/if}
+				{#if showCategory && d.readings > 1}<span>{readingsLabel(d.readings)}</span><span class="dot"></span>{/if}
+				<span class="num">{wordsLabel(d.words)}</span>
+				{#if readToday.has(d.id)}<span class="dot"></span><span class="read">{tr('Dibaca', 'Read')}</span>{/if}
 			</div>
 		</a>
 	{/each}
@@ -133,11 +139,11 @@
 					<p class="t">{d.title}</p>
 					<div class="meta">
 						{#if showCategory}<span class="ell">{catName[d.category]}</span><span class="dot"></span>{/if}
-						<span class="num">{d.words} kata</span>
-						{#if readToday.has(d.id)}<span class="dot"></span><span class="read">Dibaca</span>{/if}
+						<span class="num">{wordsLabel(d.words)}</span>
+						{#if readToday.has(d.id)}<span class="dot"></span><span class="read">{tr('Dibaca', 'Read')}</span>{/if}
 					</div>
 				</div>
-				<button class="fav" class:on={favs.has(d.id)} aria-label="Favorit" aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
+				<button class="fav" class:on={favs.has(d.id)} aria-label={tr('Favorit', 'Favorite')} aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
 					<Icon name="heart" />
 				</button>
 			</a>

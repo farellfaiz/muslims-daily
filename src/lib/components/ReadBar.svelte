@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from './Icon.svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 	import { reading } from '#lib/state/app.svelte.ts';
 
 	/**
@@ -20,14 +21,14 @@
 </script>
 
 <div class="bar">
-	<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
-	<div class="opts" role="group" aria-label="Pilihan tampilan bacaan">
+	<button class="back press" aria-label={tr('Kembali', 'Back')} onclick={back}><Icon name="back" /></button>
+	<div class="opts" role="group" aria-label={tr('Pilihan tampilan bacaan', 'Reading display options')}>
 		<button class="opt" aria-pressed={opt.lat} onclick={() => toggle('lat')}>Latin</button>
-		<button class="opt" aria-pressed={opt.tr} onclick={() => toggle('tr')}>Terjemahan</button>
-		<button class="opt" aria-pressed={opt.wbw} onclick={() => toggle('wbw')}>Per kata</button>
+		<button class="opt" aria-pressed={opt.tr} onclick={() => toggle('tr')}>{tr('Terjemahan', 'Translation')}</button>
+		<button class="opt" aria-pressed={opt.wbw} onclick={() => toggle('wbw')}>{tr('Per kata', 'Word by word')}</button>
 		<span class="fs">
-			<button aria-label="Perkecil huruf Arab" onclick={() => resize(-3)}>A−</button>
-			<button aria-label="Perbesar huruf Arab" onclick={() => resize(3)} class="big">A+</button>
+			<button aria-label={tr('Perkecil huruf Arab', 'Smaller Arabic text')} onclick={() => resize(-3)}>A−</button>
+			<button aria-label={tr('Perbesar huruf Arab', 'Larger Arabic text')} onclick={() => resize(3)} class="big">A+</button>
 		</span>
 	</div>
 </div>

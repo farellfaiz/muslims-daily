@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from './Icon.svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 
 	/** Tombol kembali: pakai riwayat bila datang dari dalam aplikasi, selain itu ke `fallback`. */
 	let { fallback }: { fallback: string } = $props();
@@ -11,7 +12,7 @@
 </script>
 
 <div class="bar">
-	<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
+	<button class="back press" aria-label={tr('Kembali', 'Back')} onclick={back}><Icon name="back" /></button>
 </div>
 
 <style>

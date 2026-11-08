@@ -11,6 +11,9 @@ export interface TourStep {
 	target: string;
 	title: string;
 	body: string;
+	/** padanan bahasa Inggris; dipilih komponen sesuai bahasa aktif */
+	titleEn: string;
+	bodyEn: string;
 }
 
 export const TOUR_STEPS: TourStep[] = [
@@ -18,54 +21,72 @@ export const TOUR_STEPS: TourStep[] = [
 		route: '/',
 		target: 'hero',
 		title: 'Jadwal salat',
-		body: 'Hitung mundur ke salat berikutnya. Warna langitnya ikut waktu asli, dari Subuh sampai malam.'
+		body: 'Hitung mundur ke salat berikutnya. Warna langitnya ikut waktu asli, dari Subuh sampai malam.',
+		titleEn: 'Prayer times',
+		bodyEn: 'Counts down to the next prayer. The sky follows the real time of day, from Fajr to night.'
 	},
 	{
 		route: '/',
 		target: 'lokasi',
 		title: 'Lokasi',
-		body: 'Tap di sini buat ganti kota atau pakai GPS, biar jadwalnya sesuai tempat kamu.'
+		body: 'Tap di sini buat ganti kota atau pakai GPS, biar jadwalnya sesuai tempat kamu.',
+		titleEn: 'Location',
+		bodyEn: 'Tap here to change your city or use GPS, so the times match where you are.'
 	},
 	{
 		route: '/',
 		target: 'catatan',
 		title: 'Catatan salat',
-		body: 'Centang salat yang sudah kamu kerjakan. Lupa centang kemarin? Mundurkan harinya pakai tombol panah.'
+		body: 'Centang salat yang sudah kamu kerjakan. Lupa centang kemarin? Mundurkan harinya pakai tombol panah.',
+		titleEn: 'Prayer log',
+		bodyEn: "Tick off each prayer once you've prayed. Forgot yesterday? Go back a day with the arrows."
 	},
 	{
 		route: '/',
 		target: 'streak',
 		title: 'Streak',
-		body: 'Jumlah hari berturut-turut yang salatnya lengkap. Heatmap dan detailnya ada di Tracker.'
+		body: 'Jumlah hari berturut-turut yang salatnya lengkap. Heatmap dan detailnya ada di Tracker.',
+		titleEn: 'Streak',
+		bodyEn: "How many days in a row you've prayed all five. The heatmap and details are in Tracker."
 	},
 	{
 		route: '/',
 		target: 'menu',
 		title: 'Menu',
-		body: "Jalan pintas ke doa, dzikir, Al-Qur'an, dan arah kiblat."
+		body: "Jalan pintas ke doa, dzikir, Al-Qur'an, dan arah kiblat.",
+		titleEn: 'Menu',
+		bodyEn: 'Shortcuts to duas, dhikr, the Quran, and the Qibla direction.'
 	},
 	{
 		route: '/doa',
 		target: 'doa',
 		title: 'Kumpulan doa',
-		body: 'Ratusan doa per kategori, lengkap dengan Arab, latin, dan terjemahan. Bisa di-search juga.'
+		body: 'Ratusan doa per kategori, lengkap dengan Arab, latin, dan terjemahan. Bisa di-search juga.',
+		titleEn: 'Dua collection',
+		bodyEn: 'Hundreds of duas by category, with Arabic, transliteration, and translation. You can search them too.'
 	},
 	{
 		route: '/dzikir',
 		target: 'dzikir',
 		title: 'Dzikir',
-		body: 'Pilih dzikir setelah salat atau pagi petang. Tap tombol di bawah tiap selesai baca, hitungannya jalan sendiri.'
+		body: 'Pilih dzikir setelah salat atau pagi petang. Tap tombol di bawah tiap selesai baca, hitungannya jalan sendiri.',
+		titleEn: 'Dhikr',
+		bodyEn: 'Pick after-prayer or morning and evening dhikr. Tap the button below after each recitation and it keeps count for you.'
 	},
 	{
 		target: 'nav',
 		title: 'Navigasi',
-		body: 'Pindah halaman dari sini. Pengaturan jadwal, backup, dan dark mode ada di Lainnya.'
+		body: 'Pindah halaman dari sini. Pengaturan jadwal, backup, dan dark mode ada di Lainnya.',
+		titleEn: 'Navigation',
+		bodyEn: 'Switch pages from here. Prayer time settings, backup, and dark mode are under More.'
 	},
 	{
 		route: '/lainnya',
 		target: 'tour',
 		title: 'Mau ulang tour?',
-		body: 'Tour ini bisa kamu buka lagi kapan saja dari sini. Selamat beribadah!'
+		body: 'Tour ini bisa kamu buka lagi kapan saja dari sini. Selamat beribadah!',
+		titleEn: 'Want the tour again?',
+		bodyEn: 'You can open this tour again from here anytime. May Allah accept your prayers!'
 	}
 ];
 

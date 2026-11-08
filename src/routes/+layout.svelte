@@ -2,7 +2,6 @@
 	import '@fontsource-variable/fraunces/opsz.css';
 	import '@fontsource-variable/plus-jakarta-sans';
 	import '@fontsource/amiri/arabic-400.css';
-	import '@fontsource/amiri/arabic-700.css';
 	import '../app.css';
 
 	import { onMount } from 'svelte';
@@ -16,6 +15,7 @@
 	import { install } from '#lib/state/install.svelte.ts';
 	import { adzan } from '#lib/state/adzan.svelte.ts';
 	import { tour } from '#lib/state/tour.svelte.ts';
+	import { lang } from '#lib/i18n.svelte.ts';
 	import { quiet } from '#lib/transition.ts';
 
 	let { children } = $props();
@@ -33,6 +33,11 @@
 			stopInstall();
 			stopAdzan();
 		};
+	});
+
+	// Bahasa: atribut lang di <html> untuk pembaca layar dan pemenggalan kata.
+	$effect(() => {
+		document.documentElement.lang = lang.value.code;
 	});
 
 	// Tema: atribut data-theme di <html> + warna bilah status mengikuti latar halaman.

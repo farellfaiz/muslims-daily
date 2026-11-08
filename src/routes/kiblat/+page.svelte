@@ -4,6 +4,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { ALIGN_DEG, angleDiff, distanceKm, headingFrom, qiblaBearing, smoothAngle, windName } from '#lib/qibla.ts';
 	import { settings } from '#lib/state/app.svelte.ts';
+	import { locale, tr } from '#lib/i18n.svelte.ts';
 
 	let cameFromApp = $state(false);
 	afterNavigate(({ from }) => (cameFromApp = !!from));
@@ -12,7 +13,7 @@
 	const s = $derived(settings.value);
 	const bearing = $derived(qiblaBearing(s.lat, s.lng));
 	const km = $derived(Math.round(distanceKm(s.lat, s.lng)));
-	const fmtKm = new Intl.NumberFormat('id-ID');
+	const fmtKm = $derived(new Intl.NumberFormat(locale()));
 
 	/**
 	 * idle = menunggu ketukan (iOS wajib minta izin lewat ketukan),
@@ -29,9 +30,9 @@
 	const aligned = $derived(diff !== null && Math.abs(diff) <= ALIGN_DEG);
 	const hint = $derived.by(() => {
 		if (diff === null) return '';
-		if (aligned) return 'Sudah menghadap kiblat';
+		if (aligned) return tr('Sudah menghadap kiblat', "You're facing the Qibla");
 		const d = Math.round(Math.abs(diff));
-		return diff > 0 ? `Putar ke kanan ${d}°` : `Putar ke kiri ${d}°`;
+		return diff > 0 ? tr(`Putar ke kanan ${d}°`, `Turn right ${d}°`) : tr(`Putar ke kiri ${d}°`, `Turn left ${d}°`);
 	});
 
 	$effect(() => {
@@ -105,27 +106,31 @@
 	});
 
 	const TICKS = Array.from({ length: 72 }, (_, i) => i * 5);
-	const CARD = [
-		['U', 0],
-		['T', 90],
-		['S', 180],
-		['B', 270]
-	] as const;
+	// $derived supaya huruf mata angin ikut berganti bahasa (U/T/S/B -> N/E/S/W)
+	const CARD = $derived([
+		[tr('U', 'N'), 0],
+		[tr('T', 'E'), 90],
+		[tr('S', 'S'), 180],
+		[tr('B', 'W'), 270]
+	] as const);
 </script>
 
 <svelte:head>
-	<title>Kiblat · Muslims Daily</title>
-	<meta name="description" content="Arah kiblat dari lokasimu, dengan kompas di HP." />
+	<title>{tr('Kiblat', 'Qibla')} · Muslims Daily</title>
+	<meta
+		name="description"
+		content={tr('Arah kiblat dari lokasimu, dengan kompas di HP.', "Qibla direction from where you are, using your phone's compass.")}
+	/>
 </svelte:head>
 
 <div class="bar">
-	<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
+	<button class="back press" aria-label={tr('Kembali', 'Back')} onclick={back}><Icon name="back" /></button>
 	<a class="loc press" href="/lainnya/lokasi"><Icon name="pin" size={15} />{s.label}</a>
 </div>
 
 <header class="page-head">
-	<div class="label">Arah salat</div>
-	<h1>Kiblat</h1>
+	<div class="label">{tr('Arah salat', 'Prayer direction')}</div>
+	<h1>{tr('Kiblat', 'Qibla')}</h1>
 </header>
 
 <section class="card dialcard" class:aligned>
@@ -137,7 +142,10 @@
 			viewBox="0 0 280 280"
 			style:transform="rotate({mode === 'live' ? rot : 0}deg)"
 			role="img"
-			aria-label="Kompas. Kiblat {Math.round(bearing)} derajat dari utara."
+			aria-label={tr(
+			`Kompas. Kiblat ${Math.round(bearing)} derajat dari utara.`,
+			`Compass. The Qibla is ${Math.round(bearing)} degrees from north.`
+		)}
 		>
 			<circle class="ring" cx="140" cy="140" r="132" />
 			{#each TICKS as t (t)}
@@ -152,8 +160,8 @@
 					transform="rotate({t} 140 140)"
 				/>
 			{/each}
-			{#each CARD as [l, d] (l)}
-				<text class="card-l" class:n={l === 'U'} x="140" y="46" transform="rotate({d} 140 140)">{l}</text>
+			{#each CARD as [l, d] (d)}
+				<text class="card-l" class:n={d === 0} x="140" y="46" transform="rotate({d} 140 140)">{l}</text>
 			{/each}
 			<!-- garis dan ikon Ka'bah pada arah kiblat -->
 			<g transform="rotate({bearing} 140 140)">
@@ -169,7 +177,9 @@
 
 	<div class="read">
 		<div class="deg disp num">{Math.round(bearing)}°</div>
-		<div class="sub">dari utara, arah {windName(bearing)}</div>
+		<div class="sub">
+			{tr(`dari utara, arah ${windName(bearing)}`, `from north, toward the ${windName(bearing, true)}`)}
+		</div>
 	</div>
 
 	{#if mode === 'live'}
@@ -177,22 +187,27 @@
 			{#if aligned}<Icon name="check" size={16} stroke={2.4} />{/if}{hint}
 		</div>
 	{:else if mode === 'idle'}
-		<button class="btn press" onclick={enable}><Icon name="compass" size={18} />Aktifkan kompas</button>
+		<button class="btn press" onclick={enable}><Icon name="compass" size={18} />{tr('Aktifkan kompas', 'Turn on compass')}</button>
 	{:else}
 		<p class="status none">
-			{denied ? 'Izin kompas ditolak.' : 'Kompas tidak tersedia di perangkat ini.'}
-			Utara ada di atas: hadapkan badan ke {Math.round(bearing)}° searah jarum jam.
+			{denied
+				? tr('Izin kompas ditolak.', 'Compass permission was denied.')
+				: tr('Kompas tidak tersedia di perangkat ini.', "This device doesn't have a compass.")}
+			{tr(
+				`Utara ada di atas: hadapkan badan ke ${Math.round(bearing)}° searah jarum jam.`,
+				`With north at the top, face ${Math.round(bearing)}° clockwise.`
+			)}
 		</p>
 	{/if}
 </section>
 
 <section class="card facts">
 	<div class="fact">
-		<span class="label">Jarak ke Ka'bah</span>
+		<span class="label">{tr("Jarak ke Ka'bah", 'Distance to the Kaaba')}</span>
 		<span class="v num">{fmtKm.format(km)} km</span>
 	</div>
 	<div class="fact">
-		<span class="label">Dihitung dari</span>
+		<span class="label">{tr('Dihitung dari', 'Calculated from')}</span>
 		<span class="v">{s.label}</span>
 	</div>
 </section>
@@ -202,10 +217,14 @@
 		<path d="M24 14C18 4 6 4 6 14s12 10 18 0 18-10 18 0-12 10-18 0z" />
 	</svg>
 	<div>
-		<div class="v">{needCalib ? 'Kompas perlu dikalibrasi' : 'Agar arah akurat'}</div>
+		<div class="v">
+			{needCalib ? tr('Kompas perlu dikalibrasi', 'Your compass needs calibrating') : tr('Agar arah akurat', 'For an accurate reading')}
+		</div>
 		<p>
-			Gerakkan HP membentuk angka 8 beberapa kali. Letakkan mendatar dan jauhkan dari magnet, logam, atau casing
-			bermagnet.
+			{tr(
+				'Gerakkan HP membentuk angka 8 beberapa kali. Letakkan mendatar dan jauhkan dari magnet, logam, atau casing bermagnet.',
+				'Move your phone in a figure 8 a few times. Hold it flat and keep it away from magnets, metal, or magnetic cases.'
+			)}
 		</p>
 	</div>
 </section>

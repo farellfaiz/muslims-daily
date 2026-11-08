@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from './Icon.svelte';
 	import { formatTime } from '#lib/date.ts';
+	import { prayerName, tr } from '#lib/i18n.svelte.ts';
 	import { ADJUST_LIMIT, IMSAK_OPTIONS, PRAYERS, type PrayerKey } from '#lib/prayer.ts';
 	import { clock, settings, timesForDay } from '#lib/state/app.svelte.ts';
 
@@ -29,38 +30,43 @@
 </script>
 
 <section class="card group">
-	<div class="label">Per salat, hari ini</div>
+	<div class="label">{tr('Per salat, hari ini', 'Per prayer, today')}</div>
 	{#each PRAYERS as p (p.key)}
 		{@const v = s.adjust[p.key] ?? 0}
 		<div class="row">
 			<div class="grow">
-				<div class="v">{p.name}</div>
+				<div class="v">{prayerName(p.key)}</div>
 				<div class="t num">{times ? formatTime(times[p.key]) : '--.--'}</div>
 			</div>
 			<div class="stepper">
-				<button aria-label="{p.name} 1 menit lebih awal" disabled={v <= -ADJUST_LIMIT} onclick={() => step(p.key, -1)}>
+				<button aria-label={tr(`${p.name} 1 menit lebih awal`, `${prayerName(p.key)} 1 minute earlier`)} disabled={v <= -ADJUST_LIMIT} onclick={() => step(p.key, -1)}>
 					<Icon name="minus" size={16} stroke={2.2} />
 				</button>
 				<span class="num val" class:on={v !== 0}>{v === 0 ? '0' : fmt(v)}</span>
-				<button aria-label="{p.name} 1 menit lebih lambat" disabled={v >= ADJUST_LIMIT} onclick={() => step(p.key, 1)}>
+				<button aria-label={tr(`${p.name} 1 menit lebih lambat`, `${prayerName(p.key)} 1 minute later`)} disabled={v >= ADJUST_LIMIT} onclick={() => step(p.key, 1)}>
 					<Icon name="plus" size={16} stroke={2.2} />
 				</button>
 			</div>
 		</div>
 	{/each}
 	{#if changed.length}
-		<button class="reset press" onclick={reset}>Kembalikan semua ke 0</button>
+		<button class="reset press" onclick={reset}>{tr('Kembalikan semua ke 0', 'Reset all to 0')}</button>
 	{/if}
 </section>
 
 <section class="card group">
 	<div class="label">Imsak</div>
-	<div class="seg wide" role="group" aria-label="Menit imsak sebelum Subuh">
+	<div class="seg wide" role="group" aria-label={tr('Menit imsak sebelum Subuh', 'Imsak minutes before Fajr')}>
 		{#each IMSAK_OPTIONS as m (m)}
-			<button aria-pressed={s.imsak === m} onclick={() => setImsak(m)}>{m} menit</button>
+			<button aria-pressed={s.imsak === m} onclick={() => setImsak(m)}>{tr(`${m} menit`, `${m} min`)}</button>
 		{/each}
 	</div>
-	<p class="hint">Jarak imsak sebelum Subuh. Kebanyakan jadwal imsakiyah di Indonesia memakai 10 menit.</p>
+	<p class="hint">
+		{tr(
+			'Jarak imsak sebelum Subuh. Kebanyakan jadwal imsakiyah di Indonesia memakai 10 menit.',
+			'How long imsak comes before Fajr. Most imsakiyah schedules in Indonesia use 10 minutes.'
+		)}
+	</p>
 </section>
 
 <style>

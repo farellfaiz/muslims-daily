@@ -35,6 +35,20 @@
 	import { heroArc, nextPrayer, skyPhase, type DayTimes } from '#lib/prayer.ts';
 	import Icon from './Icon.svelte';
 	import { settings } from '#lib/state/app.svelte.ts';
+	import { isEn, prayerName, tr } from '#lib/i18n.svelte.ts';
+
+	// Label busur dari heroArc (prayer.ts) selalu berbahasa Indonesia; diterjemahkan di sini saat tampil.
+	const ARC_EN: Record<string, string> = {
+		Subuh: 'Fajr',
+		Terbit: 'Sunrise',
+		Dzuhur: 'Dhuhr',
+		Ashar: 'Asr',
+		Maghrib: 'Maghrib',
+		Isya: 'Isha',
+		'Tengah malam': 'Midnight',
+		'1/3 akhir': 'Last 1/3'
+	};
+	const arcLabel = (l: string) => (isEn() ? (ARC_EN[l] ?? l) : l);
 
 	let {
 		now,
@@ -67,7 +81,7 @@
 	const inLastThird = $derived(!!(now && arc?.lastThird && now >= arc.lastThird.from && now < arc.lastThird.to));
 </script>
 
-<section class="hero" aria-label="Waktu salat berikutnya" data-tour="hero">
+<section class="hero" aria-label={tr('Waktu salat berikutnya', 'Next prayer')} data-tour="hero">
 	<div class="arch">
 		<div class="win" style:--sky={sky.g} style:--stars={sky.stars} style:--sky-ink={sky.ink}>
 			<div class="stars" aria-hidden="true">
@@ -91,7 +105,7 @@
 						y={p.place === 'below' ? p.pt[1] + 18 : p.place === 'right' ? p.pt[1] + 3.5 : p.pt[1] - 10}
 						text-anchor={p.place === 'right' ? 'start' : 'middle'}
 						class:mk={p.kind === 'marker'}
-						class:hid={Math.abs(p.pt[0] - body[0]) < 30 && Math.abs(p.pt[1] - body[1]) < 40}>{p.label}</text
+						class:hid={Math.abs(p.pt[0] - body[0]) < 30 && Math.abs(p.pt[1] - body[1]) < 40}>{arcLabel(p.label)}</text
 					>
 				{/each}
 			</svg>
@@ -107,9 +121,9 @@
 			</svg>
 			<!-- Bukit naik ke kanan seperti ikon; teks rata kanan di bagian bukit yang tinggi. -->
 			<div class="txt">
-				<div class="now">{next ? `Menuju ${next.name}` : 'Memuat jadwal'}</div>
+				<div class="now">{next ? tr(`Menuju ${prayerName(next.key)}`, `Until ${prayerName(next.key)}`) : tr('Memuat jadwal', 'Loading times')}</div>
 				<div class="cd num disp" aria-live="off">{next && now ? countdown(+next.at - +now) : '--:--:--'}</div>
-				<div class="sub">{next ? `Pukul ${formatTime(next.at)} ${tz}` : ' '}</div>
+				<div class="sub">{next ? tr(`Pukul ${formatTime(next.at)} ${tz}`, `At ${formatTime(next.at)} ${tz}`) : ' '}</div>
 			</div>
 		</div>
 	</div>
@@ -119,12 +133,14 @@
 			{#if arc.mode === 'night'}
 				<span class="chip" class:hot={inLastThird}>
 					<Icon name="star" size={14} />
-					{inLastThird ? 'Sekarang 1/3 malam terakhir' : `1/3 malam terakhir ${formatTime(arc.lastThird!.from)}`}
+					{inLastThird
+						? tr('Sekarang 1/3 malam terakhir', 'Now in the last third of the night')
+						: tr(`1/3 malam terakhir ${formatTime(arc.lastThird!.from)}`, `Last third of the night ${formatTime(arc.lastThird!.from)}`)}
 				</span>
-				<span class="chip">Imsak {formatTime(arc.imsak!)}</span>
+				<span class="chip">{tr('Imsak', 'Imsak')} {formatTime(arc.imsak!)}</span>
 			{:else}
-				<span class="chip">Terbit {formatTime(arc.terbit!)}</span>
-				<span class="chip">Terbenam {formatTime(arc.maghrib!)}</span>
+				<span class="chip">{tr('Terbit', 'Sunrise')} {formatTime(arc.terbit!)}</span>
+				<span class="chip">{tr('Terbenam', 'Sunset')} {formatTime(arc.maghrib!)}</span>
 			{/if}
 		</div>
 	{/if}

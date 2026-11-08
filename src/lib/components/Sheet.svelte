@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Icon from './Icon.svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 
 	/**
 	 * Lembar bawah (bottom sheet) dengan <dialog> bawaan: Esc, fokus, dan latar gelap sudah ditangani browser.
@@ -30,7 +31,7 @@
 	<!-- Judul di luar area gulir: isi yang digulir tidak pernah tergambar di atasnya. -->
 	<div class="sheet-h">
 		<h2>{title}</h2>
-		<button class="x press" aria-label="Tutup" onclick={() => (open = false)}><Icon name="x" size={18} /></button>
+		<button class="x press" aria-label={tr('Tutup', 'Close')} onclick={() => (open = false)}><Icon name="x" size={18} /></button>
 	</div>
 	<div class="sheet-in">
 		{@render children()}

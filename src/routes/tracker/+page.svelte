@@ -5,6 +5,7 @@
 	import { PRAYERS } from '#lib/prayer.ts';
 	import { clock, toast, tracker } from '#lib/state/app.svelte.ts';
 	import { bestStreak, consistency, currentStreak, heatmap, toggleUdzur } from '#lib/tracker.ts';
+	import { prayerName, tr } from '#lib/i18n.svelte.ts';
 
 	const WEEKS = 26;
 
@@ -29,15 +30,19 @@
 	function udzur() {
 		if (!today) return;
 		tracker.value = toggleUdzur(tracker.value, today);
-		toast.say(tracker.value.udzurSince ? 'Mode udzur aktif. Streak dijeda.' : 'Mode udzur nonaktif.');
+		toast.say(
+			tracker.value.udzurSince
+				? tr('Mode udzur aktif. Streak dijeda.', 'Excused days on. Your streak is paused.')
+				: tr('Mode udzur nonaktif.', 'Excused days off.')
+		);
 	}
 </script>
 
-<svelte:head><title>Tracker salat · Muslims Daily</title></svelte:head>
+<svelte:head><title>{tr('Tracker salat', 'Prayer tracker')} · Muslims Daily</title></svelte:head>
 
 <header class="page-head">
-	<div class="label">Tracker salat</div>
-	<h1>Istiqamah kamu</h1>
+	<div class="label">{tr('Tracker salat', 'Prayer tracker')}</div>
+	<h1>{tr('Istiqamah kamu', 'Your consistency')}</h1>
 </header>
 
 <section class="card big rise" class:lit={streak > 0}>
@@ -48,22 +53,31 @@
 			<div class="n num disp">{streak}</div>
 		</div>
 		<div class="grow">
-			<div class="t">hari berturut-turut</div>
+			<div class="t">{tr('hari berturut-turut', 'day streak')}</div>
 			<div class="s">
-				{empty ? 'Catat salat di Beranda. Hari dengan lima waktu lengkap menambah streak.' : 'Lima waktu tercatat setiap hari.'}
+				{empty
+					? tr(
+							'Catat salat di Beranda. Hari dengan lima waktu lengkap menambah streak.',
+							'Log your prayers on Home. Every day with all five prayers adds to your streak.'
+						)
+					: tr('Lima waktu tercatat setiap hari.', 'All five prayers logged every day.')}
 			</div>
 		</div>
 	</div>
 	<div class="best">
 		<span class="medal" aria-hidden="true"><Icon name="trophy" size={16} /></span>
-		<span class="bl">Rekor terbaik</span>
+		<span class="bl">{tr('Rekor terbaik', 'Best streak')}</span>
 		<span class="badge num" class:record={best > 0 && streak >= best}>
-			{best} hari{best > 0 && streak >= best ? ' · sedang berjalan' : ''}
+			{best}
+			{tr('hari', best === 1 ? 'day' : 'days')}{best > 0 && streak >= best ? tr(' · sedang berjalan', ' · ongoing') : ''}
 		</span>
 	</div>
 </section>
 
-<div class="sec-h"><h2>Jejak 6 bulan</h2><span class="label">Salat per hari</span></div>
+<div class="sec-h">
+	<h2>{tr('Jejak 6 bulan', 'Last 6 months')}</h2>
+	<span class="label">{tr('Salat per hari', 'Prayers per day')}</span>
+</div>
 <section class="card heat-card">
 	{#if cols.length}
 		<Heatmap {cols} />
@@ -71,15 +85,15 @@
 </section>
 
 <button class="sec-h fold" aria-expanded={showRates} aria-controls="rates" onclick={() => (showRates = !showRates)}>
-	<h2>Konsistensi per salat</h2>
-	<span class="label">30 hari <span class="chev"><Icon name="chevron" size={14} stroke={2.2} /></span></span>
+	<h2>{tr('Konsistensi per salat', 'Consistency by prayer')}</h2>
+	<span class="label">{tr('30 hari', '30 days')} <span class="chev"><Icon name="chevron" size={14} stroke={2.2} /></span></span>
 </button>
 {#if showRates}
 	<section class="card bars" id="rates">
 		{#each PRAYERS as p (p.key)}
 			{@const v = rates?.[p.key] ?? null}
 			<div class="b">
-				<span>{p.name}</span>
+				<span>{prayerName(p.key)}</span>
 				<span class="t"><span style:width="{grown && v !== null ? v : 0}%"></span></span>
 				<span class="num v">{v === null ? '-' : `${v}%`}</span>
 			</div>
@@ -89,10 +103,22 @@
 
 <section class="card udz">
 	<div class="txt">
-		<div class="t">Mode udzur</div>
-		<div class="s">Jeda pencatatan saat haid atau nifas. Streak tidak putus.</div>
+		<div class="t">{tr('Mode udzur', 'Excused days')}</div>
+		<div class="s">
+			{tr(
+				'Jeda pencatatan saat haid atau nifas. Streak tidak putus.',
+				"Pause logging during your period or postpartum bleeding. Your streak won't break."
+			)}
+		</div>
 	</div>
-	<button class="switch" class:on={udzurOn} role="switch" aria-checked={udzurOn} aria-label="Mode udzur" onclick={udzur}></button>
+	<button
+		class="switch"
+		class:on={udzurOn}
+		role="switch"
+		aria-checked={udzurOn}
+		aria-label={tr('Mode udzur', 'Excused days')}
+		onclick={udzur}
+	></button>
 </section>
 
 <style>

@@ -19,10 +19,11 @@ export function distanceKm(lat: number, lng: number): number {
 }
 
 const WINDS = ['utara', 'timur laut', 'timur', 'tenggara', 'selatan', 'barat daya', 'barat', 'barat laut'];
+const WINDS_EN = ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'];
 
-/** Nama arah mata angin (8 arah) dalam bahasa Indonesia. */
-export function windName(deg: number): string {
-	return WINDS[Math.round(norm(deg) / 45) % 8];
+/** Nama arah mata angin (8 arah), bawaan bahasa Indonesia; `en` untuk bahasa Inggris. */
+export function windName(deg: number, en = false): string {
+	return (en ? WINDS_EN : WINDS)[Math.round(norm(deg) / 45) % 8];
 }
 
 export const norm = (deg: number) => ((deg % 360) + 360) % 360;

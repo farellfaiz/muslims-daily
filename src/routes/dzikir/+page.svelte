@@ -6,7 +6,15 @@
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { forTime } from '#lib/dzikirTime.ts';
 	import Sheet from '#lib/components/Sheet.svelte';
-	import { GROUP_LABEL, PAGI_VERSI, SALAT_VERSI, TASBIH_SLUGS, type DzikirPrefs } from '#lib/salatVersi.ts';
+	import {
+		GROUP_LABEL,
+		GROUP_LABEL_EN,
+		PAGI_VERSI,
+		SALAT_VERSI,
+		TASBIH_SLUGS,
+		type DzikirPrefs
+	} from '#lib/salatVersi.ts';
+	import { isEn, prayerName as nameOf, tr } from '#lib/i18n.svelte.ts';
 	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
 	import { dateKey } from '#lib/date.ts';
 	import {
@@ -20,8 +28,9 @@
 		type DzikirSet,
 		type Session
 	} from '#lib/dzikirProgress.ts';
-	import { PRAYERS, type PrayerKey } from '#lib/prayer.ts';
+	import type { PrayerKey } from '#lib/prayer.ts';
 	import { clock, dzikirPrefs, dzikirProgress, reading, schedule, toast } from '#lib/state/app.svelte.ts';
+	import type { WirdulData } from '../data/wirdul.json/+server.ts';
 
 	let { data } = $props();
 
@@ -69,6 +78,19 @@
 	const pagiVersi = $derived(prefs.pagi);
 	const setPref = <K extends keyof DzikirPrefs>(k: K, v: DzikirPrefs[K]) => (dzikirPrefs.value = { ...prefs, [k]: v });
 	let settingsOpen = $state(false);
+	// Wirdul Lathif diunduh terpisah, baru saat versi ini dipilih (disimpan service worker untuk offline).
+	let wirdul = $state<WirdulData | null>(null);
+	$effect(() => {
+		if (pagiVersi !== 'wirdul' || wirdul) return;
+		fetch('/data/wirdul.json')
+			.then((r) => (r.ok ? (r.json() as Promise<WirdulData>) : Promise.reject(new Error(String(r.status)))))
+			.then(
+				(d) => (wirdul = d),
+				() => {
+					toast.say(tr('Wirdul Lathif gagal dimuat. Coba lagi saat online.', 'Could not load Wirdul Lathif. Try again when online.'));
+				}
+			);
+	});
 	const salatList = $derived(versi === 'ringkas' ? data.salatRingkas : data.salat);
 	/** jumlah bacaan sesudah pengaturan: tasbih 33 atau 11, surah tiga kali setelah Subuh dan Maghrib */
 	const countOf = (d: (typeof salatList)[number]) =>
@@ -78,7 +100,7 @@
 		set === 'salat'
 			? salatList.map((d) => ({ ...d, count: countOf(d), key: perKataKey('salat', d.id) }))
 			: pagiVersi === 'wirdul'
-				? data.wirdul[time].map((d) => ({ ...d, key: `wirdul:${d.id}` }))
+				? (wirdul?.[time] ?? []).map((d) => ({ ...d, key: `wirdul:${d.id}` }))
 				: forTime(data.dzikir, time).map((d) => ({
 						...d,
 						...d.text,
@@ -90,8 +112,16 @@
 	const done = $derived(doneCount(dzikirProgress.value, session, date, items));
 	const allDone = $derived(items.length > 0 && done === items.length);
 	const pct = $derived(items.length ? (done / items.length) * 100 : 0);
-	const prayerName = $derived(PRAYERS.find((p) => p.key === prayer)!.name);
-	const heading = $derived(set === 'salat' ? `Setelah ${prayerName}` : time === 'pagi' ? 'Pagi' : 'Petang');
+	const prayerName = $derived(nameOf(prayer));
+	// "pagi" / "morning", dipakai di tengah kalimat
+	const timeWord = $derived(time === 'pagi' ? tr('pagi', 'morning') : tr('petang', 'evening'));
+	const heading = $derived(
+		set === 'salat'
+			? tr(`Setelah ${prayerName}`, `After ${prayerName}`)
+			: time === 'pagi'
+				? tr('Pagi', 'Morning')
+				: tr('Petang', 'Evening')
+	);
 
 	const opt = $derived(reading.value);
 
@@ -105,17 +135,15 @@
 			total: items.filter((d) => d.group === g).length
 		}))
 	);
+	const gl = $derived(isEn() ? GROUP_LABEL_EN : GROUP_LABEL);
+	const then = $derived(tr(' lalu ', ', then '));
 	const flow = $derived(
 		groups.length
-			? groups.map((x) => `${x.total} ${GROUP_LABEL[x.g][1]}`).join(' lalu ')
-			: `${items.length} dzikir ${time}`
+			? groups.map((x) => `${x.total} ${gl[x.g][1]}`).join(then)
+			: tr(`${items.length} dzikir ${timeWord}`, `${items.length} ${timeWord} dhikr`)
 	);
 	// "Dzikir lalu doa" atau "Dzikir lalu bacaan Al-Qur'an", sesuai versi
-	const order = $derived(
-		groups
-			.map((x, k) => (k === 0 ? GROUP_LABEL[x.g][0] : GROUP_LABEL[x.g][1]))
-			.join(' lalu ')
-	);
+	const order = $derived(groups.map((x, k) => (k === 0 ? gl[x.g][0] : gl[x.g][1])).join(then));
 	const nextItem = $derived(items.find((d) => d.id === nextId));
 	const jump = (id: number) => {
 		journeyOpen = false;
@@ -135,7 +163,12 @@
 			(d) => (perKata = d),
 			() => {
 				perKataFailed = true;
-				toast.say('Arti per kata gagal dimuat. Coba lagi saat online.');
+				toast.say(
+					tr(
+						'Arti per kata gagal dimuat. Coba lagi saat online.',
+						"Couldn't load word-by-word meanings. Try again when you're online."
+					)
+				);
 			}
 		);
 	});
@@ -200,36 +233,46 @@
 	function restart() {
 		dzikirProgress.value = resetSession(dzikirProgress.value, session, date);
 		window.scrollTo({ top: 0, behavior: 'smooth' });
-		toast.say('Hitungan dimulai ulang');
+		toast.say(tr('Hitungan dimulai ulang', 'Count reset'));
 	}
 </script>
 
 <svelte:head>
-	<title>Dzikir · Muslims Daily</title>
-	<meta name="description" content="Dzikir dan doa setelah salat, serta dzikir pagi dan petang, dengan penghitung." />
+	<title>{tr('Dzikir', 'Dhikr')} · Muslims Daily</title>
+	<meta
+		name="description"
+		content={tr(
+			'Dzikir dan doa setelah salat, serta dzikir pagi dan petang, dengan penghitung.',
+			'Dhikr and duas after prayer, plus morning and evening dhikr, with a counter.'
+		)}
+	/>
 </svelte:head>
 
 <ReadBar />
 
 <header class="page-head">
 	<div class="grow">
-		<div class="label">Dzikir</div>
+		<div class="label">{tr('Dzikir', 'Dhikr')}</div>
 		<h1>{heading}</h1>
 	</div>
-	<button class="gear press" aria-label="Pengaturan dzikir" onclick={() => (settingsOpen = true)}>
+	<button class="gear press" aria-label={tr('Pengaturan dzikir', 'Dhikr settings')} onclick={() => (settingsOpen = true)}>
 		<Icon name="sliders" size={20} />
 	</button>
 </header>
 
-<div class="seg wide" role="group" aria-label="Jenis dzikir" data-tour="dzikir">
-	<button aria-pressed={set === 'salat'} onclick={() => (pickedSet = 'salat')}>Setelah salat</button>
-	<button aria-pressed={set === 'pagi-petang'} onclick={() => (pickedSet = 'pagi-petang')}>Pagi &amp; petang</button>
+<div class="seg wide" role="group" aria-label={tr('Jenis dzikir', 'Dhikr type')} data-tour="dzikir">
+	<button aria-pressed={set === 'salat'} onclick={() => (pickedSet = 'salat')}>{tr('Setelah salat', 'After prayer')}</button>
+	<button aria-pressed={set === 'pagi-petang'} onclick={() => (pickedSet = 'pagi-petang')}
+		>{tr('Pagi & petang', 'Morning & evening')}</button
+	>
 </div>
 
 {#if set === 'pagi-petang'}
-	<div class="chips" role="group" aria-label="Waktu dzikir">
-		<button class="chip" aria-pressed={time === 'pagi'} onclick={() => (pickedTime = 'pagi')}>Pagi</button>
-		<button class="chip" aria-pressed={time === 'petang'} onclick={() => (pickedTime = 'petang')}>Petang</button>
+	<div class="chips" role="group" aria-label={tr('Waktu dzikir', 'Dhikr time')}>
+		<button class="chip" aria-pressed={time === 'pagi'} onclick={() => (pickedTime = 'pagi')}>{tr('Pagi', 'Morning')}</button>
+		<button class="chip" aria-pressed={time === 'petang'} onclick={() => (pickedTime = 'petang')}
+			>{tr('Petang', 'Evening')}</button
+		>
 	</div>
 {:else}
 	<div class="gap"></div>
@@ -241,7 +284,7 @@
 			<span class="label" id="journey-h">Journey</span>
 			<span class="jt">{flow}</span>
 		</span>
-		<span class="jtoggle">Lihat alur<Icon name="chevron" size={14} stroke={2.2} /></span>
+		<span class="jtoggle">{tr('Lihat alur', 'See all')}<Icon name="chevron" size={14} stroke={2.2} /></span>
 	</button>
 
 	<div class="strip" aria-hidden="true">
@@ -256,7 +299,7 @@
 
 	{#if nextItem}
 		<button class="jnext" onclick={() => jump(nextItem.id)}>
-			<span class="label">{done === 0 ? 'Mulai dari' : 'Berikutnya'}</span>
+			<span class="label">{done === 0 ? tr('Mulai dari', 'Start with') : tr('Berikutnya', 'Up next')}</span>
 			<span class="sname">{nextItem.title}</span>
 			{#if nextItem.count > 1}<span class="scount num">{nextItem.count}×</span>{/if}
 		</button>
@@ -264,12 +307,16 @@
 </section>
 
 <Sheet bind:open={journeyOpen} title="Journey">
-	<p class="sheet-sub">{flow} · <span class="num">{done}</span> dari <span class="num">{items.length}</span> selesai</p>
+	<p class="sheet-sub">
+		{flow} · <span class="num">{done}</span>
+		{tr('dari', 'of')} <span class="num">{items.length}</span>
+		{tr('selesai', 'done')}
+	</p>
 	<ol class="steps">
 		{#each items as d, i (d.id)}
 			{@const ok = (n[d.id] ?? 0) >= d.count}
 			{#if d.group && d.group !== items[i - 1]?.group}
-				<li class="sg">{GROUP_LABEL[d.group][0]}</li>
+				<li class="sg">{gl[d.group][0]}</li>
 			{/if}
 			<li>
 				<button class="step" class:ok class:now={d.id === nextId} onclick={() => jump(d.id)}>
@@ -282,26 +329,30 @@
 	</ol>
 </Sheet>
 
-<Sheet bind:open={settingsOpen} title="Pengaturan dzikir">
+<Sheet bind:open={settingsOpen} title={tr('Pengaturan dzikir', 'Dhikr settings')}>
 	<div class="set-sec">
-		<div class="label">Versi dzikir setelah salat</div>
+		<div class="label">{tr('Versi dzikir setelah salat', 'After-prayer dhikr version')}</div>
 		<div class="vopts">
 			{#each SALAT_VERSI as v (v.value)}
 				<button class="vopt" aria-pressed={versi === v.value} onclick={() => setPref('salat', v.value)}>
 					<span class="radio"></span>
-					<span class="grow"><span class="vl">{v.label}</span><span class="vs">{v.sub}</span></span>
+					<span class="grow"
+						><span class="vl">{tr(v.label, v.labelEn)}</span><span class="vs">{tr(v.sub, v.subEn)}</span></span
+					>
 				</button>
 			{/each}
 		</div>
 	</div>
 
 	<div class="set-sec">
-		<div class="label">Versi dzikir pagi &amp; petang</div>
+		<div class="label">{tr('Versi dzikir pagi & petang', 'Morning & evening dhikr version')}</div>
 		<div class="vopts">
 			{#each PAGI_VERSI as v (v.value)}
 				<button class="vopt" aria-pressed={pagiVersi === v.value} onclick={() => setPref('pagi', v.value)}>
 					<span class="radio"></span>
-					<span class="grow"><span class="vl">{v.label}</span><span class="vs">{v.sub}</span></span>
+					<span class="grow"
+						><span class="vl">{tr(v.label, v.labelEn)}</span><span class="vs">{tr(v.sub, v.subEn)}</span></span
+					>
 				</button>
 			{/each}
 		</div>
@@ -309,23 +360,40 @@
 
 	<div class="set-sec">
 		<div class="label">Tasbih, tahmid, takbir</div>
-		<div class="seg wide" role="group" aria-label="Jumlah tasbih, tahmid, takbir">
-			<button aria-pressed={prefs.tasbih === 33} onclick={() => setPref('tasbih', 33)}><span class="num">33</span>× masing-masing</button>
-			<button aria-pressed={prefs.tasbih === 11} onclick={() => setPref('tasbih', 11)}><span class="num">11</span>× masing-masing</button>
+		<div class="seg wide" role="group" aria-label={tr('Jumlah tasbih, tahmid, takbir', 'Tasbih, tahmid, takbir count')}>
+			<button aria-pressed={prefs.tasbih === 33} onclick={() => setPref('tasbih', 33)}
+				><span class="num">33</span>× {tr('masing-masing', 'each')}</button
+			>
+			<button aria-pressed={prefs.tasbih === 11} onclick={() => setPref('tasbih', 11)}
+				><span class="num">11</span>× {tr('masing-masing', 'each')}</button
+			>
 		</div>
 		<p class="set-hint">
-			33 kali masing-masing (HR. Muslim 597) paling umum. 11 kali masing-masing, totalnya 33, adalah penjelasan
-			Suhail dalam HR. Muslim 595.
+			{tr(
+				'33 kali masing-masing (HR. Muslim 597) paling umum. 11 kali masing-masing, totalnya 33, adalah penjelasan Suhail dalam HR. Muslim 595.',
+				"33 times each (Muslim 597) is the most common. 11 times each, 33 in total, is Suhail's explanation in Muslim 595."
+			)}
 		</p>
 	</div>
 
 	<div class="set-sec">
 		<button class="sw" role="switch" aria-checked={prefs.haptic} onclick={() => setPref('haptic', !prefs.haptic)}>
-			<span class="grow"><span class="vl">Getar tiap ketukan</span><span class="vs">Getar halus saat menghitung, lebih panjang saat selesai</span></span>
+			<span class="grow"
+				><span class="vl">{tr('Getar tiap ketukan', 'Vibrate on each tap')}</span><span class="vs"
+					>{tr(
+						'Getar halus saat menghitung, lebih panjang saat selesai',
+						'A light buzz while counting, a longer one when done'
+					)}</span
+				></span
+			>
 			<span class="knob"></span>
 		</button>
 		<button class="sw" role="switch" aria-checked={prefs.autoNext} onclick={() => setPref('autoNext', !prefs.autoNext)}>
-			<span class="grow"><span class="vl">Geser ke bacaan berikutnya</span><span class="vs">Otomatis setelah satu bacaan selesai</span></span>
+			<span class="grow"
+				><span class="vl">{tr('Geser ke bacaan berikutnya', 'Move to the next reading')}</span><span class="vs"
+					>{tr('Otomatis setelah satu bacaan selesai', 'Automatically, once a reading is done')}</span
+				></span
+			>
 			<span class="knob"></span>
 		</button>
 	</div>
@@ -334,16 +402,20 @@
 <section class="card prog" class:full={allDone}>
 	<span class="orb {set === 'salat' ? 'arch' : time}" aria-hidden="true"></span>
 	<div class="grow">
-		<div class="pt"><span class="num">{done}</span> dari <span class="num">{items.length}</span> bacaan</div>
+		<div class="pt">
+			<span class="num">{done}</span>
+			{tr('dari', 'of')} <span class="num">{items.length}</span>
+			{tr('bacaan', 'readings')}
+		</div>
 		<div class="track"><span style:width="{pct}%"></span></div>
 		<div class="ps">
-			{#if set === 'salat'}{order}, selepas salat {prayerName}
-			{:else if time === 'pagi'}Dibaca setelah Subuh sampai sebelum Ashar
-			{:else}Dibaca setelah Ashar sampai malam{/if}
+			{#if set === 'salat'}{tr(`${order}, selepas salat ${prayerName}`, `${order}, after ${prayerName}`)}
+			{:else if time === 'pagi'}{tr('Dibaca setelah Subuh sampai sebelum Ashar', 'Read from Fajr until before Asr')}
+			{:else}{tr('Dibaca setelah Ashar sampai malam', 'Read from Asr into the night')}{/if}
 		</div>
 	</div>
 	{#if done > 0}
-		<button class="redo press" onclick={restart}>Mulai ulang</button>
+		<button class="redo press" onclick={restart}>{tr('Mulai ulang', 'Start over')}</button>
 	{/if}
 </section>
 
@@ -354,14 +426,14 @@
 	{@const pkAll = opt.wbw ? perKata?.[d.key] : undefined}
 	{@const pk = pkAll?.src === 'quran' ? pkAll : undefined}
 	{#if d.group && d.group !== items[i - 1]?.group}
-		<div class="sec-h"><h2>{GROUP_LABEL[d.group][0]}</h2></div>
+		<div class="sec-h"><h2>{gl[d.group][0]}</h2></div>
 	{/if}
 	<article class="card dz" class:ok class:on={active?.id === d.id && !allDone} id="dz-{d.id}" data-id={d.id}>
 		<div class="dh">
 			<StarNum n={i + 1} />
 			<h3 class="disp">{d.title}</h3>
 			{#if ok}
-				<span class="times done"><Icon name="check" size={13} stroke={2.6} />Selesai</span>
+				<span class="times done"><Icon name="check" size={13} stroke={2.6} />{tr('Selesai', 'Done')}</span>
 			{:else if c > 0}
 				<span class="times num">{c}/{d.count}</span>
 			{:else if d.count > 1}
@@ -371,11 +443,13 @@
 
 		{#if pk}
 			<Words words={pk.w} lat={opt.lat} size={opt.size} />
-			<p class="wsrc">Arti per kata dari quran.com</p>
+			<p class="wsrc">{tr('Arti per kata dari quran.com', 'Word-by-word meanings from quran.com')}</p>
 			{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
 		{:else}
 			<p class="ar" style:font-size="{opt.size}px">{d.arabic}</p>
-			{#if opt.wbw && !perKata && !perKataFailed}<p class="wsrc">Memuat arti per kata…</p>{/if}
+			{#if opt.wbw && !perKata && !perKataFailed}<p class="wsrc">
+					{tr('Memuat arti per kata…', 'Loading word-by-word meanings…')}
+				</p>{/if}
 			{#if opt.lat}<p class="lat">{d.latin}</p>{/if}
 			{#if opt.tr}<p class="tr">{d.translation}</p>{/if}
 		{/if}
@@ -401,8 +475,8 @@
 			class="fab"
 			class:ok={activeOk}
 			aria-label={activeOk
-				? `${active.title} selesai. Ketuk untuk bacaan berikutnya`
-				: `Hitung ${active.title}, ${activeC} dari ${active.count}`}
+				? tr(`${active.title} selesai. Ketuk untuk bacaan berikutnya`, `${active.title} done. Tap for the next reading`)
+				: tr(`Hitung ${active.title}, ${activeC} dari ${active.count}`, `Count ${active.title}, ${activeC} of ${active.count}`)}
 			onclick={tapActive}
 		>
 			{#if active.count > 10 && !activeOk}<span class="fill" style:width="{(activeC / active.count) * 100}%"></span>{/if}
@@ -410,10 +484,10 @@
 			<span class="fmain">
 				<span class="fti">{active.title}</span>
 				<span class="fsub">
-					{#if activeOk}Selesai · ketuk untuk lanjut
-					{:else if active.count === 1}Ketuk bila sudah dibaca
-					{:else if activeC === 0}Ketuk tiap selesai membaca
-					{:else}<span class="num">{activeC}</span> dari <span class="num">{active.count}</span>{/if}
+					{#if activeOk}{tr('Selesai · ketuk untuk lanjut', 'Done · tap to continue')}
+					{:else if active.count === 1}{tr('Ketuk bila sudah dibaca', "Tap once you've read it")}
+					{:else if activeC === 0}{tr('Ketuk tiap selesai membaca', 'Tap each time you finish')}
+					{:else}<span class="num">{activeC}</span> {tr('dari', 'of')} <span class="num">{active.count}</span>{/if}
 				</span>
 			</span>
 			<span class="fct">
@@ -438,8 +512,12 @@
 		<div class="card fin">
 			<span class="badge"><Icon name="check" size={26} stroke={2.4} /></span>
 			<div class="disp ft">Alhamdulillah</div>
-			<p>{set === 'salat' ? `Dzikir dan doa setelah ${prayerName} selesai.` : `Dzikir ${time} hari ini selesai.`}</p>
-			<button class="ghost press" onclick={restart}>Mulai ulang</button>
+			<p>
+				{set === 'salat'
+					? tr(`Dzikir dan doa setelah ${prayerName} selesai.`, `Dhikr and duas after ${prayerName}, all done.`)
+					: tr(`Dzikir ${timeWord} hari ini selesai.`, `Today's ${timeWord} dhikr, all done.`)}
+			</p>
+			<button class="ghost press" onclick={restart}>{tr('Mulai ulang', 'Start over')}</button>
 		</div>
 	{/if}
 </div>
@@ -447,21 +525,30 @@
 {#if set === 'salat'}
 	<p class="credit">
 		{#if versi === 'ringkas'}
-			Disusun dari bab dzikir setelah salam dalam Hisnul Muslim. Teks Arab dari Sahih Bukhari, Sahih Muslim, dan Al-Qur'an.
+			{tr(
+				"Disusun dari bab dzikir setelah salam dalam Hisnul Muslim. Teks Arab dari Sahih Bukhari, Sahih Muslim, dan Al-Qur'an.",
+				"Compiled from the after-salam dhikr chapter of Hisnul Muslim. Arabic text from Sahih Bukhari, Sahih Muslim, and the Qur'an."
+			)}
 		{:else}
-			Versi Al-Azhar (Syifa Budi). Teks dari <a href={data.source.url} target="_blank" rel="noopener">{data.source.name}</a>.
+			{tr('Versi Al-Azhar (Syifa Budi). Teks dari', 'Al-Azhar version (Syifa Budi). Text from')}
+			<a href={data.source.url} target="_blank" rel="noopener">{data.source.name}</a>.
 		{/if}
 	</p>
 {:else if pagiVersi === 'wirdul'}
-	<p class="credit">
-		Wirdul Lathif susunan al-Habib Abdullah al-Haddad. Teks Arab, transliterasi, dan terjemahan dari
-		<a href={data.wirdul.source.url} target="_blank" rel="noopener">{data.wirdul.source.name}</a>
-		({data.wirdul.source.team.join('; ')}).
-	</p>
+	{#if wirdul}<p class="credit">
+		{tr(
+			'Wirdul Lathif susunan al-Habib Abdullah al-Haddad. Teks Arab, transliterasi, dan terjemahan dari',
+			'Wirdul Lathif, compiled by al-Habib Abdullah al-Haddad. Arabic text, transliteration, and translation from'
+		)}
+		<a href={wirdul.source.url} target="_blank" rel="noopener">{wirdul.source.name}</a>
+		({wirdul.source.team.join('; ')}).
+	</p>{/if}
 {:else}
 	<p class="credit">
-		Susunan Hisnul Muslim. Teks Arab dari hisnmuslim.com dan Al-Qur'an; terjemahan dari Hisnul Muslim edisi
-		Indonesia; transliterasi disusun Muslims Daily.
+		{tr(
+			"Susunan Hisnul Muslim. Teks Arab dari hisnmuslim.com dan Al-Qur'an; terjemahan dari Hisnul Muslim edisi Indonesia; transliterasi disusun Muslims Daily.",
+			"Arranged as in Hisnul Muslim. Arabic text from hisnmuslim.com and the Qur'an; translation from the Indonesian edition of Hisnul Muslim; transliteration by Muslims Daily."
+		)}
 	</p>
 {/if}
 

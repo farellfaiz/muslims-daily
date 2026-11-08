@@ -4,8 +4,9 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import ReadBar from '#lib/components/ReadBar.svelte';
 	import Words from '#lib/components/Words.svelte';
-	import { BISMILLAH, arabicNum, hasBismillah, juzOf, juzStarts } from '#lib/quran.ts';
+	import { BISMILLAH, TEMPAT_EN, arabicNum, hasBismillah, juzOf, juzStarts } from '#lib/quran.ts';
 	import { quranLast, reading } from '#lib/state/app.svelte.ts';
+	import { tr } from '#lib/i18n.svelte.ts';
 
 	let { data } = $props();
 
@@ -111,8 +112,14 @@
 </script>
 
 <svelte:head>
-	<title>{s.nama} · Al-Qur'an · Muslims Daily</title>
-	<meta name="description" content="Surat {s.nama} ({s.arti}), {s.ayat} ayat, dengan terjemahan dan arti per kata." />
+	<title>{s.nama} · {tr("Al-Qur'an", 'Quran')} · Muslims Daily</title>
+	<meta
+		name="description"
+		content={tr(
+			`Surat ${s.nama} (${s.arti}), ${s.ayat} ayat, dengan terjemahan dan arti per kata.`,
+			`Surah ${s.nama}, ${s.ayat} verses, with translation and word-by-word meanings.`
+		)}
+	/>
 </svelte:head>
 
 <ReadBar fallback="/quran" />
@@ -120,7 +127,7 @@
 <header class="card head">
 	<div class="arab" lang="ar">{s.arab}</div>
 	<h1 class="disp">{s.nama}</h1>
-	<div class="meta">{s.arti} · <span class="num">{s.ayat}</span> ayat · {s.tempat} · Juz <span class="num">{firstJuz}{lastJuz !== firstJuz ? `–${lastJuz}` : ''}</span></div>
+	<div class="meta">{s.arti} · <span class="num">{s.ayat}</span> {tr('ayat', 'verses')} · {tr(s.tempat, TEMPAT_EN[s.tempat])} · Juz <span class="num">{firstJuz}{lastJuz !== firstJuz ? `–${lastJuz}` : ''}</span></div>
 	{#if data.isi && hasBismillah(s.n)}
 		<p class="bism" lang="ar" style:font-size="{opt.size}px">{BISMILLAH}</p>
 	{/if}
@@ -129,15 +136,20 @@
 {#if !data.isi}
 	<section class="card offline">
 		<Icon name="info" size={22} />
-		<p>Surat ini belum tersimpan di HP. Sambungkan internet sekali untuk membukanya, setelah itu bisa dibaca offline.</p>
+		<p>
+			{tr(
+				'Surat ini belum tersimpan di HP. Sambungkan internet sekali untuk membukanya, setelah itu bisa dibaca offline.',
+				"This surah isn't saved on your phone yet. Go online once to open it, and after that you can read it offline."
+			)}
+		</p>
 	</section>
 {:else}
 	<!-- Bilah lengket: ayat saat ini, lompat ke ayat, dan garis progres gulir. -->
 	<div class="sticky">
 		<div class="st">
 			<span class="sn">{s.nama}</span>
-			<span class="sa">Ayat <span class="num">{current}</span><span class="of num">/{s.ayat}</span></span>
-			<button class="jb press" aria-expanded={jumping} onclick={openJump}>Ke ayat</button>
+			<span class="sa">{tr('Ayat', 'Verse')} <span class="num">{current}</span><span class="of num">/{s.ayat}</span></span>
+			<button class="jb press" aria-expanded={jumping} onclick={openJump}>{tr('Ke ayat', 'Go to verse')}</button>
 		</div>
 		{#if jumping}
 			<form class="jf" onsubmit={submitJump}>
@@ -148,11 +160,11 @@
 					inputmode="numeric"
 					min="1"
 					max={s.ayat}
-					placeholder="1 sampai {s.ayat}"
-					aria-label="Nomor ayat"
+					placeholder={tr(`1 sampai ${s.ayat}`, `1 to ${s.ayat}`)}
+					aria-label={tr('Nomor ayat', 'Verse number')}
 					onkeydown={(e) => e.key === 'Escape' && (jumping = false)}
 				/>
-				<button class="go press" type="submit">Buka</button>
+				<button class="go press" type="submit">{tr('Buka', 'Go')}</button>
 			</form>
 		{/if}
 		<div class="pb" aria-hidden="true"><span style:transform="scaleX({progress})"></span></div>
@@ -164,7 +176,7 @@
 				<div class="juz" role="separator"><span>Juz <span class="num">{starts.get(i + 1)}</span></span></div>
 			{/if}
 			<article class="ay" id="a{i + 1}" data-a={i + 1}>
-				<div class="no num" aria-label="Ayat {i + 1}">{s.n}:{i + 1}</div>
+				<div class="no num" aria-label="{tr('Ayat', 'Verse')} {i + 1}">{s.n}:{i + 1}</div>
 				{#if opt.wbw}
 					<Words words={v.w} lat={opt.lat} size={opt.size} />
 				{:else}
@@ -178,20 +190,20 @@
 		{/each}
 	</section>
 	{#if opt.wbw || opt.lat}
-		<p class="src">Transliterasi dan arti per kata dari quran.com.</p>
+		<p class="src">{tr('Transliterasi dan arti per kata dari quran.com.', 'Transliteration and word-by-word meanings from quran.com.')}</p>
 	{/if}
 {/if}
 
-<nav class="pager" aria-label="Surat lain">
+<nav class="pager" aria-label={tr('Surat lain', 'Other surahs')}>
 	{#if data.prev}
 		<a class="card pg press" href="/quran/{data.prev.n}">
 			<span class="flip"><Icon name="chevron" size={16} stroke={2.2} /></span>
-			<span><span class="label">Sebelumnya</span><span class="pn">{data.prev.nama}</span></span>
+			<span><span class="label">{tr('Sebelumnya', 'Previous')}</span><span class="pn">{data.prev.nama}</span></span>
 		</a>
 	{:else}<span></span>{/if}
 	{#if data.next}
 		<a class="card pg next press" href="/quran/{data.next.n}">
-			<span><span class="label">Berikutnya</span><span class="pn">{data.next.nama}</span></span>
+			<span><span class="label">{tr('Berikutnya', 'Next')}</span><span class="pn">{data.next.nama}</span></span>
 			<Icon name="chevron" size={16} stroke={2.2} />
 		</a>
 	{/if}

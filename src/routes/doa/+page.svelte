@@ -2,25 +2,33 @@
 	import CatIcon from '#lib/components/CatIcon.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { doaPrefs } from '#lib/state/app.svelte.ts';
+	import { isEn, tr } from '#lib/i18n.svelte.ts';
 
 	let { data } = $props();
 	const favCount = $derived(doaPrefs.value.favs.length);
 	const koleksi = $derived(doaPrefs.value.koleksi);
+	const duas = (n: number) => tr(`${n} doa`, `${n} ${n === 1 ? 'dua' : 'duas'}`);
 </script>
 
 <svelte:head>
-	<title>Kumpulan doa · Muslims Daily</title>
-	<meta name="description" content="{data.total} doa harian dalam {data.categories.length} kategori, lengkap dengan teks Arab, transliterasi, dan terjemahan." />
+	<title>{tr('Kumpulan doa', 'Duas')} · Muslims Daily</title>
+	<meta
+		name="description"
+		content={tr(
+			`${data.total} doa harian dalam ${data.categories.length} kategori, lengkap dengan teks Arab, transliterasi, dan terjemahan.`,
+			`${data.total} daily duas in ${data.categories.length} categories, with Arabic text, transliteration, and translation.`
+		)}
+	/>
 </svelte:head>
 
 <header class="page-head">
-	<div class="label">Kumpulan doa</div>
-	<h1>Doa harian</h1>
+	<div class="label">{tr('Kumpulan doa', 'Duas')}</div>
+	<h1>{tr('Doa harian', 'Daily duas')}</h1>
 </header>
 
 <a class="search press" href="/doa/semua?cari">
 	<Icon name="search" />
-	<span>Cari di {data.total} doa</span>
+	<span>{tr(`Cari di ${data.total} doa`, `Search ${data.total} duas`)}</span>
 </a>
 
 <a class="all press" href="/doa/semua" data-tour="doa">
@@ -29,54 +37,58 @@
 		<path d="M26 140V66c0-20 15-38 34-38s34 18 34 38v74" />
 		<circle cx="60" cy="96" r="13" />
 	</svg>
-	<span class="label">Tanpa kategori</span>
+	<span class="label">{tr('Tanpa kategori', 'All in one')}</span>
 	<span class="big disp num">{data.total}</span>
-	<span class="at disp">Semua doa</span>
-	<span class="as">Satu daftar utuh, bisa dicari dan diurutkan</span>
+	<span class="at disp">{tr('Semua doa', 'All duas')}</span>
+	<span class="as">{tr('Satu daftar utuh, bisa dicari dan diurutkan', 'One full list you can search and sort')}</span>
 	<span class="go"><Icon name="chevron" size={18} stroke={2.2} /></span>
 </a>
 
 <div class="duo">
 	<a class="card mini press" href="/doa/favorit">
 		<span class="mico fav"><Icon name="heart" size={19} /></span>
-		<span class="mt">Favorit</span>
-		<span class="ms">{favCount ? `${favCount} doa` : 'Belum ada'}</span>
+		<span class="mt">{tr('Favorit', 'Favorites')}</span>
+		<span class="ms">{favCount ? duas(favCount) : tr('Belum ada', 'None yet')}</span>
 	</a>
 	<a class="card mini press" href="/dzikir?set=salat">
 		<span class="mico arch" aria-hidden="true"></span>
-		<span class="mt">Setelah salat</span>
-		<span class="ms">Dzikir &amp; doa</span>
+		<span class="mt">{tr('Setelah salat', 'After prayer')}</span>
+		<span class="ms">{tr('Dzikir & doa', 'Dhikr & duas')}</span>
 	</a>
 </div>
 
-<div class="sec-h"><h2>Koleksi kamu</h2>{#if koleksi.length}<a href="/doa/koleksi" class="label more">Semua</a>{/if}</div>
+<div class="sec-h"><h2>{tr('Koleksi kamu', 'Your collections')}</h2>{#if koleksi.length}<a href="/doa/koleksi" class="label more">{tr('Semua', 'All')}</a>{/if}</div>
 {#if koleksi.length}
 	<div class="kol">
 		{#each koleksi as k (k.id)}
 			<a class="card kc press" href="/doa/koleksi?id={k.id}">
 				<span class="kt">{k.name}</span>
-				<span class="ks num">{k.ids.length} doa</span>
+				<span class="ks num">{duas(k.ids.length)}</span>
 			</a>
 		{/each}
 	</div>
 {:else}
 	<p class="card ktip">
 		<Icon name="plus" size={18} />
-		<span>Kelompokkan doa sendiri, mis. doa harian anak atau doa safar. Buka doa mana pun lalu tap <b>Koleksi</b>.</span>
+		{#if isEn()}
+			<span>Group duas your own way, e.g. duas for kids or for travel. Open any dua and tap <b>Collection</b>.</span>
+		{:else}
+			<span>Kelompokkan doa sendiri, mis. doa harian anak atau doa safar. Buka doa mana pun lalu tap <b>Koleksi</b>.</span>
+		{/if}
 	</p>
 {/if}
 
 <div class="sec-h">
-	<h2>Kategori</h2>
-	<span class="label">{data.categories.length} kategori</span>
+	<h2>{tr('Kategori', 'Categories')}</h2>
+	<span class="label">{tr(`${data.categories.length} kategori`, `${data.categories.length} categories`)}</span>
 </div>
 
-<nav class="grid" aria-label="Kategori doa">
+<nav class="grid" aria-label={tr('Kategori doa', 'Dua categories')}>
 	{#each data.categories as c, i (c.slug)}
 		<a class="card cat press" class:alt={i % 4 === 1 || i % 4 === 2} href="/doa/{c.slug}" style:animation-delay="{Math.min(i, 12) * 30}ms">
 			<span class="cico"><CatIcon slug={c.slug} /></span>
 			<span class="ct">{c.short}</span>
-			<span class="cs num">{c.count} doa</span>
+			<span class="cs num">{duas(c.count)}</span>
 		</a>
 	{/each}
 </nav>

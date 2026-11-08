@@ -2,14 +2,24 @@
 	import Icon, { type IconName } from '#lib/components/Icon.svelte';
 	import { trackerSummary } from '#lib/backup.ts';
 	import { formatLong } from '#lib/date.ts';
+	import { LANGS, lang, locale, prayerName, tr } from '#lib/i18n.svelte.ts';
 	import { METHODS, PRAYERS } from '#lib/prayer.ts';
 	import { backupMeta, settings, theme, tracker, type ThemeMode } from '#lib/state/app.svelte.ts';
 	import { install } from '#lib/state/install.svelte.ts';
 	import { adzanSummary } from '#lib/state/adzan.svelte.ts';
 	import { tour } from '#lib/state/tour.svelte.ts';
 
-	const INSTALL_SUB = { prompt: 'Sekali ketuk, tanpa toko aplikasi', ios: 'Lewat tombol Bagikan di Safari', inapp: 'Buka di Safari atau Chrome dulu', manual: 'Lewat menu browser' };
-	const installSub = $derived(install.installed ? 'Sudah terpasang. Buka dari layar utama' : INSTALL_SUB[install.platform]);
+	const INSTALL_SUB = $derived({
+		prompt: tr('Sekali ketuk, tanpa toko aplikasi', 'One tap, no app store'),
+		ios: tr('Lewat tombol Bagikan di Safari', 'Through the Share button in Safari'),
+		inapp: tr('Buka di Safari atau Chrome dulu', 'Open in Safari or Chrome first'),
+		manual: tr('Lewat menu browser', 'Through the browser menu')
+	});
+	const installSub = $derived(
+		install.installed
+			? tr('Sudah terpasang. Buka dari layar utama', 'Already installed. Open it from your home screen')
+			: INSTALL_SUB[install.platform]
+	);
 
 	const s = $derived(settings.value);
 
@@ -18,54 +28,103 @@
 	const adjusted = $derived(PRAYERS.filter((p) => s.adjust[p.key]));
 	const adjustSum = $derived(
 		adjusted.length
-			? adjusted.map((p) => `${p.name} ${s.adjust[p.key]! > 0 ? '+' : '−'}${Math.abs(s.adjust[p.key]!)}`).join(', ')
-			: 'Tanpa koreksi'
+			? adjusted.map((p) => `${prayerName(p.key)} ${s.adjust[p.key]! > 0 ? '+' : '−'}${Math.abs(s.adjust[p.key]!)}`).join(', ')
+			: tr('Tanpa koreksi', 'No adjustments')
 	);
 	const lastBackup = $derived(backupMeta.value.lastAt ? new Date(backupMeta.value.lastAt) : null);
 	const neverBackedUp = $derived(!lastBackup && trackerSummary(tracker.value).days > 0);
 
 	const ROWS: { href: string; icon: IconName; title: string; sub: string; warn?: boolean }[] = $derived([
-		{ href: '/lainnya/lokasi', icon: 'pin', title: 'Lokasi jadwal salat', sub: s.place === 'gps' ? 'Lokasi saya (GPS)' : s.label },
+		{
+			href: '/lainnya/lokasi',
+			icon: 'pin',
+			title: tr('Lokasi jadwal salat', 'Prayer times location'),
+			sub: s.place === 'gps' ? tr('Lokasi saya (GPS)', 'My location (GPS)') : s.label
+		},
 		{
 			href: '/lainnya/metode',
 			icon: 'sun',
-			title: 'Metode perhitungan',
-			sub: `${method} · Ashar ${s.madhab === 'hanafi' ? 'Hanafi' : "Syafi'i"}`
+			title: tr('Metode perhitungan', 'Calculation method'),
+			sub: `${method} · ${prayerName('ashar')} ${s.madhab === 'hanafi' ? 'Hanafi' : "Syafi'i"}`
 		},
-		{ href: '/lainnya/adzan', icon: 'bell', title: 'Notifikasi adzan', sub: adzanSummary() || ' ' },
-		{ href: '/lainnya/koreksi', icon: 'sliders', title: 'Koreksi jadwal', sub: `${adjustSum} · imsak ${s.imsak} menit` },
+		{ href: '/lainnya/adzan', icon: 'bell', title: tr('Notifikasi adzan', 'Adhan notifications'), sub: adzanSummary() || ' ' },
+		{
+			href: '/lainnya/koreksi',
+			icon: 'sliders',
+			title: tr('Koreksi jadwal', 'Time adjustments'),
+			sub: `${adjustSum} · ${tr(`imsak ${s.imsak} menit`, `imsak ${s.imsak} min`)}`
+		},
 		{
 			href: '/lainnya/cadangan',
 			icon: 'download',
-			title: 'Cadangan data',
-			sub: lastBackup ? `Terakhir ${formatLong(lastBackup)}` : 'Belum pernah dicadangkan',
+			title: tr('Cadangan data', 'Data backup'),
+			sub: lastBackup
+				? tr(`Terakhir ${formatLong(lastBackup, locale())}`, `Last backup ${formatLong(lastBackup, locale())}`)
+				: tr('Belum pernah dicadangkan', 'Never backed up'),
 			warn: neverBackedUp
 		}
 	]);
 
-	const THEMES: [ThemeMode, string, 'device' | 'sun' | 'moon'][] = [
+	const THEMES: [ThemeMode, string, 'device' | 'sun' | 'moon'][] = $derived([
 		['system', 'Device', 'device'],
-		['light', 'Terang', 'sun'],
-		['dark', 'Gelap', 'moon']
-	];
+		['light', tr('Terang', 'Light'), 'sun'],
+		['dark', tr('Gelap', 'Dark'), 'moon']
+	]);
 
 	let creditsDlg: HTMLDialogElement | undefined = $state();
-	const CREDITS = [
-		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
-		['NU Online', 'quran.nu.or.id/doa', 'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangan sumbernya.'],
-		['Hisnul Muslim', 'Edisi Indonesia', "Terjemahan dzikir pagi petang (alih bahasa H. Mahrus Ali). Teks Arab dari hisnmuslim.com."],
-		['NU Online · Wirdul Lathif', 'quran.nu.or.id/wirid', 'Versi kedua dzikir pagi petang: teks Arab, transliterasi, dan terjemahan.'],
-		['adhan', 'Pustaka perhitungan', 'Menghitung jadwal salat dan arah kiblat.'],
-		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.'],
-		['Kementerian Agama RI', "Terjemahan & doa", "Terjemahan ayat Al-Qur'an, dan doa tambahan dari buku Kumpulan Doa Sehari-hari (2013). Teks Arab doa disalin dari buku; transliterasi dan terjemahannya disusun ulang."]
-	];
+	// [nama sumber (tidak diterjemahkan), jenis, keterangan]
+	const CREDITS = $derived([
+		['Pillars', 'Prayer Times & Qibla', tr('Desain aplikasi ini terinspirasi darinya.', "This app's design was inspired by it.")],
+		[
+			'NU Online',
+			'quran.nu.or.id/doa',
+			tr(
+				'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangan sumbernya.',
+				'Source of the dua collection: Arabic text, transliteration, translation, and source notes.'
+			)
+		],
+		[
+			'Hisnul Muslim',
+			tr('Edisi Indonesia', 'Indonesian edition'),
+			tr(
+				'Terjemahan dzikir pagi petang (alih bahasa H. Mahrus Ali). Teks Arab dari hisnmuslim.com.',
+				'Translation of the morning and evening dhikr (translated by H. Mahrus Ali). Arabic text from hisnmuslim.com.'
+			)
+		],
+		[
+			'NU Online · Wirdul Lathif',
+			'quran.nu.or.id/wirid',
+			tr(
+				'Versi kedua dzikir pagi petang: teks Arab, transliterasi, dan terjemahan.',
+				'A second version of the morning and evening dhikr: Arabic text, transliteration, and translation.'
+			)
+		],
+		[
+			'adhan',
+			tr('Pustaka perhitungan', 'Calculation library'),
+			tr('Menghitung jadwal salat dan arah kiblat.', 'Calculates prayer times and the qibla direction.')
+		],
+		[
+			'quran.com',
+			tr("Teks Al-Qur'an", 'Quran text'),
+			tr('Teks Utsmani, transliterasi, dan arti per kata.', 'Uthmani text, transliteration, and word-by-word meanings.')
+		],
+		[
+			'Kementerian Agama RI',
+			tr('Terjemahan & doa', 'Translation & duas'),
+			tr(
+				"Terjemahan ayat Al-Qur'an, dan doa tambahan dari buku Kumpulan Doa Sehari-hari (2013). Teks Arab doa disalin dari buku; transliterasi dan terjemahannya disusun ulang.",
+				'Quran verse translations, plus extra duas from the book Kumpulan Doa Sehari-hari (2013). The Arabic text of the duas is copied from the book; their transliteration and translation were rewritten.'
+			)
+		]
+	]);
 </script>
 
-<svelte:head><title>Lainnya · Muslims Daily</title></svelte:head>
+<svelte:head><title>{tr('Lainnya', 'More')} · Muslims Daily</title></svelte:head>
 
 <header class="page-head">
-	<div class="label">Pengaturan</div>
-	<h1>Lainnya</h1>
+	<div class="label">{tr('Pengaturan', 'Settings')}</div>
+	<h1>{tr('Lainnya', 'More')}</h1>
 </header>
 
 {#if install.ready && !install.standalone}
@@ -73,7 +132,7 @@
 		<button class="row press" onclick={() => install.ask()}>
 			<span class="ico"><Icon name="device" size={19} /></span>
 			<span class="grow">
-				<span class="rt">Pasang di layar utama</span>
+				<span class="rt">{tr('Pasang di layar utama', 'Install to home screen')}</span>
 				<span class="rs">{installSub}</span>
 			</span>
 			<span class="go"><Icon name="chevron" size={16} stroke={2.2} /></span>
@@ -85,14 +144,14 @@
 	<button class="row press" data-tour="tour" onclick={() => tour.start()}>
 		<span class="ico"><Icon name="flag" size={19} /></span>
 		<span class="grow">
-			<span class="rt">Tour aplikasi</span>
-			<span class="rs">Kenalan lagi sama fitur-fitur utama</span>
+			<span class="rt">{tr('Tour aplikasi', 'App tour')}</span>
+			<span class="rs">{tr('Kenalan lagi sama fitur-fitur utama', 'Get to know the main features again')}</span>
 		</span>
 		<span class="go"><Icon name="chevron" size={16} stroke={2.2} /></span>
 	</button>
 </div>
 
-<nav class="card list" aria-label="Pengaturan jadwal dan data">
+<nav class="card list" aria-label={tr('Pengaturan jadwal dan data', 'Schedule and data settings')}>
 	{#each ROWS as r (r.href)}
 		<a class="row press" href={r.href}>
 			<span class="ico"><Icon name={r.icon} size={19} /></span>
@@ -106,28 +165,43 @@
 </nav>
 
 <section class="card group">
-	<div class="label">Tampilan</div>
-	<div class="seg wide" role="group" aria-label="Tema tampilan">
+	<div class="label">{tr('Tampilan', 'Appearance')}</div>
+	<div class="seg wide" role="group" aria-label={tr('Tema tampilan', 'Theme')}>
 		{#each THEMES as [m, name, icon] (m)}
 			<button class="ti" aria-pressed={theme.value.mode === m} onclick={() => (theme.value = { mode: m })}><Icon name={icon} size={16} />{name}</button>
 		{/each}
 	</div>
-	<p class="hint">Mode gelap nyaman untuk tahajud dan membaca doa di malam hari.</p>
+	<p class="hint">
+		{tr('Mode gelap nyaman untuk tahajud dan membaca doa di malam hari.', 'Dark mode is easy on the eyes for tahajjud and reading duas at night.')}
+	</p>
+
+	<div class="label mt">Bahasa · Language</div>
+	<div class="seg wide" role="group" aria-label="Bahasa · Language">
+		{#each LANGS as l (l.code)}
+			<button aria-pressed={lang.value.code === l.code} lang={l.code} onclick={() => (lang.value = { code: l.code })}>{l.label}</button>
+		{/each}
+	</div>
+	<p class="hint">
+		{tr("Isi doa, dzikir, dan terjemahan Al-Qur'an tetap berbahasa Indonesia.", 'Duas, dhikr, and Quran translations stay in Indonesian.')}
+	</p>
 </section>
 
-<div class="sec-h"><h2>Tentang</h2></div>
+<div class="sec-h"><h2>{tr('Tentang', 'About')}</h2></div>
 <section class="card about">
 	<img src="/icons/icon-192.png" alt="" width="56" height="56" />
 	<div>
 		<div class="v">Muslims Daily</div>
 		<p class="sub">
-			Aplikasi open source, gratis, tanpa iklan, dan tanpa akun. Semua catatan tersimpan di perangkatmu sendiri.
+			{tr(
+				'Aplikasi open source, gratis, tanpa iklan, dan tanpa akun. Semua catatan tersimpan di perangkatmu sendiri.',
+				'Open source and free, with no ads and no account. Everything you log stays on your own device.'
+			)}
 		</p>
 	</div>
 </section>
 <button class="card credits-btn press" onclick={() => creditsDlg?.showModal()}>
 	<Icon name="heart" size={18} />
-	<span class="grow">Kredit</span>
+	<span class="grow">{tr('Kredit', 'Credits')}</span>
 	<Icon name="chevron" size={16} />
 </button>
 
@@ -139,8 +213,8 @@
 >
 	<div class="sheet-in">
 		<div class="sheet-h">
-			<h2 id="credits-title">Kredit</h2>
-			<button class="x press" aria-label="Tutup" onclick={() => creditsDlg?.close()}><Icon name="x" size={18} /></button>
+			<h2 id="credits-title">{tr('Kredit', 'Credits')}</h2>
+			<button class="x press" aria-label={tr('Tutup', 'Close')} onclick={() => creditsDlg?.close()}><Icon name="x" size={18} /></button>
 		</div>
 		{#each CREDITS as [name, kind, desc] (name)}
 			<div class="crow">
@@ -237,6 +311,9 @@
 		color: var(--ink3);
 		margin: 12px 0 0;
 		line-height: 1.5;
+	}
+	.mt {
+		margin-top: 18px;
 	}
 	.wide {
 		display: flex;

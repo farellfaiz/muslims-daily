@@ -76,7 +76,15 @@ export function backupFileName(now: Date): string {
 	return `muslims-daily-cadangan-${y}-${m}-${d}.json`;
 }
 
-export class BackupError extends Error {}
+/** message = pesan Indonesia (bawaan), en = pasangan Inggrisnya untuk ditampilkan saat bahasa Inggris aktif. */
+export class BackupError extends Error {
+	constructor(
+		message: string,
+		readonly en: string = message
+	) {
+		super(message);
+	}
+}
 
 const KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const PRAYER_KEYS = new Set<string>(PRAYERS.map((p) => p.key));
@@ -86,7 +94,7 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
 function cleanTracker(raw: unknown): TrackerData {
-	if (!isObj(raw)) throw new BackupError('Isi catatan salat tidak terbaca');
+	if (!isObj(raw)) throw new BackupError('Isi catatan salat tidak terbaca', "The prayer log in this file can't be read");
 	const logs: Record<string, DayLog> = {};
 	if (isObj(raw.logs)) {
 		for (const [key, log] of Object.entries(raw.logs)) {
@@ -151,11 +159,14 @@ export function parseBackup(text: string): ParsedBackup {
 	try {
 		raw = JSON.parse(text);
 	} catch {
-		throw new BackupError('File ini bukan cadangan Muslims Daily');
+		throw new BackupError('File ini bukan cadangan Muslims Daily', "This file isn't a Muslims Daily backup");
 	}
-	if (!isObj(raw) || raw.app !== BACKUP_APP) throw new BackupError('File ini bukan cadangan Muslims Daily');
+	if (!isObj(raw) || raw.app !== BACKUP_APP) throw new BackupError('File ini bukan cadangan Muslims Daily', "This file isn't a Muslims Daily backup");
 	if (!isNum(raw.version) || raw.version > BACKUP_VERSION) {
-		throw new BackupError('Cadangan dibuat versi aplikasi yang lebih baru. Perbarui aplikasi dulu.');
+		throw new BackupError(
+			'Cadangan dibuat versi aplikasi yang lebih baru. Perbarui aplikasi dulu.',
+			'This backup was made by a newer version of the app. Update the app first.'
+		);
 	}
 	const at = typeof raw.exportedAt === 'string' ? new Date(raw.exportedAt) : null;
 	return {

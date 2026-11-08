@@ -12,7 +12,13 @@
 
 export const SOURCES = {
 	nu: { name: 'NU Online', url: 'https://quran.nu.or.id/doa' },
-	kemenag: { name: 'Kemenag RI', url: null, book: 'Kumpulan Doa Sehari-hari, Kementerian Agama RI (cetakan III, 2013)' }
+	kemenag: {
+		name: 'Kemenag RI',
+		url: null,
+		book: 'Kumpulan Doa Sehari-hari, Kementerian Agama RI (cetakan III, 2013)',
+		/** pasangan Inggris untuk antarmuka berbahasa Inggris; judul buku tetap */
+		bookEn: 'Kumpulan Doa Sehari-hari, Ministry of Religious Affairs of Indonesia (3rd printing, 2013)'
+	}
 } as const;
 export type SourceKey = keyof typeof SOURCES;
 

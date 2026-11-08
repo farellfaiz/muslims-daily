@@ -3,6 +3,7 @@
 	import { PRAYERS } from '#lib/prayer.ts';
 	import type { HeatCell } from '#lib/tracker.ts';
 	import Icon from './Icon.svelte';
+	import { locale, prayerName, tr } from '#lib/i18n.svelte.ts';
 
 	let { cols }: { cols: HeatCell[][] } = $props();
 
@@ -15,19 +16,23 @@
 	const months = $derived(
 		cols.map((c, i) => {
 			const m = c[0].date.getMonth();
-			return i === 0 || cols[i - 1][0].date.getMonth() !== m ? formatMonthShort(c[0].date) : '';
+			return i === 0 || cols[i - 1][0].date.getMonth() !== m ? formatMonthShort(c[0].date, locale()) : '';
 		})
 	);
 
 	const level = (c: HeatCell) => (c.udzur ? 'lh' : `l${c.value}`);
-	const title = (c: HeatCell) =>
-		c.udzur ? `${formatLong(c.date)}: udzur` : `${formatLong(c.date)}: ${c.value} dari 5 salat`;
+	const title = (c: HeatCell) => {
+		const d = formatLong(c.date, locale());
+		return c.udzur
+			? `${d}: ${tr('udzur', 'excused')}`
+			: `${d}: ${tr(`${c.value} dari 5 salat`, `${c.value} of 5 prayers`)}`;
+	};
 </script>
 
 <div class="months" style:grid-template-columns="repeat({cols.length},1fr)" aria-hidden="true">
 	{#each months as m, i (i)}<span>{m}</span>{/each}
 </div>
-<div class="heat" style:grid-template-columns="repeat({cols.length},1fr)" role="grid" aria-label="Jejak salat per hari">
+<div class="heat" style:grid-template-columns="repeat({cols.length},1fr)" role="grid" aria-label={tr('Jejak salat per hari', 'Daily prayer history')}>
 	{#each cols as col, w (w)}
 		{#each col as c (c.key)}
 			{#if c.future}
@@ -46,15 +51,18 @@
 	{/each}
 </div>
 <div class="foot">
-	<div class="legend">Sedikit <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i> Lengkap</div>
-	<div class="legend"><i class="lh"></i> Udzur</div>
+	<div class="legend">
+		{tr('Sedikit', 'Fewer')} <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i>
+		{tr('Lengkap', 'All five')}
+	</div>
+	<div class="legend"><i class="lh"></i> {tr('Udzur', 'Excused')}</div>
 </div>
 {#if picked}
 	<div class="tip" aria-live="polite">
 		<div class="th">
-			<b>{formatLong(picked.date)}</b>
+			<b>{formatLong(picked.date, locale())}</b>
 			{#if picked.udzur}
-				<span class="pill udz">Udzur</span>
+				<span class="pill udz">{tr('Udzur', 'Excused')}</span>
 			{:else}
 				<span class="pill num" class:full={picked.value === 5}>{picked.value}/5</span>
 			{/if}
@@ -64,7 +72,7 @@
 				{@const done = !!picked.log[p.key]}
 				<span class="pr" class:done>
 					<span class="dot"><Icon name={done ? 'check' : 'x'} size={13} stroke={done ? 2.8 : 2} /></span>
-					<span class="pn">{p.name}</span>
+					<span class="pn">{prayerName(p.key)}</span>
 				</span>
 			{/each}
 		</div>

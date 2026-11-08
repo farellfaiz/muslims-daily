@@ -4,6 +4,7 @@
 	import { trackerSummary } from '#lib/backup.ts';
 	import { tracker } from '#lib/state/app.svelte.ts';
 	import { install } from '#lib/state/install.svelte.ts';
+	import { isEn, tr } from '#lib/i18n.svelte.ts';
 
 	let dlg: HTMLDialogElement | undefined = $state();
 	const p = $derived(install.platform);
@@ -17,13 +18,14 @@
 	});
 
 	const close = () => (install.sheet = false);
+	const isEnglish = $derived(isEn());
 
 	// Toast tertutup lembar ini (dialog selalu di lapisan teratas), jadi status salin ada di tombolnya.
 	let copied = $state('');
 	async function copyLink() {
 		try {
 			await navigator.clipboard.writeText(location.origin);
-			copied = 'Tautan disalin';
+			copied = tr('Tautan disalin', 'Link copied');
 		} catch {
 			copied = location.origin.replace(/^https?:\/\//, '');
 		}
@@ -39,59 +41,103 @@
 >
 	<div class="sheet-in">
 		<div class="sheet-h">
-			<h2 id="install-title">{p === 'inapp' ? 'Buka di browser dulu' : 'Pasang di layar utama'}</h2>
-			<button class="x press" aria-label="Tutup" onclick={close}><Icon name="x" size={18} /></button>
+			<h2 id="install-title">{p === 'inapp' ? tr('Buka di browser dulu', 'Open in your browser first') : tr('Pasang di layar utama', 'Add to your home screen')}</h2>
+			<button class="x press" aria-label={tr('Tutup', 'Close')} onclick={close}><Icon name="x" size={18} /></button>
 		</div>
 
 		{#if p === 'inapp'}
 			<p class="lead">
-				Kamu sedang membuka Muslims Daily dari dalam aplikasi lain. Dari sini aplikasi belum bisa dipasang.
+				{tr(
+					'Kamu sedang membuka Muslims Daily dari dalam aplikasi lain. Dari sini aplikasi belum bisa dipasang.',
+					"You're opening Muslims Daily inside another app. It can't be installed from here."
+				)}
 			</p>
 			<ol>
-				<li><StarNum n={1} /><span>Ketuk menu <b>⋯</b> atau <b>⋮</b> di pojok layar.</span></li>
-				<li><StarNum n={2} /><span>Pilih <b>Buka di browser</b> (Safari atau Chrome).</span></li>
-				<li><StarNum n={3} /><span>Di browser, buka menu <b>Lainnya</b> lalu ketuk <b>Pasang di layar utama</b>.</span></li>
+				{#if isEnglish}
+					<li><StarNum n={1} /><span>Tap the <b>⋯</b> or <b>⋮</b> menu in the corner of the screen.</span></li>
+					<li><StarNum n={2} /><span>Choose <b>Open in browser</b> (Safari or Chrome).</span></li>
+					<li><StarNum n={3} /><span>In the browser, open the menu and tap <b>Add to Home Screen</b> or <b>Install app</b>.</span></li>
+				{:else}
+					<li><StarNum n={1} /><span>Ketuk menu <b>⋯</b> atau <b>⋮</b> di pojok layar.</span></li>
+					<li><StarNum n={2} /><span>Pilih <b>Buka di browser</b> (Safari atau Chrome).</span></li>
+					<li><StarNum n={3} /><span>Di browser, buka menu <b>Lainnya</b> lalu ketuk <b>Pasang di layar utama</b>.</span></li>
+				{/if}
 			</ol>
 			<button class="btn ghost press" onclick={copyLink}>
-				<Icon name={copied ? 'check' : 'copy'} size={17} />{copied || 'Salin tautan'}
+				<Icon name={copied ? 'check' : 'copy'} size={17} />{copied || tr('Salin tautan', 'Copy link')}
 			</button>
 		{:else}
 			<ul class="perks">
-				<li><Icon name="check" size={15} />Sekali ketuk dari layar utama, tampil layar penuh</li>
-				<li><Icon name="check" size={15} />Tetap jalan tanpa internet</li>
+				<li><Icon name="check" size={15} />{tr('Sekali ketuk dari layar utama, tampil layar penuh', 'One tap from your home screen, full screen')}</li>
+				<li><Icon name="check" size={15} />{tr('Tetap jalan tanpa internet', 'Works offline')}</li>
 				{#if p === 'ios'}
-					<li><Icon name="check" size={15} />Catatan salat tidak dihapus Safari walau lama tidak dibuka</li>
+					<li>
+						<Icon name="check" size={15} />{tr(
+							'Catatan salat tidak dihapus Safari walau lama tidak dibuka',
+							"Safari won't clear your prayer log, even if you don't open it for a while"
+						)}
+					</li>
 				{/if}
 			</ul>
 
 			{#if p === 'ios'}
 				<ol>
-					<li>
-						<StarNum n={1} />
-						<span>Ketuk tombol <b>Bagikan</b> <span class="ic"><Icon name="share" size={15} /></span> di bilah bawah Safari (di Chrome ada di kanan atas).</span>
-					</li>
-					<li><StarNum n={2} /><span>Gulir ke bawah, pilih <b>Tambah ke Layar Utama</b>.</span></li>
-					<li><StarNum n={3} /><span>Ketuk <b>Tambah</b>. Ikon Muslims Daily muncul di layar utama.</span></li>
+					{#if isEnglish}
+						<li>
+							<StarNum n={1} />
+							<span>Tap the <b>Share</b> button <span class="ic"><Icon name="share" size={15} /></span> in Safari's bottom bar (in Chrome it's at the top right).</span>
+						</li>
+						<li><StarNum n={2} /><span>Scroll down and choose <b>Add to Home Screen</b>.</span></li>
+						<li><StarNum n={3} /><span>Tap <b>Add</b>. The Muslims Daily icon shows up on your home screen.</span></li>
+					{:else}
+						<li>
+							<StarNum n={1} />
+							<span>Ketuk tombol <b>Bagikan</b> <span class="ic"><Icon name="share" size={15} /></span> di bilah bawah Safari (di Chrome ada di kanan atas).</span>
+						</li>
+						<li><StarNum n={2} /><span>Gulir ke bawah, pilih <b>Tambah ke Layar Utama</b>.</span></li>
+						<li><StarNum n={3} /><span>Ketuk <b>Tambah</b>. Ikon Muslims Daily muncul di layar utama.</span></li>
+					{/if}
 				</ol>
 				{#if hasData}
 					<p class="note">
 						<Icon name="info" size={16} />
-						<span>
-							Di iPhone, aplikasi yang dipasang mulai dengan catatan kosong. Simpan
-							<a href="/lainnya/cadangan" onclick={close}>cadangan</a> dulu di sini, lalu pulihkan dari aplikasinya.
-						</span>
+						{#if isEnglish}
+							<span>
+								On iPhone, the installed app starts with an empty log. Save a
+								<a href="/lainnya/cadangan" onclick={close}>backup</a> here first, then restore it in the app.
+							</span>
+						{:else}
+							<span>
+								Di iPhone, aplikasi yang dipasang mulai dengan catatan kosong. Simpan
+								<a href="/lainnya/cadangan" onclick={close}>cadangan</a> dulu di sini, lalu pulihkan dari aplikasinya.
+							</span>
+						{/if}
 					</p>
 				{/if}
 			{:else}
 				<ol>
-					<li><StarNum n={1} /><span>Buka menu browser, biasanya <b>⋮</b> atau <b>⋯</b> di pojok atas.</span></li>
-					<li>
-						<StarNum n={2} />
-						<span>Pilih <b>Pasang aplikasi</b>, <b>Instal</b>, atau <b>Tambahkan ke layar utama</b>.</span>
-					</li>
-					<li><StarNum n={3} /><span>Ikuti konfirmasinya. Ikon muncul di layar utama.</span></li>
+					{#if isEnglish}
+						<li><StarNum n={1} /><span>Open the browser menu, usually <b>⋮</b> or <b>⋯</b> in the top corner.</span></li>
+						<li>
+							<StarNum n={2} />
+							<span>Choose <b>Install app</b>, <b>Install</b>, or <b>Add to Home screen</b>.</span>
+						</li>
+						<li><StarNum n={3} /><span>Confirm, and the icon shows up on your home screen.</span></li>
+					{:else}
+						<li><StarNum n={1} /><span>Buka menu browser, biasanya <b>⋮</b> atau <b>⋯</b> di pojok atas.</span></li>
+						<li>
+							<StarNum n={2} />
+							<span>Pilih <b>Pasang aplikasi</b>, <b>Instal</b>, atau <b>Tambahkan ke layar utama</b>.</span>
+						</li>
+						<li><StarNum n={3} /><span>Ikuti konfirmasinya. Ikon muncul di layar utama.</span></li>
+					{/if}
 				</ol>
-				<p class="hint">Kalau pilihan itu tidak ada, mungkin aplikasi sudah terpasang. Cari ikonnya di layar utama.</p>
+				<p class="hint">
+					{tr(
+						'Kalau pilihan itu tidak ada, mungkin aplikasi sudah terpasang. Cari ikonnya di layar utama.',
+						"Don't see that option? The app may already be installed. Look for its icon on your home screen."
+					)}
+				</p>
 			{/if}
 		{/if}
 	</div>

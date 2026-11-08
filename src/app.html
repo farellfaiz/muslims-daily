@@ -11,6 +11,7 @@
 				var m = JSON.parse(localStorage.getItem('md:theme') || '{}').mode;
 				// bawaan terang; hanya 'system' yang mengikuti pengaturan device
 				if (m !== 'system') document.documentElement.dataset.theme = m === 'dark' ? 'dark' : 'light';
+				if (JSON.parse(localStorage.getItem('md:lang') || '{}').code === 'en') document.documentElement.lang = 'en';
 			} catch (e) {}
 			// Chrome bisa mengirim tawaran pasang sebelum aplikasi selesai dimuat; simpan dulu di sini.
 			addEventListener('beforeinstallprompt', function (e) {

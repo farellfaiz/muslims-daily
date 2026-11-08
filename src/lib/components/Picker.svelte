@@ -20,6 +20,7 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import Icon from './Icon.svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 
 	/**
 	 * Dropdown kustom pengganti <select>. Daftar pilihan baru dirender saat dibuka,
@@ -30,9 +31,9 @@
 		value,
 		onchange,
 		label,
-		placeholder = 'Pilih',
+		placeholder,
 		searchable = false,
-		searchPlaceholder = 'Cari',
+		searchPlaceholder,
 		size = 'md'
 	}: {
 		options: PickerOption[];
@@ -45,6 +46,9 @@
 		searchPlaceholder?: string;
 		size?: 'md' | 'sm';
 	} = $props();
+
+	const ph = $derived(placeholder ?? tr('Pilih', 'Choose'));
+	const searchPh = $derived(searchPlaceholder ?? tr('Cari', 'Search'));
 
 	const id = `pk${++uid}`;
 	let open = $state(false);
@@ -125,10 +129,10 @@
 		aria-haspopup="listbox"
 		aria-expanded={open}
 		aria-controls="{id}-list"
-		aria-label="{label}: {current?.label ?? placeholder}"
+		aria-label="{label}: {current?.label ?? ph}"
 		onclick={() => (open ? hide() : show())}
 	>
-		<span class="cur" class:ph={!current}>{current?.label ?? placeholder}</span>
+		<span class="cur" class:ph={!current}>{current?.label ?? ph}</span>
 		<span class="chev" class:up={open}><Icon name="chevron" size={size === 'sm' ? 13 : 15} stroke={2.2} /></span>
 	</button>
 
@@ -146,8 +150,8 @@
 						aria-controls="{id}-list"
 						aria-activedescendant={shown.length ? `${id}-o${active}` : undefined}
 						aria-autocomplete="list"
-						aria-label="{searchPlaceholder} {label.toLowerCase()}"
-						placeholder={searchPlaceholder}
+						aria-label="{searchPh} {label.toLowerCase()}"
+						placeholder={searchPh}
 						autocomplete="off"
 						spellcheck="false"
 						onkeydown={onkey}
@@ -181,7 +185,7 @@
 						{#if o.value === value}<Icon name="check" size={16} stroke={2.4} />{/if}
 					</li>
 				{:else}
-					<li class="empty" role="presentation">Tidak ada yang cocok dengan “{query}”</li>
+					<li class="empty" role="presentation">{tr(`Tidak ada yang cocok dengan “${query}”`, `Nothing matches “${query}”`)}</li>
 				{/each}
 			</ul>
 		</div>

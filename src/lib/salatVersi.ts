@@ -4,16 +4,49 @@
  */
 export type SalatVersi = 'azhar' | 'ringkas';
 
-export const SALAT_VERSI: { value: SalatVersi; label: string; sub: string }[] = [
-	{ value: 'ringkas', label: 'Ringkas', sub: '11 bacaan sahih dari hadis (Hisnul Muslim)' },
-	{ value: 'azhar', label: 'Al-Azhar (Syifa Budi)', sub: '22 bacaan: 6 dzikir lalu 16 doa' }
+/** Pilihan versi. labelEn dan subEn untuk antarmuka bahasa Inggris (dipilih di komponen). */
+export interface VersiOpt<V> {
+	value: V;
+	label: string;
+	sub: string;
+	labelEn: string;
+	subEn: string;
+}
+
+export const SALAT_VERSI: VersiOpt<SalatVersi>[] = [
+	{
+		value: 'ringkas',
+		label: 'Ringkas',
+		sub: '11 bacaan sahih dari hadis (Hisnul Muslim)',
+		labelEn: 'Short',
+		subEn: '11 authentic readings from hadith (Hisnul Muslim)'
+	},
+	{
+		value: 'azhar',
+		label: 'Al-Azhar (Syifa Budi)',
+		sub: '22 bacaan: 6 dzikir lalu 16 doa',
+		labelEn: 'Al-Azhar (Syifa Budi)',
+		subEn: '22 readings: 6 dhikr, then 16 duas'
+	}
 ];
 
 export type PagiVersi = 'hisn' | 'wirdul';
 
-export const PAGI_VERSI: { value: PagiVersi; label: string; sub: string }[] = [
-	{ value: 'hisn', label: 'Hisnul Muslim', sub: 'Bacaan dari hadis dengan rujukannya, sekitar 20 bacaan' },
-	{ value: 'wirdul', label: 'Wirdul Lathif (al-Haddad)', sub: '56 bacaan, naskah NU Online' }
+export const PAGI_VERSI: VersiOpt<PagiVersi>[] = [
+	{
+		value: 'hisn',
+		label: 'Hisnul Muslim',
+		sub: 'Bacaan dari hadis dengan rujukannya, sekitar 20 bacaan',
+		labelEn: 'Hisnul Muslim',
+		subEn: 'Readings from hadith with references, about 20 readings'
+	},
+	{
+		value: 'wirdul',
+		label: 'Wirdul Lathif (al-Haddad)',
+		sub: '56 bacaan, naskah NU Online',
+		labelEn: 'Wirdul Lathif (al-Haddad)',
+		subEn: '56 readings, NU Online text'
+	}
 ];
 
 /** Pengaturan dzikir yang diingat (md:dzikirPrefs). */
@@ -43,4 +76,11 @@ export const GROUP_LABEL = {
 	dzikir: ['Dzikir', 'dzikir'],
 	doa: ['Doa', 'doa'],
 	quran: ["Bacaan Al-Qur'an", "bacaan Al-Qur'an"]
+} as const;
+
+/** Pasangan Inggris untuk GROUP_LABEL. */
+export const GROUP_LABEL_EN = {
+	dzikir: ['Dhikr', 'dhikr'],
+	doa: ['Duas', 'duas'],
+	quran: ["Qur'an readings", "Qur'an readings"]
 } as const;

@@ -1,8 +1,11 @@
 <script lang="ts">
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
-	import { parseJump, searchSurat } from '#lib/quran.ts';
+	import { TEMPAT_EN, parseJump, searchSurat, type Surat } from '#lib/quran.ts';
 	import { quranLast } from '#lib/state/app.svelte.ts';
+	import { tr } from '#lib/i18n.svelte.ts';
+
+	const place = (t: Surat['tempat']) => tr(t, TEMPAT_EN[t]);
 
 	let { data } = $props();
 
@@ -16,21 +19,27 @@
 </script>
 
 <svelte:head>
-	<title>Al-Qur'an · Muslims Daily</title>
-	<meta name="description" content="Al-Qur'an 114 surat dengan terjemahan Kemenag, transliterasi, dan arti per kata. Bisa dibaca tanpa internet." />
+	<title>{tr("Al-Qur'an", 'Quran')} · Muslims Daily</title>
+	<meta
+		name="description"
+		content={tr(
+			"Al-Qur'an 114 surat dengan terjemahan Kemenag, transliterasi, dan arti per kata. Bisa dibaca tanpa internet.",
+			'All 114 surahs of the Quran with Indonesian translation (Kemenag), transliteration, and word-by-word meanings. Works offline.'
+		)}
+	/>
 </svelte:head>
 
 <header class="page-head">
-	<div class="label">114 surat</div>
-	<h1>Al-Qur'an</h1>
+	<div class="label">{tr('114 surat', '114 surahs')}</div>
+	<h1>{tr("Al-Qur'an", 'Quran')}</h1>
 </header>
 
 {#if last}
 	<a class="card resume press" href="/quran/{last.n}#a{quranLast.value.a}">
 		<span class="ico"><Icon name="book" size={20} /></span>
 		<span class="grow">
-			<span class="label">Lanjutkan membaca</span>
-			<span class="rt">{last.nama} <span class="num">· ayat {quranLast.value.a}</span></span>
+			<span class="label">{tr('Lanjutkan membaca', 'Continue reading')}</span>
+			<span class="rt">{last.nama} <span class="num">· {tr('ayat', 'verse')} {quranLast.value.a}</span></span>
 		</span>
 		<Icon name="chevron" size={16} stroke={2.2} />
 	</a>
@@ -41,8 +50,8 @@
 	<input
 		bind:value={query}
 		type="search"
-		placeholder="Cari surat atau ayat: yasin, 2:255"
-		aria-label="Cari surat"
+		placeholder={tr('Cari surat atau ayat: yasin, 2:255', 'Search a surah or verse: yasin, 2:255')}
+		aria-label={tr('Cari surat', 'Search surahs')}
 		autocomplete="off"
 		spellcheck="false"
 	/>
@@ -50,15 +59,15 @@
 
 {#if jump}
 	<a class="card jump press" href="/quran/{jump.surat.n}#a{jump.ayat}">
-		<span class="label">Buka ayat</span>
-		<span class="rt">{jump.surat.nama} <span class="num">ayat {jump.ayat}</span></span>
+		<span class="label">{tr('Buka ayat', 'Go to verse')}</span>
+		<span class="rt">{jump.surat.nama} <span class="num">{tr('ayat', 'verse')} {jump.ayat}</span></span>
 		<Icon name="chevron" size={16} stroke={2.2} />
 	</a>
 {/if}
 
 {#if !searching}
-	<div class="seg wide" role="group" aria-label="Tampilkan per">
-		<button aria-pressed={tab === 'surat'} onclick={() => (tab = 'surat')}>Surat</button>
+	<div class="seg wide" role="group" aria-label={tr('Tampilkan per', 'Show by')}>
+		<button aria-pressed={tab === 'surat'} onclick={() => (tab = 'surat')}>{tr('Surat', 'Surah')}</button>
 		<button aria-pressed={tab === 'juz'} onclick={() => (tab = 'juz')}>Juz</button>
 	</div>
 {/if}
@@ -80,8 +89,9 @@
 						<span class="grow">
 							<span class="rt">{su.nama}</span>
 							<span class="rs">
-								{#if a === 1 && b === su.ayat}Satu surat, <span class="num">{su.ayat}</span> ayat
-								{:else}Ayat <span class="num">{a}–{b}</span>{/if}
+								{#if a === 1 && b === su.ayat}{tr('Satu surat,', 'Whole surah,')} <span class="num">{su.ayat}</span>
+									{tr('ayat', 'verses')}
+								{:else}{tr('Ayat', 'Verses')} <span class="num">{a}–{b}</span>{/if}
 							</span>
 						</span>
 						<span class="ar" lang="ar">{su.arab}</span>
@@ -91,24 +101,27 @@
 		</section>
 	{/each}
 {:else}
-	<nav class="card list" aria-label="Daftar surat">
+	<nav class="card list" aria-label={tr('Daftar surat', 'Surah list')}>
 		{#each shown as s (s.n)}
 			<a class="row" href="/quran/{s.n}">
 				<StarNum n={s.n} />
 				<span class="grow">
 					<span class="rt">{s.nama}</span>
-					<span class="rs">{s.arti} · <span class="num">{s.ayat}</span> ayat · {s.tempat}</span>
+					<span class="rs">{s.arti} · <span class="num">{s.ayat}</span> {tr('ayat', 'verses')} · {place(s.tempat)}</span>
 				</span>
 				<span class="ar" lang="ar">{s.arab}</span>
 			</a>
 		{:else}
-			{#if !jump}<p class="empty">Tidak ada surat yang cocok dengan “{query}”.</p>{/if}
+			{#if !jump}<p class="empty">{tr(`Tidak ada surat yang cocok dengan “${query}”.`, `No surah matches “${query}”.`)}</p>{/if}
 		{/each}
 	</nav>
 {/if}
 
 <p class="credit">
-	Teks Utsmani dan arti per kata dari quran.com. Terjemahan ayat dari Kementerian Agama RI.
+	{tr(
+		'Teks Utsmani dan arti per kata dari quran.com. Terjemahan ayat dari Kementerian Agama RI.',
+		'Uthmani text and word-by-word meanings from quran.com. Verse translations from the Indonesian Ministry of Religious Affairs.'
+	)}
 </p>
 
 <style>

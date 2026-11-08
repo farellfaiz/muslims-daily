@@ -3,6 +3,7 @@
 	import SubPage from '#lib/components/SubPage.svelte';
 	import { BEFORE_OPTIONS, nextAlert } from '#lib/adzan.ts';
 	import { formatTime, tzLabel } from '#lib/date.ts';
+	import { prayerName, tr } from '#lib/i18n.svelte.ts';
 	import { PRAYERS } from '#lib/prayer.ts';
 	import { adzan } from '#lib/state/adzan.svelte.ts';
 	import { clock, schedule } from '#lib/state/app.svelte.ts';
@@ -19,38 +20,54 @@
 	}
 </script>
 
-<SubPage title="Notifikasi adzan" sub="Pemberitahuan saat waktu salat masuk. Atur sendiri waktu mana yang ingin diingatkan.">
+<SubPage
+	title={tr('Notifikasi adzan', 'Adhan notifications')}
+	sub={tr(
+		'Pemberitahuan saat waktu salat masuk. Atur sendiri waktu mana yang ingin diingatkan.',
+		'A heads-up when each prayer time begins. Choose which prayers you want reminders for.'
+	)}
+>
 	{#if !adzan.ready}
-		<section class="card group"><p class="hint top">Memuat…</p></section>
+		<section class="card group"><p class="hint top">{tr('Memuat…', 'Loading…')}</p></section>
 	{:else if adzan.support === 'ios-install'}
 		<section class="card group warn-card">
-			<div class="v">Pasang aplikasinya dulu</div>
+			<div class="v">{tr('Pasang aplikasinya dulu', 'Install the app first')}</div>
 			<p class="sub">
-				Di iPhone dan iPad, notifikasi hanya bisa untuk aplikasi yang sudah dipasang di layar utama. Pasang dulu, lalu buka
-				Muslims Daily dari layar utama dan kembali ke halaman ini.
+				{tr(
+					'Di iPhone dan iPad, notifikasi hanya bisa untuk aplikasi yang sudah dipasang di layar utama. Pasang dulu, lalu buka Muslims Daily dari layar utama dan kembali ke halaman ini.',
+					'On iPhone and iPad, notifications only work for apps installed on the home screen. Install it first, then open Muslims Daily from your home screen and come back to this page.'
+				)}
 			</p>
-			<button class="cta press" onclick={() => install.ask()}><Icon name="device" size={17} />Cara memasang</button>
+			<button class="cta press" onclick={() => install.ask()}><Icon name="device" size={17} />{tr('Cara memasang', 'How to install')}</button>
 		</section>
 	{:else if adzan.support === 'unsupported'}
 		<section class="card group warn-card">
-			<div class="v">Browser ini belum mendukung notifikasi</div>
-			<p class="sub">Coba buka Muslims Daily di Chrome, Edge, Firefox, atau Safari terbaru.</p>
+			<div class="v">{tr('Browser ini belum mendukung notifikasi', "This browser doesn't support notifications yet")}</div>
+			<p class="sub">
+				{tr(
+					'Coba buka Muslims Daily di Chrome, Edge, Firefox, atau Safari terbaru.',
+					'Try opening Muslims Daily in the latest Chrome, Edge, Firefox, or Safari.'
+				)}
+			</p>
 		</section>
 	{:else}
 		<section class="card group">
 			<button class="master" role="switch" aria-checked={adzan.active} onclick={master} disabled={adzan.permission === 'denied'}>
 				<span class="ico" class:on={adzan.active}><Icon name="bell" size={19} /></span>
 				<span class="grow">
-					<span class="v">Notifikasi adzan</span>
+					<span class="v">{tr('Notifikasi adzan', 'Adhan notifications')}</span>
 					<span class="sub">
 						{#if adzan.permission === 'denied'}
-							Izin ditolak browser
+							{tr('Izin ditolak browser', 'Blocked by the browser')}
 						{:else if !adzan.active}
-							Mati
+							{tr('Mati', 'Off')}
 						{:else if next}
-							Berikutnya {next.kind === 'before' ? `pengingat ${next.name}` : next.name} pukul {formatTime(next.at)}
+							{tr(
+								`Berikutnya ${next.kind === 'before' ? `pengingat ${next.name}` : next.name} pukul ${formatTime(next.at)}`,
+								`Next: ${next.kind === 'before' ? `${prayerName(next.key)} reminder` : prayerName(next.key)} at ${formatTime(next.at)}`
+							)}
 						{:else}
-							Semua waktu dimatikan
+							{tr('Semua waktu dimatikan', 'All prayers turned off')}
 						{/if}
 					</span>
 				</span>
@@ -58,23 +75,30 @@
 			</button>
 			{#if adzan.permission === 'denied'}
 				<p class="hint warn">
-					Browser memblokir notifikasi untuk situs ini. Buka pengaturan situs di browser (ikon gembok di bilah alamat), izinkan
-					Notifikasi, lalu kembali ke sini.
+					{tr(
+						'Browser memblokir notifikasi untuk situs ini. Buka pengaturan situs di browser (ikon gembok di bilah alamat), izinkan Notifikasi, lalu kembali ke sini.',
+						'Your browser is blocking notifications for this site. Open the site settings (the lock icon in the address bar), allow Notifications, then come back here.'
+					)}
 				</p>
 			{:else if adzan.permission === 'default' && !prefs.enabled}
-				<p class="hint">Saat dinyalakan, browser akan meminta izin menampilkan notifikasi.</p>
+				<p class="hint">
+					{tr(
+						'Saat dinyalakan, browser akan meminta izin menampilkan notifikasi.',
+						'When you turn this on, your browser will ask for permission to show notifications.'
+					)}
+				</p>
 			{/if}
 		</section>
 
-		<section class="card list" class:off={!adzan.active} aria-label="Notifikasi per waktu salat">
-			<div class="label lh">Per waktu salat · {onCount}/5</div>
+		<section class="card list" class:off={!adzan.active} aria-label={tr('Notifikasi per waktu salat', 'Notifications per prayer')}>
+			<div class="label lh">{tr('Per waktu salat', 'Per prayer')} · {onCount}/5</div>
 			{#each PRAYERS as p (p.key)}
 				<button class="row" role="switch" aria-checked={prefs.on[p.key]} disabled={!adzan.active} onclick={() => adzan.toggle(p.key)}>
 					<span class="grow">
-						<span class="v">{p.name}</span>
+						<span class="v">{prayerName(p.key)}</span>
 						<span class="sub num">
 							{times ? `${formatTime(times.today[p.key])} ${clock.now ? tzLabel(clock.now) : ''}` : '--.--'}
-							{#if adzan.active && !prefs.on[p.key]}· tanpa notifikasi{/if}
+							{#if adzan.active && !prefs.on[p.key]}· {tr('tanpa notifikasi', 'no notification')}{/if}
 						</span>
 					</span>
 					<span class="sw" aria-hidden="true"></span>
@@ -83,21 +107,26 @@
 		</section>
 
 		<section class="card group" class:off={!adzan.active}>
-			<div class="label">Pengingat sebelum adzan</div>
-			<div class="seg wide" role="group" aria-label="Pengingat sebelum adzan">
+			<div class="label">{tr('Pengingat sebelum adzan', 'Reminder before adhan')}</div>
+			<div class="seg wide" role="group" aria-label={tr('Pengingat sebelum adzan', 'Reminder before adhan')}>
 				{#each BEFORE_OPTIONS as m (m)}
 					<button aria-pressed={prefs.before === m} disabled={!adzan.active} onclick={() => adzan.setBefore(m)}>
-						{m === 0 ? 'Tidak' : `${m} mnt`}
+						{m === 0 ? tr('Tidak', 'None') : tr(`${m} mnt`, `${m} min`)}
 					</button>
 				{/each}
 			</div>
-			<p class="hint">Notifikasi tambahan sebelum waktu salat, untuk bersiap dan berwudhu. Berlaku untuk waktu yang dinyalakan.</p>
+			<p class="hint">
+				{tr(
+					'Notifikasi tambahan sebelum waktu salat, untuk bersiap dan berwudhu. Berlaku untuk waktu yang dinyalakan.',
+					'An extra notification before the prayer time, so you can get ready and make wudu. Applies to the prayers you turned on.'
+				)}
+			</p>
 		</section>
 
 		{#if adzan.active}
 			<button class="card test press" onclick={() => adzan.test()}>
 				<Icon name="bell" size={18} />
-				<span class="grow">Coba kirim notifikasi</span>
+				<span class="grow">{tr('Coba kirim notifikasi', 'Send a test notification')}</span>
 				<Icon name="chevron" size={16} />
 			</button>
 		{/if}
@@ -105,9 +134,14 @@
 		<p class="note">
 			<Icon name="info" size={15} />
 			<span>
-				Muslims Daily tanpa server, jadi notifikasi disiapkan oleh HP-mu sendiri. Notifikasi muncul selama aplikasi masih terbuka
-				atau berjalan di latar. Bila aplikasi ditutup paksa atau HP menghemat baterai dengan ketat, notifikasi bisa terlewat.
-				{#if !install.standalone}Memasang aplikasi di layar utama membuatnya lebih andal.{/if}
+				{tr(
+					'Muslims Daily tanpa server, jadi notifikasi disiapkan oleh HP-mu sendiri. Notifikasi muncul selama aplikasi masih terbuka atau berjalan di latar. Bila aplikasi ditutup paksa atau HP menghemat baterai dengan ketat, notifikasi bisa terlewat.',
+					"Muslims Daily has no server, so your phone prepares the notifications itself. They show up while the app is open or running in the background. If the app is force closed or your phone saves battery aggressively, a notification can be missed."
+				)}
+				{#if !install.standalone}{tr(
+						'Memasang aplikasi di layar utama membuatnya lebih andal.',
+						'Installing the app to your home screen makes it more reliable.'
+					)}{/if}
 			</span>
 		</p>
 	{/if}

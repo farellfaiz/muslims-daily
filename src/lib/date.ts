@@ -17,13 +17,20 @@ export function addDays(d: Date, n: number): Date {
 	return r;
 }
 
-const fmtLong = new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-const fmtFull = new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-const fmtMonth = new Intl.DateTimeFormat('id-ID', { month: 'short' });
+// Formatter disimpan per locale (membuat Intl.DateTimeFormat cukup mahal). Locale bawaan Indonesia;
+// komponen mengirim locale() dari #lib/i18n.svelte.ts supaya ikut bahasa yang dipilih.
+const fmtCache = new Map<string, Intl.DateTimeFormat>();
+function fmt(loc: string, opts: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+	const key = loc + JSON.stringify(opts);
+	let f = fmtCache.get(key);
+	if (!f) fmtCache.set(key, (f = new Intl.DateTimeFormat(loc, opts)));
+	return f;
+}
 
-export const formatLong = (d: Date) => fmtLong.format(d);
-export const formatFull = (d: Date) => fmtFull.format(d);
-export const formatMonthShort = (d: Date) => fmtMonth.format(d);
+export const formatLong = (d: Date, loc = 'id-ID') => fmt(loc, { weekday: 'long', day: 'numeric', month: 'long' }).format(d);
+export const formatFull = (d: Date, loc = 'id-ID') =>
+	fmt(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+export const formatMonthShort = (d: Date, loc = 'id-ID') => fmt(loc, { month: 'short' }).format(d);
 
 /** Jam gaya Indonesia: "04.02". */
 export function formatTime(d: Date): string {
@@ -31,9 +38,9 @@ export function formatTime(d: Date): string {
 }
 
 /** Tanggal Hijriah (Umm al-Qura) dari Intl. Null bila browser tidak mendukung. */
-export function formatHijri(d: Date): string | null {
+export function formatHijri(d: Date, loc = 'id-ID'): string | null {
 	try {
-		return new Intl.DateTimeFormat('id-ID-u-ca-islamic-umalqura', {
+		return fmt(`${loc}-u-ca-islamic-umalqura`, {
 			day: 'numeric',
 			month: 'long',
 			year: 'numeric'

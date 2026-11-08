@@ -4,6 +4,7 @@
 	import { settings, timesForDay, tracker, toast } from '#lib/state/app.svelte.ts';
 	import { canCheck, isComplete, isUdzur, togglePrayer } from '#lib/tracker.ts';
 	import Icon from './Icon.svelte';
+	import { locale, prayerName, tr } from '#lib/i18n.svelte.ts';
 
 	let { now, today, tomorrow }: { now: Date | null; today: DayTimes | null; tomorrow: DayTimes | null } = $props();
 
@@ -27,9 +28,13 @@
 		return timesForDay(day, settings.value);
 	});
 
-	const fmtDay = new Intl.DateTimeFormat('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-	const label = $derived(offset === 0 ? 'Hari ini' : offset === -1 ? 'Kemarin' : day ? fmtDay.format(day) : '');
-	const sub = $derived(offset >= -1 && day ? fmtDay.format(day) : `${-offset} hari lalu`);
+	const fmtDay = $derived(new Intl.DateTimeFormat(locale(), { weekday: 'long', day: 'numeric', month: 'long' }));
+	const label = $derived(
+		offset === 0 ? tr('Hari ini', 'Today') : offset === -1 ? tr('Kemarin', 'Yesterday') : day ? fmtDay.format(day) : ''
+	);
+	const sub = $derived(
+		offset >= -1 && day ? fmtDay.format(day) : tr(`${-offset} hari lalu`, `${-offset} days ago`)
+	);
 	const done5 = $derived(PRAYERS.filter((p) => log[p.key]).length);
 
 	// "Berikutnya" hanya untuk hari ini, dan hanya bila salat itu masih hari ini (lewat Isya = Subuh besok).
@@ -56,8 +61,12 @@
 		if (!key) return;
 		if (locked(p)) {
 			const at = times?.[p];
-			const name = PRAYERS.find((x) => x.key === p)!.name;
-			toast.say(at ? `Waktu ${name} belum masuk. Masuk pukul ${formatTime(at)}.` : `Waktu ${name} belum masuk.`);
+			const name = prayerName(p);
+			toast.say(
+				at
+					? tr(`Waktu ${name} belum masuk. Masuk pukul ${formatTime(at)}.`, `It's not ${name} time yet. It starts at ${formatTime(at)}.`)
+					: tr(`Waktu ${name} belum masuk.`, `It's not ${name} time yet.`)
+			);
 			return;
 		}
 		const was = isComplete(tracker.value.logs[key]);
@@ -67,7 +76,11 @@
 			setTimeout(() => (burst = null), 650);
 		}
 		if (!was && isComplete(tracker.value.logs[key]))
-			toast.say(offset === 0 ? 'Lima waktu lengkap hari ini. Streak bertambah.' : 'Lima waktu lengkap. Streak diperbarui.');
+			toast.say(
+				offset === 0
+					? tr('Lima waktu lengkap hari ini. Streak bertambah.', 'All five prayers done today. Your streak grows.')
+					: tr('Lima waktu lengkap. Streak diperbarui.', 'All five prayers done. Streak updated.')
+			);
 	}
 
 	// Geser kiri/kanan di kartu untuk ganti hari (HP).
@@ -84,9 +97,9 @@
 	};
 </script>
 
-<div class="card list" class:udzur data-tour="catatan" role="group" aria-label="Catatan salat per hari" ontouchstart={onStart} ontouchend={onEnd}>
+<div class="card list" class:udzur data-tour="catatan" role="group" aria-label={tr('Catatan salat per hari', 'Daily prayer log')} ontouchstart={onStart} ontouchend={onEnd}>
 	<div class="days">
-		<button class="arrow press" aria-label="Hari sebelumnya" onclick={() => go(-1)} disabled={offset <= -MAX_BACK}>
+		<button class="arrow press" aria-label={tr('Hari sebelumnya', 'Previous day')} onclick={() => go(-1)} disabled={offset <= -MAX_BACK}>
 			<Icon name="back" size={18} />
 		</button>
 		<div class="day" aria-live="polite">
@@ -96,13 +109,13 @@
 				<span class="dot"></span><span class="num">{done5}/5</span>
 			</div>
 		</div>
-		<button class="arrow press" aria-label="Hari berikutnya" onclick={() => go(1)} disabled={offset >= 0}>
+		<button class="arrow press" aria-label={tr('Hari berikutnya', 'Next day')} onclick={() => go(1)} disabled={offset >= 0}>
 			<Icon name="chevron" size={18} />
 		</button>
 	</div>
 
 	{#if udzur}
-		<p class="udz">Hari udzur. Pencatatan dijeda dan streak kamu aman.</p>
+		<p class="udz">{tr('Hari udzur. Pencatatan dijeda dan streak kamu aman.', 'Excused day. Logging is paused and your streak is safe.')}</p>
 	{/if}
 
 	{#key key}
@@ -120,10 +133,10 @@
 					onclick={() => tap(p.key)}
 				>
 					<span class="txt">
-						<span class="nm">{p.name}</span>
+						<span class="nm">{prayerName(p.key)}</span>
 						<span class="tm num">{times ? `${formatTime(times[p.key])} ${now ? tzLabel(now) : ''}` : '--.--'}</span>
 					</span>
-					{#if done}<span class="tag">Sudah salat</span>{:else if p.key === nextKey}<span class="tag soon">Berikutnya</span>{/if}
+					{#if done}<span class="tag">{tr('Sudah salat', 'Prayed')}</span>{:else if p.key === nextKey}<span class="tag soon">{tr('Berikutnya', 'Next')}</span>{/if}
 					<span class="chk" aria-hidden="true">
 						<Icon name="check" size={16} stroke={2.6} />
 						{#if burst === p.key}
@@ -140,7 +153,7 @@
 	{/key}
 
 	{#if offset !== 0}
-		<button class="back-today" onclick={() => ((dir = 1), (offset = 0))}>Kembali ke hari ini</button>
+		<button class="back-today" onclick={() => ((dir = 1), (offset = 0))}>{tr('Kembali ke hari ini', 'Back to today')}</button>
 	{/if}
 </div>
 

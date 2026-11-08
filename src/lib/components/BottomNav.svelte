@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { navigating, page } from '$app/state';
 	import Icon, { type IconName } from './Icon.svelte';
+	import { tr } from '#lib/i18n.svelte.ts';
 
-	const items: { href: string; label: string; icon: IconName }[] = [
-		{ href: '/', label: 'Beranda', icon: 'home' },
+	// $derived supaya label ikut berganti saat bahasa diubah
+	const items: { href: string; label: string; icon: IconName }[] = $derived([
+		{ href: '/', label: tr('Beranda', 'Home'), icon: 'home' },
 		{ href: '/tracker', label: 'Tracker', icon: 'grid' },
 		{ href: '/quran', label: 'Quran', icon: 'book' },
-		{ href: '/doa', label: 'Doa', icon: 'bookmark' },
-		{ href: '/lainnya', label: 'Lainnya', icon: 'dots' }
-	];
+		{ href: '/doa', label: tr('Doa', 'Duas'), icon: 'bookmark' },
+		{ href: '/lainnya', label: tr('Lainnya', 'More'), icon: 'dots' }
+	]);
 
 	// Pakai tujuan navigasi selagi halaman dimuat, supaya pil langsung bergerak saat tab diketuk.
 	const path = $derived(navigating.to?.url.pathname ?? page.url.pathname);
@@ -20,7 +22,7 @@
 	jadi lima tab tetap lega. Label tab nonaktif disembunyikan secara visual saja
 	(lebar 0), sehingga pembaca layar tetap membacanya sebagai nama tautan.
 -->
-<nav aria-label="Navigasi utama" data-tour="nav">
+<nav aria-label={tr('Navigasi utama', 'Main navigation')} data-tour="nav">
 	{#each items as it (it.href)}
 		<a href={it.href} aria-current={active(it.href) ? 'page' : undefined}>
 			<Icon name={it.icon} />

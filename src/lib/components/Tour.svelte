@@ -5,6 +5,7 @@
 	import Sheet from './Sheet.svelte';
 	import { tour } from '#lib/state/tour.svelte.ts';
 	import { cardTop, spotlight, type Box } from '#lib/tour.ts';
+	import { isEn, tr } from '#lib/i18n.svelte.ts';
 
 	// Tawaran: muncul sekali di beranda saat aplikasi pertama dibuka, setelah halaman sempat tampil.
 	let offerOpen = $state(false);
@@ -107,16 +108,21 @@
 <Sheet bind:open={offerOpen} title="Assalamu'alaikum">
 	<div class="offer">
 		<img src="/icons/icon-192.png" alt="" width="64" height="64" />
-		<p class="ot">Baru pertama buka Muslims Daily?</p>
-		<p class="os">Ikut tour singkat yuk, biar langsung kenal fitur-fiturnya. Cuma sekitar satu menit.</p>
-		<button class="go press" onclick={begin}>Mulai tour</button>
-		<button class="later press" onclick={() => (offerOpen = false)}>Nanti aja</button>
-		<p class="hint">Tour bisa dibuka lagi kapan saja dari menu Lainnya.</p>
+		<p class="ot">{tr('Baru pertama buka Muslims Daily?', 'New to Muslims Daily?')}</p>
+		<p class="os">
+			{tr(
+				'Ikut tour singkat yuk, biar langsung kenal fitur-fiturnya. Cuma sekitar satu menit.',
+				'Take a quick tour to get to know the features. It only takes about a minute.'
+			)}
+		</p>
+		<button class="go press" onclick={begin}>{tr('Mulai tour', 'Start tour')}</button>
+		<button class="later press" onclick={() => (offerOpen = false)}>{tr('Nanti aja', 'Maybe later')}</button>
+		<p class="hint">{tr('Tour bisa dibuka lagi kapan saja dari menu Lainnya.', 'You can open the tour again anytime from More.')}</p>
 	</div>
 </Sheet>
 
 {#if tour.active}
-	<div class="tour" role="dialog" aria-modal="true" aria-label="Tour aplikasi">
+	<div class="tour" role="dialog" aria-modal="true" aria-label={tr('Tour aplikasi', 'App tour')}>
 		{#if spot}
 			<div
 				class="spot"
@@ -132,19 +138,19 @@
 		<div class="card tip" class:shown={top !== null} bind:clientHeight={cardH} style:top="{top ?? view.h}px" aria-live="polite">
 			<div class="th">
 				<span class="label num">{tour.step + 1} / {tour.total}</span>
-				<button class="skip" onclick={() => tour.stop()}>Lewati</button>
+				<button class="skip" onclick={() => tour.stop()}>{tr('Lewati', 'Skip')}</button>
 			</div>
-			<h2 class="disp">{tour.current.title}</h2>
-			<p>{tour.current.body}</p>
+			<h2 class="disp">{isEn() ? tour.current.titleEn : tour.current.title}</h2>
+			<p>{isEn() ? tour.current.bodyEn : tour.current.body}</p>
 			<div class="tf">
 				<div class="dots" aria-hidden="true">
 					{#each { length: tour.total } as _, i (i)}<span class:on={i === tour.step}></span>{/each}
 				</div>
 				{#if tour.step > 0}
-					<button class="nav-b press" aria-label="Sebelumnya" onclick={() => tour.back()}><Icon name="back" size={16} stroke={2.2} /></button>
+					<button class="nav-b press" aria-label={tr('Sebelumnya', 'Previous')} onclick={() => tour.back()}><Icon name="back" size={16} stroke={2.2} /></button>
 				{/if}
 				<button class="next press" bind:this={nextBtn} onclick={() => (last ? done() : tour.next())}>
-					{last ? 'Selesai' : 'Lanjut'}
+					{last ? tr('Selesai', 'Done') : tr('Lanjut', 'Next')}
 				</button>
 			</div>
 		</div>

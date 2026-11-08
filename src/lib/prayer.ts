@@ -13,11 +13,21 @@ export const PRAYERS: { key: PrayerKey; name: string }[] = [
 	{ key: 'isya', name: 'Isya' }
 ];
 
-export const METHODS: { key: MethodKey; name: string; note: string }[] = [
-	{ key: 'kemenag', name: 'Kemenag RI', note: 'Subuh 20°, Isya 18°, ihtiyat 2 menit' },
-	{ key: 'singapore', name: 'MUIS Singapura', note: 'Subuh 20°, Isya 18°' },
-	{ key: 'mwl', name: 'Muslim World League', note: 'Subuh 18°, Isya 17°' },
-	{ key: 'ummalqura', name: 'Umm al-Qura', note: 'Dipakai di Arab Saudi' }
+/** Nama salat dalam bahasa Inggris, untuk modul murni yang tidak bisa memakai i18n (mis. teks notifikasi). */
+export const PRAYER_EN: Record<PrayerKey, string> = {
+	subuh: 'Fajr',
+	dzuhur: 'Dhuhr',
+	ashar: 'Asr',
+	maghrib: 'Maghrib',
+	isya: 'Isha'
+};
+
+/** note = keterangan Indonesia, noteEn = pasangan Inggrisnya (dipilih di komponen). */
+export const METHODS: { key: MethodKey; name: string; note: string; noteEn: string }[] = [
+	{ key: 'kemenag', name: 'Kemenag RI', note: 'Subuh 20°, Isya 18°, ihtiyat 2 menit', noteEn: 'Fajr 20°, Isha 18°, 2-minute ihtiyat' },
+	{ key: 'singapore', name: 'MUIS Singapura', note: 'Subuh 20°, Isya 18°', noteEn: 'Fajr 20°, Isha 18°' },
+	{ key: 'mwl', name: 'Muslim World League', note: 'Subuh 18°, Isya 17°', noteEn: 'Fajr 18°, Isha 17°' },
+	{ key: 'ummalqura', name: 'Umm al-Qura', note: 'Dipakai di Arab Saudi', noteEn: 'Used in Saudi Arabia' }
 ];
 
 /**

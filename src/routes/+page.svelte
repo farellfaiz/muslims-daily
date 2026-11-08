@@ -4,26 +4,40 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import InstallCard from '#lib/components/InstallCard.svelte';
 	import TodayPrayers from '#lib/components/TodayPrayers.svelte';
-	import { doaOfTheDay } from '#lib/data/doa.ts';
+	import { onMount } from 'svelte';
+	import { doaOfTheDay, type DailyDoa } from '#lib/data/doa.ts';
+	import { loadDaily } from '#lib/doaIndex.ts';
 	import { formatHijri, formatLong } from '#lib/date.ts';
 	import { clock, schedule, settings, tracker } from '#lib/state/app.svelte.ts';
 	import { currentStreak } from '#lib/tracker.ts';
+	import { locale, tr } from '#lib/i18n.svelte.ts';
 
-	let { data } = $props();
+	// Pool doa pilihan diunduh terpisah (/data/daily.json, disimpan service worker), bukan ditanam di HTML
+	// beranda; pilihannya bergantung tanggal di perangkat, jadi baru bisa ditentukan di browser.
+	let daily = $state<DailyDoa[]>([]);
+	onMount(() => {
+		loadDaily().then((d) => (daily = d), () => {});
+	});
 
 	const now = $derived(clock.now);
 	const times = $derived(now ? schedule(now) : null);
 	const streak = $derived(now ? currentStreak(tracker.value, now) : 0);
 	// Tanggal hanya dihitung ulang saat hari berganti, bukan tiap detik.
 	const dayStr = $derived(now?.toDateString());
-	const greg = $derived(dayStr ? formatLong(new Date(dayStr)) : ' ');
-	const hijri = $derived(dayStr ? (formatHijri(new Date(dayStr)) ?? '') : ' ');
-	const featured = $derived(doaOfTheDay(data.daily, dayStr ? new Date(dayStr) : new Date(2026, 0, 1)));
+	const greg = $derived(dayStr ? formatLong(new Date(dayStr), locale()) : ' ');
+	const hijri = $derived(dayStr ? (formatHijri(new Date(dayStr), locale()) ?? '') : ' ');
+	const featured = $derived(dayStr && daily.length ? doaOfTheDay(daily, new Date(dayStr)) : undefined);
 </script>
 
 <svelte:head>
 	<title>Muslims Daily</title>
-	<meta name="description" content="Jadwal salat, tracker salat, dan kumpulan doa harian. Ringan dan bisa offline." />
+	<meta
+		name="description"
+		content={tr(
+			'Jadwal salat, tracker salat, dan kumpulan doa harian. Ringan dan bisa offline.',
+			'Prayer times, a prayer tracker, and a collection of daily duas. Light and works offline.'
+		)}
+	/>
 </svelte:head>
 
 <header class="top">
@@ -41,20 +55,26 @@
 <InstallCard />
 
 <div class="sec-h">
-	<h2>Catatan salat</h2>
-	<a class="streak press" href="/tracker" data-tour="streak"><Flame size={15} lit={streak > 0} /><span class="num">{streak}</span> hari istiqamah</a>
+	<h2>{tr('Catatan salat', 'Prayer log')}</h2>
+	<a class="streak press" href="/tracker" data-tour="streak"
+		><Flame size={15} lit={streak > 0} /><span class="num">{streak}</span>
+		{tr('hari istiqamah', 'day streak')}</a
+	>
 </div>
 <TodayPrayers {now} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />
 
 <div class="sec-h"><h2>Menu</h2></div>
-<nav class="quick" aria-label="Menu cepat" data-tour="menu">
-	<a href="/doa" class="press t-navy"><span class="ico"><Icon name="bookmark" size={22} /></span>Doa</a>
-	<a href="/dzikir" class="press t-peach"><span class="ico"><Icon name="beads" size={22} /></span>Dzikir</a>
-	<a href="/quran" class="press t-gold"><span class="ico"><Icon name="book" size={22} /></span>Al-Qur'an</a>
-	<a href="/kiblat" class="press t-rose"><span class="ico"><Icon name="compass" size={22} /></span>Kiblat</a>
+<nav class="quick" aria-label={tr('Menu cepat', 'Quick menu')} data-tour="menu">
+	<a href="/doa" class="press t-navy"><span class="ico"><Icon name="bookmark" size={22} /></span>{tr('Doa', 'Duas')}</a>
+	<a href="/dzikir" class="press t-peach"><span class="ico"><Icon name="beads" size={22} /></span>{tr('Dzikir', 'Dhikr')}</a>
+	<a href="/quran" class="press t-gold"><span class="ico"><Icon name="book" size={22} /></span>{tr("Al-Qur'an", 'Quran')}</a>
+	<a href="/kiblat" class="press t-rose"><span class="ico"><Icon name="compass" size={22} /></span>{tr('Kiblat', 'Qibla')}</a>
 </nav>
 
-<div class="sec-h"><h2>Doa pilihan</h2><a href="/doa" class="label more">Lihat semua</a></div>
+<div class="sec-h">
+	<h2>{tr('Doa pilihan', 'Featured dua')}</h2>
+	<a href="/doa" class="label more">{tr('Lihat semua', 'See all')}</a>
+</div>
 {#if featured}
 	<a class="card feature press" href={featured.href}>
 		<div class="label">{featured.category}</div>

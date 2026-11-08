@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tr } from '#lib/i18n.svelte.ts';
 	import BackBar from '#lib/components/BackBar.svelte';
 	import CatIcon from '#lib/components/CatIcon.svelte';
 	import DoaList from '#lib/components/DoaList.svelte';
@@ -9,7 +10,10 @@
 
 <svelte:head>
 	<title>{c.name} · Muslims Daily</title>
-	<meta name="description" content="Kumpulan {c.name.toLowerCase()}: {data.items.map((d) => d.title).join(', ')}." />
+	<meta
+		name="description"
+		content={tr(`Kumpulan ${c.name.toLowerCase()}`, c.name) + `: ${data.items.map((d) => d.title).join(', ')}.`}
+	/>
 </svelte:head>
 
 <BackBar fallback="/doa" />
@@ -17,7 +21,7 @@
 <header class="page-head head">
 	<span class="ico"><CatIcon slug={c.slug} size={24} /></span>
 	<div>
-		<div class="label">Kategori · {c.count} doa</div>
+		<div class="label">{tr(`Kategori · ${c.count} doa`, `Category · ${c.count} ${c.count === 1 ? 'dua' : 'duas'}`)}</div>
 		<h1>{c.short}</h1>
 	</div>
 </header>

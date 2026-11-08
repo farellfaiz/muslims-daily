@@ -1,6 +1,7 @@
 import { formatTime } from '#lib/date.ts';
 import { alertTag, alertText, alertsFor, defaultAdzanPrefs, dueAlerts, notifSupport, type AdzanPrefs, type Alert, type NotifSupport } from '#lib/adzan.ts';
 import { detectPlatform } from '#lib/install.ts';
+import { lang, prayerName, tr } from '#lib/i18n.svelte.ts';
 import type { PrayerKey } from '#lib/prayer.ts';
 import { Persisted } from './persisted.svelte.ts';
 import { schedule, settings, toast } from './app.svelte.ts';
@@ -66,7 +67,7 @@ class Adzan {
 	}
 
 	async #show(a: Alert) {
-		const { title, body } = alertText(a, settings.value.label, this.prefs.before);
+		const { title, body } = alertText(a, placeLabel(), this.prefs.before, lang.value.code);
 		await notify(title, body, alertTag(a));
 	}
 
@@ -77,9 +78,9 @@ class Adzan {
 		if (this.permission === 'granted') {
 			adzanPrefs.value = { ...this.prefs, enabled: true };
 			this.#last = new Date();
-			toast.say('Notifikasi adzan aktif');
+			toast.say(tr('Notifikasi adzan aktif', 'Adhan notifications are on'));
 		} else if (this.permission === 'denied') {
-			toast.say('Izin notifikasi ditolak browser');
+			toast.say(tr('Izin notifikasi ditolak browser', 'The browser blocked notifications'));
 		}
 	}
 
@@ -102,12 +103,23 @@ class Adzan {
 		const plain = { ...this.prefs, enabled: true, before: 0 };
 		const next = [...alertsFor(today, plain), ...alertsFor(tomorrow, plain)].find((a) => a.at > now);
 		const ok = await notify(
-			'Notifikasi adzan aktif',
-			next ? `Berikutnya ${next.name} pukul ${formatTime(next.at)} · ${settings.value.label}` : 'Notifikasi muncul saat waktu salat masuk.',
+			tr('Notifikasi adzan aktif', 'Adhan notifications are on'),
+			next
+				? tr(
+						`Berikutnya ${next.name} pukul ${formatTime(next.at)} · ${placeLabel()}`,
+						`Next: ${prayerName(next.key)} at ${formatTime(next.at)} · ${placeLabel()}`
+					)
+				: tr('Notifikasi muncul saat waktu salat masuk.', "You'll get a notification when each prayer time begins."),
 			'adzan-test'
 		);
-		if (!ok) toast.say('Notifikasi tidak bisa dimunculkan');
+		if (!ok) toast.say(tr('Notifikasi tidak bisa dimunculkan', "Couldn't show the notification"));
 	}
+}
+
+/** Nama tempat untuk teks notifikasi; lokasi GPS ikut bahasa aktif. */
+function placeLabel(): string {
+	const s = settings.value;
+	return s.place === 'gps' ? tr('Lokasi saya', 'My location') : s.label;
 }
 
 /** Lewat service worker bila ada (wajib di Android), selain itu langsung dari halaman. */
@@ -117,7 +129,7 @@ async function notify(title: string, body: string, tag: string): Promise<boolean
 		tag,
 		icon: '/icons/icon-192.png',
 		badge: '/icons/icon-192.png',
-		lang: 'id',
+		lang: lang.value.code,
 		vibrate: [200, 100, 200],
 		data: { url: '/' }
 	};
@@ -139,11 +151,14 @@ export const adzan = new Adzan();
 /** Untuk subjudul baris di Lainnya. */
 export function adzanSummary(): string {
 	if (!adzan.ready) return '';
-	if (adzan.support === 'ios-install') return 'Pasang di layar utama dulu';
-	if (adzan.support === 'unsupported') return 'Tidak didukung browser ini';
-	if (adzan.permission === 'denied') return 'Izin ditolak browser';
-	if (!adzan.active) return 'Mati';
+	if (adzan.support === 'ios-install') return tr('Pasang di layar utama dulu', 'Install to your home screen first');
+	if (adzan.support === 'unsupported') return tr('Tidak didukung browser ini', "This browser doesn't support it");
+	if (adzan.permission === 'denied') return tr('Izin ditolak browser', 'Blocked by the browser');
+	if (!adzan.active) return tr('Mati', 'Off');
 	const on = Object.values(adzan.prefs.on).filter(Boolean).length;
-	const before = adzan.prefs.before ? ` · ${adzan.prefs.before} menit sebelumnya` : '';
-	return on === 5 ? `Kelima waktu${before}` : on === 0 ? 'Semua waktu dimatikan' : `${on} waktu${before}`;
+	const b = adzan.prefs.before;
+	const before = b ? tr(` · ${b} menit sebelumnya`, ` · ${b} min before`) : '';
+	if (on === 5) return tr(`Kelima waktu${before}`, `All 5 prayers${before}`);
+	if (on === 0) return tr('Semua waktu dimatikan', 'All prayers turned off');
+	return tr(`${on} waktu${before}`, `${on} ${on === 1 ? 'prayer' : 'prayers'}${before}`);
 }

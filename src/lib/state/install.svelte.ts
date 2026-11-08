@@ -1,6 +1,7 @@
 import { detectPlatform, emptyVisits, shouldOffer, touchVisit, type InstallPlatform, type VisitState } from '#lib/install.ts';
 import { Persisted } from './persisted.svelte.ts';
 import { toast } from './app.svelte.ts';
+import { tr } from '#lib/i18n.svelte.ts';
 
 /** Event pasang dari Chrome/Edge. Belum ada di tipe bawaan TypeScript. */
 interface BeforeInstallPromptEvent extends Event {
@@ -61,7 +62,7 @@ class Install {
 			this.sheet = false;
 			visits.value = { ...visits.value, installed: true };
 			detect();
-			toast.say('Terpasang. Buka dari layar utama');
+			toast.say(tr('Terpasang. Buka dari layar utama', 'Installed. Open it from your home screen'));
 		};
 		const onMode = () => (this.standalone = standalone.matches);
 		// Kunjungan dihitung saat dibuka dan saat kembali ke tab setelah lama ditinggal.
