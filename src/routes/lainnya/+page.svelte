@@ -2,6 +2,7 @@
 	import AdjustCard from '#lib/components/AdjustCard.svelte';
 	import BackupCard from '#lib/components/BackupCard.svelte';
 	import Icon from '#lib/components/Icon.svelte';
+	import Picker from '#lib/components/Picker.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { CITIES } from '#lib/cities.ts';
 	import { METHODS, type MadhabKey, type MethodKey } from '#lib/prayer.ts';
@@ -36,6 +37,8 @@
 			{ enableHighAccuracy: false, timeout: 10000, maximumAge: 3600000 }
 		);
 	}
+
+	const cityOptions = CITIES.map((c) => ({ value: c.id, label: c.name }));
 
 	const setMethod = (m: MethodKey) => (settings.value = { ...s, method: m });
 	const setMadhab = (m: MadhabKey) => (settings.value = { ...s, madhab: m });
@@ -77,13 +80,18 @@
 	<button class="btn press" onclick={useGps} disabled={locating}>
 		<Icon name="locate" size={18} />{locating ? 'Mencari lokasi…' : 'Gunakan lokasi saya'}
 	</button>
-	<label class="field">
+	<div class="field">
 		<span class="label">Atau pilih kota</span>
-		<select value={s.place === 'gps' ? '' : s.place} onchange={(e) => pickCity(e.currentTarget.value)}>
-			{#if s.place === 'gps'}<option value="" disabled>Lokasi saya (GPS)</option>{/if}
-			{#each CITIES as c (c.id)}<option value={c.id}>{c.name}</option>{/each}
-		</select>
-	</label>
+		<Picker
+			label="Kota"
+			options={cityOptions}
+			value={s.place === 'gps' ? '' : s.place}
+			placeholder="Lokasi saya (GPS)"
+			searchable
+			searchPlaceholder="Cari kota"
+			onchange={pickCity}
+		/>
+	</div>
 	<p class="hint">Lokasi hanya dipakai menghitung jadwal di HP kamu. Tidak dikirim ke server mana pun.</p>
 </section>
 
@@ -210,19 +218,9 @@
 		display: block;
 		margin-top: 14px;
 	}
-	select {
+	.field .label {
 		display: block;
-		width: 100%;
-		margin-top: 6px;
-		font: inherit;
-		font-size: 14px;
-		font-weight: 600;
-		color: var(--ink);
-		background: var(--sunk);
-		border: 0;
-		border-radius: 12px;
-		height: 44px;
-		padding: 0 12px;
+		margin-bottom: 6px;
 	}
 	.hint {
 		font-size: 12px;

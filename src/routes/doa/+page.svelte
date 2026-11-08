@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon from '#lib/components/Icon.svelte';
+	import Picker from '#lib/components/Picker.svelte';
 	import { withTransition } from '#lib/transition.ts';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { CATEGORIES, DOA, normalize, searchText, type Doa } from '#lib/data/doa.ts';
@@ -38,6 +39,13 @@
 
 	// Ganti tampilan / filter dengan transisi halus bila browser mendukung.
 	const vt = withTransition;
+
+	const SORT_OPTIONS: { value: DoaPrefs['sort']; label: string }[] = [
+		{ value: 'kat', label: 'Urut kategori' },
+		{ value: 'az', label: 'Urut A sampai Z' },
+		{ value: 'short', label: 'Terpendek dulu' },
+		{ value: 'long', label: 'Terpanjang dulu' }
+	];
 
 	function setPrefs(p: Partial<DoaPrefs>) {
 		vt(() => (doaPrefs.value = { ...doaPrefs.value, ...p }));
@@ -86,12 +94,13 @@
 </div>
 
 <div class="toolbar">
-	<select aria-label="Urutkan" value={prefs.sort} onchange={(e) => setPrefs({ sort: e.currentTarget.value as DoaPrefs['sort'] })}>
-		<option value="kat">Urut kategori</option>
-		<option value="az">Urut A sampai Z</option>
-		<option value="short">Terpendek dulu</option>
-		<option value="long">Terpanjang dulu</option>
-	</select>
+	<Picker
+		label="Urutkan"
+		size="sm"
+		options={SORT_OPTIONS}
+		value={prefs.sort}
+		onchange={(v) => setPrefs({ sort: v as DoaPrefs['sort'] })}
+	/>
 	<div class="seg vt" role="group" aria-label="Tampilan">
 		<button aria-pressed={prefs.view === 'card'} aria-label="Tampilan kartu" onclick={() => setPrefs({ view: 'card' })}><Icon name="cards" size={17} /></button>
 		<button aria-pressed={prefs.view === 'list'} aria-label="Tampilan daftar" onclick={() => setPrefs({ view: 'list' })}><Icon name="list" size={17} /></button>
@@ -195,17 +204,6 @@
 		justify-content: space-between;
 		align-items: center;
 		margin: 14px 2px 10px;
-	}
-	select {
-		font: inherit;
-		font-size: 12px;
-		font-weight: 700;
-		color: var(--ink);
-		background: var(--sunk);
-		border: 0;
-		border-radius: 10px;
-		height: 34px;
-		padding: 0 10px;
 	}
 	.vt button {
 		width: 36px;
