@@ -140,11 +140,11 @@ export const SALAT: SalatItem[] = [
 		group: 'doa',
 		count: 1,
 		arabic:
-			'اللَّهُمَّ اغْفِرْ لَنَا ذُنُوبَنَا وَلِلْوَالِدَيْنِ وَارْحَمْهُمْ كَمَا رَبَّيَانَا صِغَارًا وَلِجَمِيعِ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ الْأَحْيَاءِ مِنْهُمْ وَالْأَمْوَاتِ',
+			'اللَّهُمَّ اغْفِرْ لَنَا ذُنُوبَنَا وَلِوَالِدِينَا وَارْحَمْهُمْ كَمَا رَبَّوْنَا صِغَارًا',
 		latin:
-			"Allāhummagh-fir lanā dzunūbanā walil wālidayni warḥamhum kamā rabbayānā ṣighāran wali jamī'il muslimīna wal muslimāt wal mu'minīna wal mu'mināt al-aḥyā'i minhum wal-amwāt",
+			"Allāhummaghfir lanā dzunūbanā wa liwālidīnā warḥamhum kamā rabbaunā ṣighārā",
 		translation:
-			'Ya Allah, ampunilah dosa-dosa kami dan dosa kedua orang tua kami, sayangilah mereka sebagaimana mereka mendidik kami sewaktu kecil, serta (ampunilah) seluruh kaum muslimin dan muslimat, mukminin dan mukminat, yang masih hidup maupun yang telah wafat.'
+			'Ya Allah, ampunilah dosa-dosa kami dan dosa orang tua kami, dan sayangilah mereka sebagaimana mereka mendidik kami sewaktu kecil.'
 	},
 	{
 		id: 12,
