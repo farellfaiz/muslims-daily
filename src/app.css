@@ -164,6 +164,8 @@ body {
 html {
 	-webkit-text-size-adjust: 100%;
 	scroll-behavior: smooth;
+	/* Sisakan tempat scrollbar walau halaman pendek (mis. Quran), supaya nav dan isi tidak bergeser saat pindah tab. */
+	scrollbar-gutter: stable;
 }
 body {
 	font-family: var(--f-body);
@@ -332,6 +334,17 @@ svg.i {
 }
 ::view-transition-new(root) {
 	animation-name: vt-in;
+}
+/*
+	Nav bawah tidak ikut crossfade: potret lamanya disembunyikan dan yang tampil
+	adalah nav aslinya, supaya animasi pil melebar dan menyempit terlihat utuh.
+*/
+::view-transition-group(bottom-nav),
+::view-transition-new(bottom-nav) {
+	animation: none;
+}
+::view-transition-old(bottom-nav) {
+	display: none;
 }
 @keyframes vt-out {
 	to {
