@@ -22,7 +22,10 @@ self.skipWaiting();
 clientsClaim();
 
 // Daftar file diisi saat build (globPatterns di vite.config.ts).
-precacheAndRoute(self.__WB_MANIFEST, { cleanURLs: true });
+// Query diabaikan saat mencocokkan: /dzikir?set=salat, /doa/semua?cari, /doa/koleksi?id=... tetap
+// mendapat halamannya sendiri dari cache. Tanpa ini, URL ber-query jatuh ke kerangka beranda ('/')
+// dan halaman yang dibuka langsung atau saat offline malah menampilkan beranda.
+precacheAndRoute(self.__WB_MANIFEST, { cleanURLs: true, ignoreURLParametersMatching: [/.*/] });
 cleanupOutdatedCaches();
 
 // Semua halaman jalan offline lewat kerangka aplikasi.
