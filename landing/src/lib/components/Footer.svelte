@@ -6,9 +6,11 @@
 	const CREDITS: [string, string, string, string?][] = [
 		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
 		['NU Online', 'quran.nu.or.id/doa', 'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangannya.', 'https://quran.nu.or.id/doa'],
+		['Hisnul Muslim', 'Edisi Indonesia', 'Terjemahan dzikir pagi petang (alih bahasa H. Mahrus Ali). Teks Arab dari hisnmuslim.com.'],
+		['NU Online · Wirdul Lathif', 'quran.nu.or.id/wirid', 'Versi kedua dzikir pagi petang.', 'https://quran.nu.or.id/wirid'],
 		['adhan', 'Library perhitungan', 'Menghitung jadwal salat dan arah kiblat.', 'https://github.com/batoulapps/adhan-js'],
 		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.', 'https://quran.com'],
-		['Kementerian Agama RI', 'Terjemahan', "Terjemahan ayat Al-Qur'an."]
+		['Kementerian Agama RI', 'Terjemahan & doa', "Terjemahan ayat Al-Qur'an, dan doa tambahan dari buku Kumpulan Doa Sehari-hari (2013)."]
 	];
 
 	let dlg = $state<HTMLDialogElement>();

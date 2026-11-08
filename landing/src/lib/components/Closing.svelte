@@ -75,15 +75,28 @@
 		font-weight: 600;
 	}
 	.pulse {
+		position: relative;
 		width: 9px;
 		height: 9px;
 		border-radius: 50%;
 		background: var(--peach);
-		animation: pulse 2s ease-in-out infinite;
+	}
+	/* Lingkaran terpisah: transform dan opacity jalan di GPU, box-shadow tidak. */
+	.pulse::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: var(--peach);
+		animation: pulse 2s ease-out infinite;
 	}
 	@keyframes pulse {
-		50% {
-			box-shadow: 0 0 0 6px rgba(229, 155, 120, 0.2);
+		from {
+			opacity: 0.35;
+		}
+		to {
+			opacity: 0;
+			transform: scale(2.4);
 		}
 	}
 	.cta {

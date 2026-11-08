@@ -27,8 +27,7 @@ Project aplikasinya tetap memakai root repo. Header cache ada di [`static/_heade
 | --- | --- | --- |
 | Hero dan cerita sehari | `src/lib/components/Journey.svelte` | Satu adegan scroll: pintu membesar, lalu langit berganti dari Subuh sampai malam dan HP menampilkan fitur yang cocok |
 | Pintu dengan langit live | `src/lib/components/Door.svelte` | Jadwal Kemenag RI dihitung di browser (`src/lib/sky.ts`), kota dipilih dari zona waktu pengunjung |
-| Buat siapa | `src/lib/components/Purpose.svelte` | Kalimat besar yang menyala per kata saat di-scroll |
-| Privasi, fitur lain, install, open source, penutup | `src/lib/components/*.svelte` | |
+| Privasi (kalimat menyala per kata), fitur lain, install, open source, penutup | `src/lib/components/*.svelte` | |
 
 Animasi scroll hanya aktif bila pengunjung tidak memilih "kurangi gerakan" dan JavaScript jalan
 (kelas `motion` di `<html>`, dipasang oleh `src/app.html`). Selain itu halaman tampil sebagai daftar biasa.
@@ -39,12 +38,12 @@ Screenshot di `static/screens/` diambil dari aplikasinya sendiri, bukan mockup. 
 ada di [`src/lib/screens.json`](src/lib/screens.json). Untuk mengambil ulang setelah tampilan aplikasi berubah:
 
 ```bash
-# di folder root: jalankan aplikasinya dulu
-npm run dev -- --port 5174
+# di folder root: build aplikasinya dulu
+npm run build
 
 # di folder landing
 npm run screens                       # semua layar
-npm run screens -- http://localhost:5174 tracker   # satu layar
+npm run screens -- ../build tracker   # satu layar
 ```
 
 Skrip memakai Chrome atau Edge yang sudah terpasang (atur `CHROME_PATH` bila letaknya lain), memalsukan jam

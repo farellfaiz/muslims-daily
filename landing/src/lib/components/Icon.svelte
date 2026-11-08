@@ -22,7 +22,9 @@
 		kebab: '<circle cx="12" cy="5.5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="18.5" r="1.3"/>',
 		check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
 		star: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8-4.3-4.1 5.9-.9z"/>',
-		info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'
+		info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+		bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/>',
+		globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9s1.3-6.4 3.8-9z"/>'
 	} as const;
 	export type IconName = keyof typeof PATHS;
 </script>

@@ -13,8 +13,12 @@ class Live {
 	times = $derived(this.now ? schedule(this.now, this.place) : null);
 	phase = $derived(this.now && this.times ? skyPhase(this.now, this.times.today) : null);
 	next = $derived(this.now && this.times ? nextPrayer(this.now, this.times.today, this.times.tomorrow) : null);
+	/** Menit berjalan. Busur dan posisi matahari cukup bergerak per menit, bukan per detik. */
+	minute = $derived(this.now ? Math.floor(+this.now / 60000) : 0);
 	arc = $derived(
-		this.now && this.times ? heroArc(this.now, this.times.yesterday, this.times.today, this.times.tomorrow) : null
+		this.minute && this.times
+			? heroArc(new Date(this.minute * 60000), this.times.yesterday, this.times.today, this.times.tomorrow)
+			: null
 	);
 
 	start() {

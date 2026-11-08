@@ -1,10 +1,11 @@
 /**
  * Ambil screenshot asli aplikasi untuk landing page.
  *
- * Cara pakai (app harus sudah jalan, mis. `npm run dev -- --port 5174` di folder root):
- *   npm run screens                 -> memakai http://localhost:5174
- *   npm run screens -- http://localhost:4173
- *   npm run screens -- http://localhost:5174 tracker   (hanya satu layar)
+ * Cara pakai:
+ *   (cd .. && npm run build)        build aplikasinya dulu
+ *   npm run screens                 -> membaca langsung folder ../build, tanpa server
+ *   npm run screens -- ../build tracker              (hanya satu layar)
+ *   npm run screens -- http://localhost:5174         (atau dari server yang sudah jalan)
  *
  * Tidak mengunduh browser: memakai Chrome atau Edge yang sudah terpasang
  * (atur CHROME_PATH bila letaknya lain).
@@ -14,7 +15,7 @@
  * progres dzikir, posisi baca) supaya layar terlihat seperti sedang dipakai.
  */
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 
@@ -23,7 +24,34 @@ const { screens } = JSON.parse(readFileSync(join(root, 'src/lib/screens.json'), 
 const out = join(root, 'static/screens');
 mkdirSync(out, { recursive: true });
 
-const base = (process.argv[2] ?? 'http://localhost:5174').replace(/\/$/, '');
+const src = process.argv[2] ?? join(root, '../build');
+const fromDir = !/^https?:/.test(src);
+const dir = fromDir ? resolve(src) : '';
+if (fromDir && !existsSync(join(dir, 'index.html')))
+	throw new Error(`Build aplikasi tidak ada di ${dir}. Jalankan npm run build di folder root.`);
+const base = fromDir ? 'http://app.local' : src.replace(/\/$/, '');
+const TYPES = {
+	'.html': 'text/html; charset=utf-8',
+	'.js': 'text/javascript',
+	'.css': 'text/css',
+	'.json': 'application/json',
+	'.png': 'image/png',
+	'.webp': 'image/webp',
+	'.svg': 'image/svg+xml',
+	'.woff2': 'font/woff2',
+	'.webmanifest': 'application/manifest+json'
+};
+/** Layani request ke http://app.local dari folder build (rute prerender tersimpan sebagai <rute>.html). */
+function serve(req) {
+	const u = new URL(req.url());
+	if (u.host !== 'app.local') return req.abort();
+	const p = decodeURIComponent(u.pathname);
+	const file = [join(dir, p), join(dir, p + '.html'), join(dir, p, 'index.html')].find(
+		(f) => extname(f) && existsSync(f)
+	);
+	if (!file) return req.respond({ status: 404, contentType: 'text/plain', body: 'not found' });
+	req.respond({ status: 200, contentType: TYPES[extname(file)] ?? 'application/octet-stream', body: readFileSync(file) });
+}
 const only = process.argv[3];
 
 const chrome = [
@@ -121,6 +149,12 @@ const EXTRA = {
 
 /** Dijalankan di halaman sebelum skrip app mana pun: jam palsu + isi localStorage. */
 function prepare(fixedMs, entries) {
+	try {
+		// Splash hanya sekali per sesi: tandai sudah tampil supaya tidak tertangkap di screenshot.
+		sessionStorage.setItem('md:splash', '1');
+	} catch {
+		/* abaikan */
+	}
 	const RealDate = Date;
 	const offset = fixedMs - RealDate.now();
 	class FakeDate extends RealDate {
@@ -154,6 +188,8 @@ try {
 		const store = {
 			theme: { mode: s.theme },
 			visits: { visits: 3, lastSeen: fixed, dismissedAt: 0, installed: true },
+			tour: { offered: true, done: true },
+			lang: { code: 'id' },
 			tracker: trackerFor(s.at, extra.today ?? []),
 			...(extra.storage?.(s.at) ?? {})
 		};
@@ -165,6 +201,10 @@ try {
 		// Matikan animasi supaya hasil tidak tertangkap di tengah transisi.
 		await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
 		await page.evaluateOnNewDocument(prepare, fixed, entries);
+		if (fromDir) {
+			await page.setRequestInterception(true);
+			page.on('request', serve);
+		}
 		await page.goto(base + s.path, { waitUntil: 'networkidle2', timeout: 60_000 });
 		await page.evaluate(() => document.fonts.ready);
 		if (extra.scrollTo) {

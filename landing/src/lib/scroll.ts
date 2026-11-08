@@ -34,7 +34,22 @@ export function onFrame(f: Frame) {
 	};
 }
 
-export const motionOn = () => document.documentElement.classList.contains('motion');
+/**
+ * Penulis style yang hanya menyentuh DOM bila nilainya benar-benar berubah.
+ * Sebagian besar nilai adegan diam di 0 atau 1, jadi ini memangkas banyak pekerjaan browser per frame.
+ */
+export function styler() {
+	const seen = new WeakMap<Element, Map<string, string>>();
+	return (el: HTMLElement | SVGElement, prop: string, value: string) => {
+		let m = seen.get(el);
+		if (!m) seen.set(el, (m = new Map()));
+		if (m.get(prop) === value) return;
+		m.set(prop, value);
+		el.style.setProperty(prop, value);
+	};
+}
+
+export const motionOn =() => document.documentElement.classList.contains('motion');
 
 export const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 /** Posisi v di rentang [a, b], dijepit ke 0..1. */

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { APP_URL, REPO_URL } from '#lib/config.ts';
-	import { clamp, lerp, motionOn, onFrame, range, smooth } from '#lib/scroll.ts';
+	import { clamp, lerp, motionOn, onFrame, range, smooth, styler } from '#lib/scroll.ts';
 	import data from '#lib/screens.json';
-	import { PHASES, SKY, skyGradient, type Phase } from '#lib/sky.ts';
+	import { FIELD_STARS, PHASES, SKY, skyGradient, type Phase } from '#lib/sky.ts';
 	import Door from './Door.svelte';
 	import Icon from './Icon.svelte';
 	import Phone, { type Shot } from './Phone.svelte';
@@ -34,7 +34,7 @@
 			name: 'Pagi',
 			dot: 'Pagi',
 			title: 'Dzikir pagi & petang',
-			text: 'Counter di tiap bacaan, hitungannya tersimpan. Setiap bacaan ada sumbernya.'
+			text: 'Counter di tiap bacaan, hitungannya tersimpan. Ada dua versi bacaan, semuanya dengan sumber.'
 		},
 		{
 			shot: shot('tracker'),
@@ -58,7 +58,7 @@
 			name: 'Maghrib',
 			dot: 'Maghrib',
 			title: "Al-Qur'an",
-			text: '114 surat dengan latin dan terjemahan Kemenag. Lanjut dari ayat terakhir yang dibaca.'
+			text: '114 surat dengan latin, terjemahan Kemenag, dan arti per kata. Lanjut dari ayat terakhir yang dibaca.'
 		},
 		{
 			shot: shot('beranda-malam'),
@@ -82,14 +82,6 @@
 	const SUN_AT = [0.03, 0.25, 0.5, 0.72, 0.92, 1.14];
 	const DOT_AT = [0.03, 0.25, 0.5, 0.72, 0.92, 0.985];
 
-	// Bintang adegan: deterministik, hanya di dua pertiga atas langit.
-	const STAR_FIELD = Array.from({ length: 64 }, (_, i) => ({
-		x: (i * 61 + 7) % 100,
-		y: ((i * 37) % 64) + 2,
-		s: i % 5 === 0 ? 3 : 2,
-		d: (i % 9) * 0.35
-	}));
-
 	let section = $state<HTMLElement>();
 	let stage = $state<HTMLElement>();
 	let heroCopy = $state<HTMLElement>();
@@ -111,6 +103,7 @@
 	const layers: HTMLElement[] = [];
 
 	let active = $state(0);
+	let loadTo = $state(-1);
 	let lightInk = $state(true);
 	let W = $state(1280);
 	let H = $state(800);
@@ -153,32 +146,43 @@
 		geo = { S: Math.max(W / ww, H / (wh * 0.48)) * 1.12, tx: W / 2 - ox, ty: H / 2 - oy };
 	}
 
+	const set = styler();
+
 	function frame() {
 		if (!section || !stage) return;
 		const r = section.getBoundingClientRect();
 		const h = stage.clientHeight;
-		if (r.bottom < -h || r.top > h * 1.5) return;
+		// Adegan sudah lewat: hentikan animasi bintang, sisanya tidak perlu ditulis ulang.
+		if (r.bottom < 0) {
+			starsEl!.classList.remove('run');
+			return;
+		}
 		const s = clamp(-r.top / h, 0, LEN);
+		const past = s > ZOOM_B + 0.1;
 
 		// 1. Hero: teks naik dan memudar, pintu membesar.
 		const out = range(s, 0.03, 0.3);
-		heroCopy!.style.opacity = String(1 - out);
-		heroCopy!.style.transform = `translate3d(0, ${-out * 0.08 * h}px, 0)`;
-		cue!.style.opacity = String(1 - range(s, 0, 0.08));
+		set(heroCopy!, 'opacity', (1 - out).toFixed(3));
+		set(heroCopy!, 'transform', `translate3d(0, ${(-out * 0.08 * h).toFixed(1)}px, 0)`);
+		// Tombol hero yang sudah hilang jangan sampai masih bisa diklik atau kena Tab.
+		set(heroCopy!, 'visibility', out >= 1 ? 'hidden' : 'visible');
+		set(cue!, 'opacity', (1 - range(s, 0, 0.08)).toFixed(3));
 		const z = smooth(range(s, ZOOM_A, ZOOM_B));
 		if (geo) {
 			// Skala eksponensial terasa seperti maju dengan kecepatan tetap. Geseran ke tengah sengaja
 			// tertinggal (z kuadrat) supaya tepi bawah jendela tidak sempat naik dan memperlihatkan latar.
 			const k = Math.exp(Math.log(geo.S) * z);
 			const m = z * z;
-			doorWrap!.style.transform = `translate3d(${geo.tx * m}px, ${geo.ty * m}px, 0) scale(${k})`;
+			set(doorWrap!, 'transform', `translate3d(${(geo.tx * m).toFixed(1)}px, ${(geo.ty * m).toFixed(1)}px, 0) scale(${k.toFixed(4)})`);
 		}
-		doorEl!.style.setProperty('--inner', String(1 - range(s, 0.1, 0.48)));
-		doorEl!.style.setProperty('--dawn', String(smooth(range(s, 0.28, 0.85))));
-		doorWrap!.style.visibility = s > ZOOM_B + 0.1 ? 'hidden' : 'visible';
+		set(doorEl!, '--inner', (1 - range(s, 0.1, 0.48)).toFixed(3));
+		set(doorEl!, '--dawn', smooth(range(s, 0.28, 0.85)).toFixed(3));
+		set(doorWrap!, 'visibility', past ? 'hidden' : 'visible');
+		set(doorWrap!, 'will-change', past ? 'auto' : 'transform');
+		doorEl!.classList.toggle('idle', past);
 
 		// 2. Langit adegan menggantikan jendela pintu.
-		skybox!.style.opacity = String(range(s, 0.86, 1.08));
+		set(skybox!, 'opacity', range(s, 0.86, 1.08).toFixed(3));
 
 		// 3. Satu hari. phi = posisi bab (pecahan); langit bertahan di tengah bab dan berganti di perbatasan.
 		const phi = (s - START) / CH;
@@ -187,36 +191,44 @@
 		const lo = Math.floor(sigma);
 		const f = sigma - lo;
 		layers.forEach((el, k) => {
-			el.style.opacity = k === lo ? '1' : k === lo + 1 ? String(f) : '0';
+			const top = k === lo + 1 && f > 0;
+			set(el, 'opacity', k === lo ? '1' : top ? f.toFixed(3) : '0');
+			set(el, 'visibility', k === lo || top ? 'visible' : 'hidden');
+			// Hanya lapisan yang sedang berganti yang perlu layer GPU sendiri.
+			set(el, 'will-change', top ? 'opacity' : 'auto');
 		});
 		const hi = Math.min(lo + 1, N - 1);
-		starsEl!.style.opacity = String(lerp(SKY[PHASES[lo]].stars, SKY[PHASES[hi]].stars, f));
+		const stars = lerp(SKY[PHASES[lo]].stars, SKY[PHASES[hi]].stars, f);
+		set(starsEl!, 'opacity', stars.toFixed(3));
+		starsEl!.classList.toggle('run', stars > 0.01 && s > 0.8);
 		const ink = SKY[PHASES[Math.round(sigma)]].light;
 		if (ink !== lightInk) lightInk = ink;
 		const idx = clamp(Math.round(phi), 0, N - 1);
 		if (idx !== active) active = idx;
+		// Screenshot baru diunduh begitu mulai scroll, dan hanya sampai dua bab ke depan.
+		if (s > 0.02 && idx + 2 > loadTo) loadTo = idx + 2;
 
 		// 4. Masuknya busur, bukit, HP, dan teks bab.
 		const ent = smooth(range(s, 0.95, START));
-		arcEl!.style.clipPath = `inset(-20% ${(1 - ent) * 100}% -20% 0)`;
-		hillEl!.style.transform = `translate3d(0, ${(1 - ent) * 100}%, 0)`;
-		phoneLayer!.style.transform = `translate3d(0, ${(1 - ent) * 0.5 * h}px, 0)`;
-		phoneLayer!.style.opacity = String(range(s, 0.95, 1.2));
-		chaptersEl!.style.opacity = String(range(s, 1.08, START));
+		set(arcEl!, 'clip-path', `inset(-20% ${((1 - ent) * 100).toFixed(2)}% -20% 0)`);
+		set(hillEl!, 'transform', `translate3d(0, ${((1 - ent) * 100).toFixed(2)}%, 0)`);
+		set(phoneLayer!, 'transform', `translate3d(0, ${((1 - ent) * 0.5 * h).toFixed(1)}px, 0)`);
+		set(phoneLayer!, 'opacity', range(s, 0.95, 1.2).toFixed(3));
+		set(chaptersEl!, 'opacity', range(s, 1.08, START).toFixed(3));
 		// Bukit: krem di siang hari, siluet ungu tua saat Maghrib, navy saat malam.
-		hillDusk!.style.opacity = String(range(sigma, 3.45, 3.95));
-		hillNight!.style.opacity = String(range(sigma, 4.3, 4.9));
+		set(hillDusk!, 'opacity', range(sigma, 3.45, 3.95).toFixed(3));
+		set(hillNight!, 'opacity', range(sigma, 4.3, 4.9).toFixed(3));
 
 		// 5. Matahari berjalan terus mengikuti gulir; bulan terbit setelah Maghrib.
 		const sp = clamp(phi, 0, N - 1);
 		const a = Math.floor(sp);
 		const b = Math.min(a + 1, N - 1);
 		const [sx, sy] = at(lerp(SUN_AT[a], SUN_AT[b], sp - a));
-		sunEl!.style.transform = `translate3d(${sx}px, ${sy}px, 0)`;
-		sunEl!.style.opacity = String(ent * (1 - range(sp, 4.3, 4.75)));
+		set(sunEl!, 'transform', `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`);
+		set(sunEl!, 'opacity', (ent * (1 - range(sp, 4.3, 4.75))).toFixed(3));
 		const [mx, my] = at(lerp(0.3, 0.6, range(sp, 4.35, 5)));
-		moonEl!.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
-		moonEl!.style.opacity = String(range(sp, 4.4, 4.85));
+		set(moonEl!, 'transform', `translate3d(${mx.toFixed(1)}px, ${my.toFixed(1)}px, 0)`);
+		set(moonEl!, 'opacity', range(sp, 4.4, 4.85).toFixed(3));
 	}
 
 	let motion = $state(false);
@@ -229,6 +241,8 @@
 			frame();
 		});
 		ro.observe(stage!);
+		// Ukuran pintu di HP ikut tinggi teks hero, yang berubah saat font selesai dimuat.
+		ro.observe(doorEl!);
 		const stop = onFrame(frame);
 		return () => {
 			ro.disconnect();
@@ -268,9 +282,8 @@
 				<div class="layer" bind:this={layers[i]} style:background={skyGradient(p)}></div>
 			{/each}
 			<div class="field" bind:this={starsEl}>
-				{#each STAR_FIELD as st, i (i)}
-					<i style:left="{st.x}%" style:top="{st.y}%" style:width="{st.s}px" style:height="{st.s}px" style:animation-delay="{st.d}s"
-					></i>
+				{#each FIELD_STARS as bg, i (i)}
+					<i style:background-image={bg} style:animation-delay="{i * 1.1}s"></i>
 				{/each}
 			</div>
 		</div>
@@ -295,7 +308,7 @@
 		</div>
 		<div class="fx phone-layer" bind:this={phoneLayer}>
 			<div class="phone-pos">
-				<Phone shots={CHAPTERS.map((c) => c.shot)} {active} />
+				<Phone shots={CHAPTERS.map((c) => c.shot)} {active} load={loadTo} />
 			</div>
 		</div>
 
@@ -338,8 +351,10 @@
 	:global(.motion) .journey {
 		height: calc(var(--len) * 100vh);
 	}
+	/* scroll-margin negatif membatalkan scroll-padding nav, supaya berhenti tepat di bab pertama. */
 	:global(.motion) .anchor {
 		top: calc(var(--start) * 100vh);
+		scroll-margin-top: calc(-1 * var(--nav-h));
 	}
 	.stage {
 		position: relative;
@@ -493,15 +508,16 @@
 			position: absolute;
 			left: 0;
 			right: 0;
-			top: -40%;
+			top: 0;
 			height: 40%;
 			background: var(--navy);
+			transform: translateY(-100%);
 			animation: drip 1.8s var(--ease) infinite;
 		}
 	}
 	@keyframes drip {
 		to {
-			top: 110%;
+			transform: translateY(260%);
 		}
 	}
 
@@ -531,8 +547,11 @@
 	}
 	.field i {
 		position: absolute;
-		border-radius: 50%;
-		background: #fff;
+		inset: 0;
+		background-size: 100% 100%;
+	}
+	.field:global(.run) i {
+		will-change: opacity;
 		animation: tw 3.2s ease-in-out infinite;
 	}
 	@keyframes tw {
@@ -540,7 +559,9 @@
 			opacity: 0.25;
 		}
 	}
+	/* State awal sama dengan posisi paling atas, supaya tidak muncul sebelum JavaScript jalan. */
 	.arc {
+		clip-path: inset(-20% 100% -20% 0);
 		inset: 0;
 		z-index: 3;
 		color: #33506f;
@@ -634,6 +655,7 @@
 			inset -12px -6px 0 #d9d4c6;
 	}
 	.hill {
+		transform: translate3d(0, 100%, 0);
 		left: 0;
 		right: 0;
 		bottom: -1px;
@@ -669,7 +691,6 @@
 		top: 50%;
 		width: min(37vh, 360px);
 		transform: translateY(-48%);
-		filter: drop-shadow(0 30px 40px rgba(15, 26, 38, 0.25));
 	}
 
 	/* ---------- bab ---------- */
@@ -797,13 +818,13 @@
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.6),
 			0 30px 60px -36px rgba(15, 26, 38, 0.45);
-		-webkit-backdrop-filter: blur(18px) saturate(160%);
-		backdrop-filter: blur(18px) saturate(160%);
 		opacity: 0;
+		visibility: hidden;
 		transform: translate3d(0, calc(-50% + 30px), 0);
 		transition:
 			opacity 0.25s var(--ease),
-			transform 0s linear 0.25s;
+			transform 0s linear 0.25s,
+			visibility 0s linear 0.25s;
 	}
 	:global(.motion) .chapter.light .ch-copy {
 		background: rgba(15, 26, 38, 0.34);
@@ -812,12 +833,17 @@
 			inset 0 1px 0 rgba(255, 255, 255, 0.1),
 			0 30px 60px -36px rgba(0, 0, 0, 0.6);
 	}
+	/* Blur latar mahal: hanya kartu yang sedang tampil yang memakainya. */
 	:global(.motion) .chapter.on .ch-copy {
+		-webkit-backdrop-filter: blur(var(--glass, 18px)) saturate(160%);
+		backdrop-filter: blur(var(--glass, 18px)) saturate(160%);
 		opacity: 1;
+		visibility: visible;
 		transform: translate3d(0, -50%, 0);
 		transition:
 			opacity 0.5s var(--ease) 0.12s,
-			transform 0.75s var(--ease) 0.12s;
+			transform 0.75s var(--ease) 0.12s,
+			visibility 0s;
 	}
 
 	@media (max-width: 899px) {
@@ -847,6 +873,7 @@
 		:global(.motion) .ch-copy {
 			left: var(--gutter);
 			right: var(--gutter);
+			--glass: 10px;
 			top: calc(var(--nav-h) + 10px);
 			width: auto;
 			padding: 20px 20px 22px;

@@ -13,7 +13,9 @@
 		Jam di status bar sama dengan jam saat screenshot diambil. Bila ada beberapa layar,
 		yang aktif masuk dari bawah dan menutup layar sebelumnya.
 	*/
-	let { shots, active = 0, eager = false }: { shots: Shot[]; active?: number; eager?: boolean } = $props();
+	// `load`: indeks terakhir yang boleh diunduh. Bawaannya semua, dengan lazy loading dari browser.
+	let { shots, active = 0, load = Infinity }: { shots: Shot[]; active?: number; load?: number } = $props();
+	const gated = $derived(load !== Infinity);
 
 	const clockOf = (at: string) => at.slice(11, 16).replace(':', '.');
 </script>
@@ -32,11 +34,11 @@
 						</span>
 					</div>
 					<img
-						src="/screens/{s.id}.webp"
+						src={i <= load ? `/screens/${s.id}.webp` : undefined}
 						alt={s.alt}
 						width="780"
 						height="1594"
-						loading={eager && i === 0 ? 'eager' : 'lazy'}
+						loading={gated ? 'eager' : 'lazy'}
 						decoding="async"
 					/>
 				</figure>
@@ -99,19 +101,23 @@
 		background: #faf6f1;
 		color: #22384f;
 		opacity: 0;
+		visibility: hidden;
 		transform: translateY(4%);
 		z-index: 0;
 		transition:
 			opacity 0.45s var(--ease) 0.45s,
-			transform 0.7s var(--ease);
+			transform 0.7s var(--ease),
+			visibility 0s 0.9s;
 	}
 	.shot.on {
 		opacity: 1;
+		visibility: visible;
 		transform: none;
 		z-index: 1;
 		transition:
 			opacity 0.45s var(--ease),
-			transform 0.7s var(--ease);
+			transform 0.7s var(--ease),
+			visibility 0s;
 	}
 	.shot.dark {
 		background: #0f1a26;

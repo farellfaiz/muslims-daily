@@ -11,7 +11,7 @@
 
 <script lang="ts">
 	import { live } from '#lib/live.svelte.ts';
-	import { countdown, formatTime, PHASES, SKY, skyGradient, STARS } from '#lib/sky.ts';
+	import { countdown, DOOR_STARS, formatTime, PHASES, SKY, skyGradient } from '#lib/sky.ts';
 
 	/*
 		Pintu lengkung bawang dari ikon aplikasinya, dengan langit yang hidup:
@@ -24,7 +24,7 @@
 	const arc = $derived(live.arc);
 	const frac = (d: Date) => (arc ? (+d - +arc.start) / (+arc.end - +arc.start) : 0.5);
 	const points = $derived(arc ? arc.points.map((p) => ({ ...p, pt: arcPoint(frac(p.at)) })) : []);
-	const body = $derived(arcPoint(live.now && arc ? frac(live.now) : 0.5));
+	const body = $derived(arcPoint(live.minute && arc ? frac(new Date(live.minute * 60000)) : 0.5));
 	const isNight = $derived(arc?.mode === 'night');
 	const highlight = $derived.by(() => {
 		if (!arc?.lastThird) return '';
@@ -41,9 +41,9 @@
 		{#each PHASES as p (p)}
 			<div class="sky" class:on={p === phase} style:background={skyGradient(p)}></div>
 		{/each}
-		<div class="stars" style:opacity={SKY[phase].stars} aria-hidden="true">
-			{#each STARS as s, i (i)}
-				<i style:left="{s.x}%" style:top="{s.y}%" style:animation-delay="{s.delay}s" style:opacity={s.o}></i>
+		<div class="stars" class:off={!SKY[phase].stars} style:opacity={SKY[phase].stars} aria-hidden="true">
+			{#each DOOR_STARS as bg, i (i)}
+				<i style:background-image={bg} style:animation-delay="{i}s"></i>
 			{/each}
 		</div>
 		<div class="inner">
@@ -126,15 +126,28 @@
 	.stars {
 		position: absolute;
 		inset: 0;
-		transition: opacity 1.4s;
+		transition:
+			opacity 1.4s,
+			visibility 0s;
+	}
+	.stars.off {
+		visibility: hidden;
+		transition:
+			opacity 1.4s,
+			visibility 0s 1.4s;
 	}
 	.stars i {
 		position: absolute;
-		width: 2px;
-		height: 2px;
-		border-radius: 50%;
-		background: #fff;
+		inset: 0;
+		background-size: 100% 100%;
+		will-change: opacity;
 		animation: tw 3s ease-in-out infinite;
+	}
+	/* Bintang berhenti saat tidak terlihat: siang hari, atau pintu sudah dilewati. */
+	.stars.off i,
+	.door:global(.idle) .stars i {
+		will-change: auto;
+		animation: none;
 	}
 	@keyframes tw {
 		50% {

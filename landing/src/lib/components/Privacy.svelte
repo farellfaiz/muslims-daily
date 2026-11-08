@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { motionOn, onFrame, range, reveal } from '#lib/scroll.ts';
+	import { motionOn, onFrame, range, reveal, styler } from '#lib/scroll.ts';
 	import Icon, { type IconName } from './Icon.svelte';
 
 	/*
@@ -33,13 +33,14 @@
 
 	onMount(() => {
 		if (!motionOn()) return;
+		const set = styler();
 		return onFrame(() => {
 			if (!track || !para) return;
 			const r = track.getBoundingClientRect();
 			const h = innerHeight;
 			if (r.bottom < 0 || r.top > h) return;
 			// Mulai menyala saat kalimat masuk layar, selesai sebelum kalimat dilepas.
-			para.style.setProperty('--p', String(range(-r.top, -h * 0.5, r.height - h * 1.15)));
+			set(para, '--p', range(-r.top, -h * 0.5, r.height - h * 1.15).toFixed(3));
 		});
 	});
 </script>
@@ -110,9 +111,6 @@
 		line-height: 1.04;
 		letter-spacing: -0.035em;
 		text-wrap: balance;
-	}
-	.big span {
-		transition: opacity 0.2s linear;
 	}
 	.big span.hot {
 		color: #f1b493;

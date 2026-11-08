@@ -19,6 +19,7 @@
 		dark = !dark;
 		const root = document.documentElement;
 		root.dataset.theme = dark ? 'dark' : 'light';
+		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0A121B' : '#D3E4F3');
 		try {
 			localStorage.setItem('mdl:theme', dark ? 'dark' : 'light');
 		} catch {
@@ -152,6 +153,13 @@
 		}
 		.go .short {
 			display: inline;
+		}
+	}
+	/* Blur lebih ringan di HP. */
+	@media (max-width: 899px) {
+		nav.scrolled .bar {
+			-webkit-backdrop-filter: blur(10px);
+			backdrop-filter: blur(10px);
 		}
 	}
 	@media (max-width: 340px) {

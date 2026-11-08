@@ -20,7 +20,7 @@
 		{
 			shot: shot('doa-kategori'),
 			title: 'Doa per kategori',
-			text: 'Dari doa sehari-hari sampai doa para nabi. Bisa disimpan ke favorit.'
+			text: 'Dari doa sehari-hari sampai doa para nabi. Simpan ke favorit atau koleksi sendiri.'
 		}
 	];
 	const METHODS = ['Kemenag RI', 'MUIS Singapura', 'Muslim World League', 'Umm al-Qura'];
@@ -63,7 +63,22 @@
 				<span class="ico"><Icon name="bolt" size={22} /></span>
 				<h3>Ringan</h3>
 				<p class="stat disp num">&lt;100 KB</p>
-				<p>Total JavaScript satu app. Kebuka cepat, termasuk di HP spek standar.</p>
+				<p>JavaScript per halaman, setelah gzip. Kebuka cepat, termasuk di HP spek standar.</p>
+			</article>
+			<article class="card small rv" use:reveal>
+				<span class="ico"><Icon name="bell" size={22} /></span>
+				<h3>Notifikasi adzan</h3>
+				<p>Atur per salat, plus pengingat beberapa menit sebelumnya. Aktif selama app masih berjalan. Di iPhone, install dulu ke home screen.</p>
+			</article>
+			<article class="card small rv" use:reveal style:--d="90ms">
+				<span class="ico"><Icon name="globe" size={22} /></span>
+				<h3>Indonesia atau English</h3>
+				<p>Menu dan tampilan bisa diganti ke English. Terjemahan doa tetap bahasa Indonesia.</p>
+			</article>
+			<article class="card small rv" use:reveal style:--d="180ms">
+				<span class="ico"><Icon name="moon" size={22} /></span>
+				<h3>Dark mode</h3>
+				<p>Terang, gelap, atau ikut pengaturan HP.</p>
 			</article>
 		</div>
 	</div>
