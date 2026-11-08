@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+	import { slide } from 'svelte/transition';
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
@@ -75,6 +76,20 @@
 	const toggle = (k: 'lat' | 'tr') => (reading.value = { ...opt, [k]: !opt[k] });
 	const resize = (delta: number) => (reading.value = { ...opt, size: Math.min(46, Math.max(22, opt.size + delta)) });
 
+	// Journey: gambaran alur semua bacaan sesi ini. Tertutup bawaannya supaya tidak mendorong kartu bacaan terlalu jauh.
+	let journeyOpen = $state(false);
+	const nextId = $derived(items.find((d) => (n[d.id] ?? 0) < d.count)?.id);
+	const groups = $derived(
+		set === 'salat'
+			? (['dzikir', 'doa'] as const).map((g) => ({ g, total: items.filter((d) => d.group === g).length }))
+			: []
+	);
+	const flow = $derived(
+		groups.length ? groups.map((x) => `${x.total} ${x.g}`).join(' lalu ') : `${items.length} dzikir ${time}`
+	);
+	const nextItem = $derived(items.find((d) => d.id === nextId));
+	const jump = (id: number) => document.getElementById(`dz-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
 	async function count(d: Item, i: number) {
 		if (!date || (n[d.id] ?? 0) >= d.count) return;
 		dzikirProgress.value = tap(dzikirProgress.value, session, date, d.id, d.count);
@@ -134,6 +149,50 @@
 		<button class="chip" aria-pressed={time === 'petang'} onclick={() => (pickedTime = 'petang')}>Petang</button>
 	{/if}
 </div>
+
+<section class="card journey" aria-labelledby="journey-h">
+	<button class="jh" aria-expanded={journeyOpen} aria-controls="journey-list" onclick={() => (journeyOpen = !journeyOpen)}>
+		<span class="grow">
+			<span class="label" id="journey-h">Journey</span>
+			<span class="jt">{flow}</span>
+		</span>
+		<span class="jtoggle">{journeyOpen ? 'Tutup' : 'Lihat alur'}<span class="chev" class:up={journeyOpen}><Icon name="chevron" size={14} stroke={2.2} /></span></span>
+	</button>
+
+	<div class="strip" aria-hidden="true">
+		{#each items as d (d.id)}
+			<span
+				class="seg-{d.group ?? 'dzikir'}"
+				class:done={(n[d.id] ?? 0) >= d.count}
+				class:now={d.id === nextId}
+			></span>
+		{/each}
+	</div>
+
+	{#if journeyOpen}
+		<ol id="journey-list" class="steps" transition:slide={{ duration: 280 }}>
+			{#each items as d, i (d.id)}
+				{@const ok = (n[d.id] ?? 0) >= d.count}
+				{#if d.group && d.group !== items[i - 1]?.group}
+					<li class="sg">{d.group === 'dzikir' ? 'Dzikir' : 'Doa'}</li>
+				{/if}
+				<li>
+					<button class="step" class:ok class:now={d.id === nextId} onclick={() => jump(d.id)}>
+						<span class="node">{#if ok}<Icon name="check" size={12} stroke={2.8} />{:else}<span class="num">{i + 1}</span>{/if}</span>
+						<span class="sname">{d.title}</span>
+						{#if d.count > 1}<span class="scount num">{d.count}×</span>{/if}
+					</button>
+				</li>
+			{/each}
+		</ol>
+	{:else if nextItem}
+		<button class="jnext" onclick={() => jump(nextItem.id)}>
+			<span class="label">{done === 0 ? 'Mulai dari' : 'Berikutnya'}</span>
+			<span class="sname">{nextItem.title}</span>
+			{#if nextItem.count > 1}<span class="scount num">{nextItem.count}×</span>{/if}
+		</button>
+	{/if}
+</section>
 
 <section class="card prog" class:full={allDone}>
 	<span class="orb {set === 'salat' ? 'arch' : time}" aria-hidden="true"></span>
@@ -314,6 +373,167 @@
 		background: var(--ink);
 		border-color: var(--ink);
 		color: var(--paper);
+	}
+	.journey {
+		padding: 14px 16px 12px;
+		margin-bottom: 12px;
+	}
+	.jh {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+		text-align: left;
+	}
+	.jh .label {
+		display: block;
+	}
+	.jt {
+		display: block;
+		margin-top: 3px;
+		font-weight: 700;
+		font-size: 14px;
+		color: var(--ink);
+	}
+	.jtoggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		font-size: 12px;
+		font-weight: 700;
+		color: var(--navy);
+		flex: none;
+	}
+	.chev {
+		display: inline-flex;
+		transform: rotate(90deg);
+		transition: transform 0.25s var(--ease);
+	}
+	.chev.up {
+		transform: rotate(-90deg);
+	}
+	/* satu ruas per bacaan: biru untuk dzikir, peach untuk doa */
+	.strip {
+		display: flex;
+		gap: 3px;
+		margin-top: 12px;
+	}
+	.strip span {
+		flex: 1;
+		height: 7px;
+		border-radius: 999px;
+		background: var(--navy-soft);
+		transition: background 0.3s var(--ease);
+	}
+	.strip .seg-doa {
+		background: var(--peach-soft);
+	}
+	.strip .seg-dzikir.done {
+		background: var(--navy);
+	}
+	.strip .seg-doa.done {
+		background: var(--peach);
+	}
+	.strip .now {
+		box-shadow: inset 0 0 0 1.5px var(--ink2);
+	}
+	.jnext {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		margin-top: 10px;
+		text-align: left;
+	}
+	.jnext .label {
+		flex: none;
+	}
+	.sname {
+		flex: 1;
+		min-width: 0;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--ink);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.scount {
+		flex: none;
+		font-size: 11.5px;
+		font-weight: 700;
+		color: var(--peach-ink);
+	}
+	.steps {
+		list-style: none;
+		margin: 10px 0 0;
+		padding: 0;
+	}
+	.sg {
+		font-size: 10.5px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink3);
+		padding: 10px 0 4px;
+	}
+	.step {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		padding: 7px 0;
+		text-align: left;
+	}
+	/* garis penghubung antar langkah */
+	.step::before {
+		content: '';
+		position: absolute;
+		left: 10.5px;
+		top: -7px;
+		bottom: -7px;
+		width: 1.5px;
+		background: var(--line-strong);
+		z-index: 0;
+	}
+	.steps li:first-child .step::before,
+	.sg + li .step::before {
+		top: 50%;
+	}
+	.steps li:last-child .step::before {
+		bottom: 50%;
+	}
+	.node {
+		position: relative;
+		z-index: 1;
+		width: 22px;
+		height: 22px;
+		flex: none;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		font-size: 10.5px;
+		font-weight: 800;
+		color: var(--ink3);
+		background: var(--card);
+		border: 1.5px solid var(--line-strong);
+	}
+	.step.ok .node {
+		background: var(--navy);
+		border-color: var(--navy);
+		color: var(--on-navy);
+	}
+	.step.ok .sname {
+		color: var(--ink3);
+	}
+	.step.now .node {
+		border-color: var(--peach);
+		color: var(--peach-ink);
+		box-shadow: 0 0 0 4px var(--peach-soft);
+	}
+	.step.now .sname {
+		font-weight: 800;
 	}
 	.prog {
 		display: flex;
