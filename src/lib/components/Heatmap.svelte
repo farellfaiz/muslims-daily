@@ -29,26 +29,27 @@
 	};
 </script>
 
-<div class="months" style:grid-template-columns="repeat({cols.length},1fr)" aria-hidden="true">
-	{#each months as m, i (i)}<span>{m}</span>{/each}
-</div>
-<div class="heat" style:grid-template-columns="repeat({cols.length},1fr)" role="grid" aria-label={tr('Jejak salat per hari', 'Daily prayer history')}>
-	{#each cols as col, w (w)}
-		{#each col as c (c.key)}
-			{#if c.future}
-				<i class="future"></i>
-			{:else}
-				<button
-					class={level(c)}
-					class:on={picked?.key === c.key}
-					style:animation-delay="{w * 18}ms"
-					title={title(c)}
-					aria-label={title(c)}
-					onclick={() => (pickedKey = c.key)}
-				></button>
-			{/if}
+<div class="wipe">
+	<div class="months" style:grid-template-columns="repeat({cols.length},1fr)" aria-hidden="true">
+		{#each months as m, i (i)}<span>{m}</span>{/each}
+	</div>
+	<div class="heat" style:grid-template-columns="repeat({cols.length},1fr)" role="grid" aria-label={tr('Jejak salat per hari', 'Daily prayer history')}>
+		{#each cols as col, w (w)}
+			{#each col as c (c.key)}
+				{#if c.future}
+					<i class="future"></i>
+				{:else}
+					<button
+						class={level(c)}
+						class:on={picked?.key === c.key}
+						title={title(c)}
+						aria-label={title(c)}
+						onclick={() => (pickedKey = c.key)}
+					></button>
+				{/if}
+			{/each}
 		{/each}
-	{/each}
+	</div>
 </div>
 <div class="foot">
 	<div class="legend">
@@ -80,6 +81,30 @@
 {/if}
 
 <style>
+	/*
+		Heatmap terbuka dari kiri ke kanan oleh satu lapisan penutup yang digeser (cuma transform, satu layer).
+		Jangan animasikan tiap kotak: 182 kotak beranimasi bikin HP ngelag.
+		Margin dan padding memberi ruang supaya garis kotak terpilih di tepi tidak terpotong.
+	*/
+	.wipe {
+		position: relative;
+		overflow: hidden;
+		margin: -3px;
+		padding: 3px;
+	}
+	.wipe::after {
+		content: '';
+		position: absolute;
+		inset: 0 0 0 -48px;
+		background: linear-gradient(90deg, transparent, var(--card) 48px);
+		pointer-events: none;
+		animation: heat-wipe 0.6s var(--ease) both;
+	}
+	@keyframes heat-wipe {
+		to {
+			transform: translateX(101%);
+		}
+	}
 	.months {
 		display: grid;
 		font-size: 10px;
@@ -98,10 +123,6 @@
 		width: 100%;
 		aspect-ratio: 1;
 		border-radius: 3px;
-	}
-	.heat button {
-		opacity: 0;
-		animation: pop 0.4s var(--ease) forwards;
 	}
 	.heat button.on,
 	.heat button:hover {

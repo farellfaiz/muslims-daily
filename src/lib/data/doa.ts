@@ -43,8 +43,6 @@ export interface DoaItem {
 	slug: string;
 	category: string;
 	title: string;
-	/** teks Arab bacaan pertama, dipotong */
-	preview: string;
 	/** jumlah bacaan (tanpa subjudul) */
 	readings: number;
 	words: number;

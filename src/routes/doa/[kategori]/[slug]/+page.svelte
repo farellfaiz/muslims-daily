@@ -108,7 +108,7 @@
 <h1 class="disp title rise">{doa.title}</h1>
 <div class="meta">
 	{#if readings.length > 1}<span class="num">{tr(`${readings.length} bacaan`, `${readings.length} readings`)}</span><span class="dot"></span>{/if}
-	<span class="num">{tr(`${doa.words} kata`, `${doa.words} ${doa.words === 1 ? 'word' : 'words'}`)}</span><span class="dot"></span><span>{src.name}</span>
+	<span>{src.name}</span>
 </div>
 
 <article class="card reading" style:--arsize="{opt.size}px">

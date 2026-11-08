@@ -87,7 +87,8 @@
 		border-bottom: 1px solid var(--line);
 	}
 	.sheet-in {
-		flex: 1;
+		/* Basis harus auto: dengan `flex: 1` (basis 0) Safari menganggap isinya setinggi nol, lembar jadi terpotong. */
+		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
 		/* gulir berhenti di lembar, tidak ikut menggulir halaman di belakangnya */

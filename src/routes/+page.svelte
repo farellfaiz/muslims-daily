@@ -42,7 +42,7 @@
 
 <header class="top">
 	<div class="brand">
-		<img src="/icons/icon-192.png" alt="" width="44" height="44" />
+		<img src="/icons/icon-192.png" alt="" width="44" height="44" decoding="sync" />
 		<div>
 			<div class="label">{hijri}</div>
 			<div class="disp date">{greg}</div>

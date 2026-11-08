@@ -18,7 +18,7 @@
 		font-size: 13px;
 		font-weight: 600;
 		transition: all 0.35s var(--ease);
-		z-index: 30;
+		z-index: 70; /* di atas onboarding, supaya pesan izin lokasi tetap terbaca */
 		pointer-events: none;
 		max-width: calc(100% - 40px);
 		text-align: center;

@@ -40,7 +40,6 @@
 		background: var(--navy-soft);
 		border-color: transparent;
 		box-shadow: none;
-		animation: rise 0.4s var(--ease);
 	}
 	img {
 		border-radius: 12px;
@@ -78,16 +77,5 @@
 		display: grid;
 		place-items: center;
 		color: var(--ink2);
-	}
-	@keyframes rise {
-		from {
-			opacity: 0;
-			transform: translateY(8px);
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.offer {
-			animation: none;
-		}
 	}
 </style>

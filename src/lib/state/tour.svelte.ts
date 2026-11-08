@@ -5,15 +5,16 @@ import { Persisted } from './persisted.svelte.ts';
 const seen = new Persisted<{ offered: boolean; done: boolean }>('tour', { offered: false, done: false });
 
 /**
- * Tour aplikasi. Ditawarkan sekali saat aplikasi pertama dibuka; bisa diulang dari Lainnya.
+ * Tour aplikasi. Ditawarkan sekali di langkah terakhir onboarding; bisa diulang dari Lainnya.
  * Langkahnya ada di #lib/tour.ts, sorotannya digambar Tour.svelte.
  */
 class Tour {
-	/** false selama prerender, supaya tawaran tidak berkedip */
+	/** false selama prerender, supaya onboarding tidak berkedip */
 	ready = $state(false);
 	active = $state(false);
 	step = $state(0);
 
+	/** Pengguna baru: belum pernah melewati onboarding (dipakai +layout.svelte untuk menampilkannya). */
 	get offer() {
 		return this.ready && !this.active && !seen.value.offered;
 	}

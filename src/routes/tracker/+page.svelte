@@ -3,8 +3,9 @@
 	import Flame from '#lib/components/Flame.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import { PRAYERS } from '#lib/prayer.ts';
-	import { clock, toast, tracker } from '#lib/state/app.svelte.ts';
-	import { bestStreak, consistency, currentStreak, heatmap, toggleUdzur } from '#lib/tracker.ts';
+	import { dateKey } from '#lib/date.ts';
+	import { clock, tracker } from '#lib/state/app.svelte.ts';
+	import { bestStreak, consistency, currentStreak, heatmap, isUdzur, prayedCount } from '#lib/tracker.ts';
 	import { prayerName, tr } from '#lib/i18n.svelte.ts';
 
 	const WEEKS = 26;
@@ -17,7 +18,18 @@
 	const cols = $derived(today ? heatmap(tracker.value, today, WEEKS) : []);
 	const rates = $derived(today ? consistency(tracker.value, today) : null);
 	const empty = $derived(Object.keys(tracker.value.logs).length === 0);
-	const udzurOn = $derived(tracker.value.udzurSince !== null);
+
+	// Keterangan di bawah angka streak: kondisi hari ini, supaya isinya berubah dan berguna.
+	const todayNote = $derived.by(() => {
+		if (!today) return ' ';
+		const key = dateKey(today);
+		const n = prayedCount(tracker.value.logs[key]);
+		if (isUdzur(tracker.value, key, key)) return tr('Hari ini udzur, streak kamu dijeda dulu.', "You're excused today, so your streak is on pause.");
+		if (empty) return tr('Belum ada catatan. Centang salat pertamamu di Beranda.', 'Nothing logged yet. Tick your first prayer on Home.');
+		if (n === 5) return tr('Lima waktu hari ini sudah lengkap.', 'All five prayers logged today.');
+		if (n === 0) return tr('Hari ini belum ada salat yang dicentang.', 'No prayers ticked yet today.');
+		return tr(`Hari ini ${n} dari 5 salat sudah dicentang.`, `${n} of 5 prayers ticked today.`);
+	});
 
 	// Konsistensi per salat disembunyikan secara bawaan; bar tumbuh dari nol saat dibuka.
 	let showRates = $state(false);
@@ -26,16 +38,6 @@
 		if (showRates && rates) requestAnimationFrame(() => requestAnimationFrame(() => (grown = true)));
 		else grown = false;
 	});
-
-	function udzur() {
-		if (!today) return;
-		tracker.value = toggleUdzur(tracker.value, today);
-		toast.say(
-			tracker.value.udzurSince
-				? tr('Mode udzur aktif. Streak dijeda.', 'Excused days on. Your streak is paused.')
-				: tr('Mode udzur nonaktif.', 'Excused days off.')
-		);
-	}
 </script>
 
 <svelte:head><title>{tr('Tracker salat', 'Prayer tracker')} · Muslims Daily</title></svelte:head>
@@ -45,7 +47,7 @@
 	<h1>{tr('Istiqamah kamu', 'Your consistency')}</h1>
 </header>
 
-<section class="card big rise" class:lit={streak > 0}>
+<section class="card big" class:lit={streak > 0}>
 	<div class="main">
 		<!-- Api dan angka satu kelompok yang rapat; jarak ke teks tetap lega. -->
 		<div class="count">
@@ -54,14 +56,7 @@
 		</div>
 		<div class="grow">
 			<div class="t">{tr('hari berturut-turut', 'day streak')}</div>
-			<div class="s">
-				{empty
-					? tr(
-							'Catat salat di Beranda. Hari dengan lima waktu lengkap menambah streak.',
-							'Log your prayers on Home. Every day with all five prayers adds to your streak.'
-						)
-					: tr('Lima waktu tercatat setiap hari.', 'All five prayers logged every day.')}
-			</div>
+			<div class="s">{todayNote}</div>
 		</div>
 	</div>
 	<div class="best">
@@ -100,26 +95,6 @@
 		{/each}
 	</section>
 {/if}
-
-<section class="card udz">
-	<div class="txt">
-		<div class="t">{tr('Mode udzur', 'Excused days')}</div>
-		<div class="s">
-			{tr(
-				'Jeda pencatatan saat haid atau nifas. Streak tidak putus.',
-				"Pause logging during your period or postpartum bleeding. Your streak won't break."
-			)}
-		</div>
-	</div>
-	<button
-		class="switch"
-		class:on={udzurOn}
-		role="switch"
-		aria-checked={udzurOn}
-		aria-label={tr('Mode udzur', 'Excused days')}
-		onclick={udzur}
-	></button>
-</section>
 
 <style>
 	.big {
@@ -263,45 +238,5 @@
 	}
 	.v {
 		text-align: right;
-	}
-	.udz {
-		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 16px;
-		margin-top: 12px;
-	}
-	.udz .txt {
-		flex: 1;
-	}
-	.udz .t {
-		font-size: 14px;
-	}
-	.switch {
-		width: 46px;
-		height: 28px;
-		border-radius: 99px;
-		background: var(--sunk);
-		position: relative;
-		flex: none;
-		transition: background 0.25s;
-	}
-	.switch::after {
-		content: '';
-		position: absolute;
-		top: 3px;
-		left: 3px;
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: var(--knob);
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-		transition: transform 0.25s var(--ease);
-	}
-	.switch.on {
-		background: var(--peach);
-	}
-	.switch.on::after {
-		transform: translateX(18px);
 	}
 </style>

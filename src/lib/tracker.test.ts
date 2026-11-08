@@ -8,7 +8,7 @@ import {
 	emptyTracker,
 	heatmap,
 	togglePrayer,
-	toggleUdzur,
+	toggleUdzurDay,
 	type DayLog,
 	type TrackerData
 } from './tracker.ts';
@@ -57,15 +57,38 @@ describe('streak', () => {
 		expect(currentStreak(d, today)).toBe(2);
 	});
 
-	it('mode udzur yang masih aktif melindungi hari-hari berikutnya', () => {
-		const d = toggleUdzur(withDays([[1, full], [2, full]]), today);
+	it('mode udzur lama yang masih aktif tetap melindungi hari-hari berikutnya', () => {
+		const d = withDays([[1, full], [2, full]], { udzurSince: dateKey(today) });
 		expect(currentStreak(d, addDays(today, 3))).toBe(2);
 	});
+});
 
-	it('mematikan mode udzur menyimpan rentangnya sampai kemarin', () => {
-		const off = toggleUdzur(toggleUdzur(emptyTracker(), today), addDays(today, 3));
-		expect(off.udzurSince).toBeNull();
-		expect(off.udzurDays).toEqual([0, 1, 2].map((i) => dateKey(addDays(today, i))));
+describe('udzur per hari', () => {
+	const k = dateKey(today);
+
+	it('ketuk sekali jadi udzur, ketuk lagi batal', () => {
+		const on = toggleUdzurDay(emptyTracker(), k, today);
+		expect(on.udzurDays).toEqual([k]);
+		expect(toggleUdzurDay(on, k, today).udzurDays).toEqual([]);
+	});
+
+	it('hanya hari yang dipilih yang berubah', () => {
+		const kemarin = dateKey(addDays(today, -1));
+		const d = toggleUdzurDay(emptyTracker(), kemarin, today);
+		expect(d.udzurDays).toEqual([kemarin]);
+		expect(currentStreak({ ...d, logs: { [dateKey(addDays(today, -2))]: full } }, today)).toBe(1);
+	});
+
+	it('centang salat tidak hilang saat hari ditandai udzur', () => {
+		const d = toggleUdzurDay(withDays([[0, { subuh: true }]]), k, today);
+		expect(d.logs[k]).toEqual({ subuh: true });
+	});
+
+	it('mode udzur lama dilebur: membatalkan hari ini mengakhiri rentangnya', () => {
+		const start = addDays(today, -2);
+		const d = toggleUdzurDay({ ...emptyTracker(), udzurSince: dateKey(start) }, k, today);
+		expect(d.udzurSince).toBeNull();
+		expect(d.udzurDays).toEqual([dateKey(start), dateKey(addDays(today, -1))]);
 	});
 });
 

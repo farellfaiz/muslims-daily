@@ -10,9 +10,12 @@ export type DayLog = Partial<Record<PrayerKey, true>>;
 
 export interface TrackerData {
 	logs: Record<string, DayLog>;
-	/** Hari udzur yang sudah selesai (haid atau nifas). */
+	/** Hari udzur (haid atau nifas), ditandai per hari dari Beranda. */
 	udzurDays: string[];
-	/** Mode udzur sedang aktif sejak tanggal ini (inklusif). */
+	/**
+	 * Peninggalan mode udzur lama: aktif sejak tanggal ini (inklusif) sampai hari ini.
+	 * Masih dibaca untuk data dan cadangan lama; dilebur ke `udzurDays` saat hari udzur diubah.
+	 */
 	udzurSince: string | null;
 }
 
@@ -126,16 +129,19 @@ export function consistency(d: TrackerData, today: Date, days = 30): Record<Pray
 	return out;
 }
 
-/** Menyalakan atau mematikan mode udzur. Saat dimatikan, rentangnya disimpan sebagai hari udzur (sampai kemarin). */
-export function toggleUdzur(d: TrackerData, today: Date): TrackerData {
+/**
+ * Tandai satu hari sebagai udzur, atau batalkan bila diketuk lagi. Centang salat hari itu tidak dihapus,
+ * jadi muncul lagi kalau tandanya dibatalkan. Rentang mode udzur lama dileburkan jadi hari satuan.
+ */
+export function toggleUdzurDay(d: TrackerData, key: string, today: Date): TrackerData {
 	const todayKey = dateKey(today);
-	if (d.udzurSince === null) return { ...d, udzurSince: todayKey };
-	const days = [...d.udzurDays];
-	for (let day = fromKey(d.udzurSince); dateKey(day) < todayKey; day = addDays(day, 1)) {
-		const k = dateKey(day);
-		if (!days.includes(k)) days.push(k);
+	const days = new Set(d.udzurDays);
+	if (d.udzurSince !== null) {
+		for (let day = fromKey(d.udzurSince); dateKey(day) <= todayKey; day = addDays(day, 1)) days.add(dateKey(day));
 	}
-	return { ...d, udzurDays: days, udzurSince: null };
+	if (isUdzur(d, key, todayKey)) days.delete(key);
+	else days.add(key);
+	return { ...d, udzurDays: [...days].sort(), udzurSince: null };
 }
 
 /** Tandai sudah salat, atau batalkan bila diketuk lagi. */

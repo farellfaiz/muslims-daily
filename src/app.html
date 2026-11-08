@@ -2,7 +2,7 @@
 <html lang="id">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 		<meta name="theme-color" content="#FAF6F1" />
 		<meta name="color-scheme" content="light dark" />
 		<script>
@@ -17,6 +17,10 @@
 			addEventListener('beforeinstallprompt', function (e) {
 				e.preventDefault();
 				window.__installPrompt = e;
+			});
+			// Safari iOS mengabaikan user-scalable=no, jadi cubit untuk zoom ditahan di sini.
+			['gesturestart', 'gesturechange'].forEach(function (t) {
+				document.addEventListener(t, function (e) { e.preventDefault(); }, { passive: false });
 			});
 		</script>
 		<meta name="apple-mobile-web-app-capable" content="yes" />

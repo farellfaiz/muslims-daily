@@ -81,7 +81,6 @@ export const ITEMS: DoaItem[] = DATA.doa.map((d) => {
 		slug: d.slug,
 		category: d.category,
 		title: d.title,
-		preview: clip(r[0]?.arabic ?? '', 140),
 		readings: r.length,
 		words: wordsOf(d),
 		search: normalize([d.title, cat.short, clip(r.map((p) => `${p.translation} ${p.latin}`).join(' '), 600)].join(' '))

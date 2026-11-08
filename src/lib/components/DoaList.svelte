@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tr } from '#lib/i18n.svelte.ts';
 	import { onMount } from 'svelte';
+	import CatIcon from './CatIcon.svelte';
 	import Icon from './Icon.svelte';
 	import Picker from './Picker.svelte';
 	import StarNum from './StarNum.svelte';
@@ -66,7 +67,6 @@
 
 	const noMatch = $derived(tr('Belum ada doa yang cocok. Coba kata lain.', 'No matching duas yet. Try another word.'));
 	const readingsLabel = (n: number) => tr(`${n} bacaan`, `${n} ${n === 1 ? 'reading' : 'readings'}`);
-	const wordsLabel = (n: number) => tr(`${n} kata`, `${n} ${n === 1 ? 'word' : 'words'}`);
 
 	const results = $derived.by(() => {
 		const nq = normalize(q.trim());
@@ -112,36 +112,45 @@
 {#if !results.length}
 	<p class="empty">{q ? noMatch : (empty ?? noMatch)}</p>
 {:else if prefs.view === 'card'}
-	{#each results as d, i (d.id)}
-		<a class="card dcard" href={doaHref(d)} style:animation-delay="{Math.min(i, 8) * 45}ms">
-			<div class="head">
-				<StarNum n={i + 1} />
-				<span class="label grow">{showCategory ? catName[d.category] : readingsLabel(d.readings)}</span>
-				<button class="fav" class:on={favs.has(d.id)} aria-label={tr('Favorit', 'Favorite')} aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
-					<Icon name="heart" />
-				</button>
-			</div>
-			<p class="ar" lang="ar">{d.preview}</p>
-			<h2 class="t disp">{d.title}</h2>
-			<div class="meta">
-				{#if showCategory && d.readings > 1}<span>{readingsLabel(d.readings)}</span><span class="dot"></span>{/if}
-				<span class="num">{wordsLabel(d.words)}</span>
-				{#if readToday.has(d.id)}<span class="dot"></span><span class="read">{tr('Dibaca', 'Read')}</span>{/if}
-			</div>
-		</a>
-	{/each}
+	<div class="cards">
+		{#each results as d, i (d.id)}
+			<a class="card dcard" href={doaHref(d)}>
+				<div class="head">
+					<StarNum n={i + 1} />
+					<!-- Warnanya mengikuti kartu kategori yang sama di halaman Doa. -->
+					<span class="dico" class:alt={catOrder[d.category] % 4 === 1 || catOrder[d.category] % 4 === 2}><CatIcon slug={d.category} size={20} /></span>
+					<span class="grow">{#if readToday.has(d.id)}<span class="read">{tr('Dibaca', 'Read')}</span>{/if}</span>
+					<button class="fav" class:on={favs.has(d.id)} aria-label={tr('Favorit', 'Favorite')} aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
+						<Icon name="heart" />
+					</button>
+				</div>
+				<h2 class="t disp">{d.title}</h2>
+				{#if showCategory || d.readings > 1}
+					<div class="meta">
+						{#if showCategory}<span class="ell">{catName[d.category]}</span>{/if}
+						{#if showCategory && d.readings > 1}<span class="dot"></span>{/if}
+						{#if d.readings > 1}<span class="nw">{readingsLabel(d.readings)}</span>{/if}
+					</div>
+				{/if}
+			</a>
+		{/each}
+	</div>
 {:else}
 	<div class="card rows">
 		{#each results as d, i (d.id)}
-			<a class="drow" href={doaHref(d)} style:animation-delay="{Math.min(i, 10) * 30}ms">
+			<a class="drow" href={doaHref(d)}>
 				<StarNum n={i + 1} />
 				<div class="grow min">
 					<p class="t">{d.title}</p>
-					<div class="meta">
-						{#if showCategory}<span class="ell">{catName[d.category]}</span><span class="dot"></span>{/if}
-						<span class="num">{wordsLabel(d.words)}</span>
-						{#if readToday.has(d.id)}<span class="dot"></span><span class="read">{tr('Dibaca', 'Read')}</span>{/if}
-					</div>
+					{#if showCategory || d.readings > 1 || readToday.has(d.id)}
+						<div class="meta">
+							{#if showCategory}<span class="ell">{catName[d.category]}</span>{/if}
+							{#if showCategory && d.readings > 1}<span class="dot"></span>{/if}
+							{#if d.readings > 1}<span class="nw">{readingsLabel(d.readings)}</span>{/if}
+							{#if readToday.has(d.id) && (showCategory || d.readings > 1)}<span class="dot"></span>{/if}
+							{#if readToday.has(d.id)}<span class="read">{tr('Dibaca', 'Read')}</span>{/if}
+						</div>
+					{/if}
 				</div>
 				<button class="fav" class:on={favs.has(d.id)} aria-label={tr('Favorit', 'Favorite')} aria-pressed={favs.has(d.id)} onclick={(e) => fav(e, d.id)}>
 					<Icon name="heart" />
@@ -197,12 +206,16 @@
 		font-size: 13.5px;
 		line-height: 1.6;
 	}
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
 	.dcard {
-		display: block;
-		padding: 16px 16px 14px;
-		margin-bottom: 12px;
+		display: flex;
+		flex-direction: column;
+		padding: 10px 10px 12px 12px;
 		text-decoration: none;
-		animation: rise 0.4s var(--ease) both;
 		transition:
 			transform 0.25s var(--ease),
 			box-shadow 0.25s;
@@ -216,7 +229,12 @@
 	.head {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 6px;
+		margin: 0 0 10px -4px;
+	}
+	.head .read {
+		font-size: 11px;
+		font-weight: 700;
 	}
 	.grow {
 		flex: 1;
@@ -224,22 +242,41 @@
 	.min {
 		min-width: 0;
 	}
-	.dcard .ar {
-		font-size: 22px;
-		margin: 10px 0 6px;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
+	.dico {
+		flex: none;
+		width: 36px;
+		height: 36px;
+		border-radius: 13px;
+		display: grid;
+		place-items: center;
+		background: var(--navy-soft);
+		color: var(--navy);
+	}
+	.dico.alt {
+		background: var(--peach-soft);
+		color: var(--peach-ink);
 	}
 	.t {
 		margin: 0;
 	}
 	.dcard .t {
 		font-weight: 500;
-		font-size: 18px;
+		font-size: 15.5px;
+		line-height: 1.28;
 		letter-spacing: -0.01em;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.dcard .meta {
+		margin-top: auto;
+		padding-top: 8px;
+	}
+	.nw {
+		flex: none;
+		white-space: nowrap;
 	}
 	.meta {
 		display: flex;
@@ -264,6 +301,7 @@
 		color: var(--navy);
 	}
 	.ell {
+		min-width: 0;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -278,7 +316,6 @@
 		padding: 12px 4px;
 		border-bottom: 1px solid var(--line);
 		text-decoration: none;
-		animation: rise 0.35s var(--ease) both;
 	}
 	.drow:last-child {
 		border-bottom: 0;

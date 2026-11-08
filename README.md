@@ -17,14 +17,14 @@
 
 - **Jadwal salat** dihitung langsung di HP, tanpa internet. Bisa pilih metode (Kemenag RI, MUIS, MWL, Umm al-Qura), mazhab Ashar, lokasi GPS atau kota, koreksi per salat supaya cocok dengan masjid setempat, dan imsak 5, 10, atau 15 menit.
 - **Langit yang hidup**: hero beranda berbentuk pintu lengkung yang warna langitnya ikut waktu salat, dengan hitung mundur ke salat berikutnya. Malam hari menampilkan sepertiga malam terakhir dan imsak.
-- **Catatan dan tracker salat**: tap untuk menandai sudah salat, termasuk hari-hari yang lalu. Ada streak, heatmap 6 bulan, konsistensi per salat, dan mode udzur yang menjeda streak tanpa memutusnya.
+- **Catatan dan tracker salat**: tap untuk menandai sudah salat, termasuk hari-hari yang lalu. Ada streak, heatmap 6 bulan, konsistensi per salat, dan tanda udzur per hari yang menjeda streak tanpa memutusnya.
 - **Kumpulan doa**: 260 doa dalam 19 kategori, lengkap dengan teks Arab, latin, dan terjemahan. Bisa di-search (toleran ejaan, dhuha = duha), diurutkan, ditampilkan sebagai kartu atau daftar, disimpan ke favorit, dan dikelompokkan ke **koleksi pribadi**.
 - **Dzikir** setelah salat dan pagi petang, masing-masing dengan dua versi. Ada penghitung ketuk dengan getar halus, lafaz pagi atau petang yang menyesuaikan sendiri, alur sesi (Journey), dan progres per sesi.
 - **Al-Qur'an**: 114 surat dan tab juz, teks Utsmani, latin, terjemahan, arti per kata, lompat ke ayat, dan lanjutkan dari posisi terakhir.
 - **Kiblat**: arah dan jarak ke Ka'bah, dengan kompas yang menyala saat HP sudah menghadap kiblat.
 - **Notifikasi adzan** per salat, bisa dengan pengingat beberapa menit sebelumnya.
 - **Dua bahasa**: antarmuka Indonesia atau English.
-- **Tour aplikasi** untuk pengguna baru, splash screen, dan ajakan install ke home screen.
+- **Onboarding dan tour aplikasi** untuk pengguna baru, splash screen, dan ajakan install ke home screen.
 - **Dark mode**: Terang (bawaan), Gelap, atau ikut pengaturan HP.
 - **Backup**: simpan semua data ke satu file JSON lalu restore di HP lain. Datanya digabung, tidak menimpa.
 - **Privasi**: tanpa akun, tanpa iklan, tanpa pelacakan. Semua catatan tersimpan di HP sendiri.
@@ -80,7 +80,7 @@ src/
   service-worker/sw.ts  cache offline dan ketukan notifikasi adzan
   lib/
     prayer.ts           hitung jadwal salat dan fase langit
-    tracker.ts          streak, heatmap, konsistensi, mode udzur
+    tracker.ts          streak, heatmap, konsistensi, hari udzur
     qibla.ts            arah kiblat, jarak, dan pembacaan kompas
     backup.ts           ekspor, validasi, dan penggabungan backup
     koleksi.ts          koleksi doa pribadi

@@ -6,6 +6,7 @@
 
 	import { onMount } from 'svelte';
 	import { onNavigate } from '$app/navigation';
+	import { page } from '$app/state';
 	import { pwaInfo } from 'virtual:pwa-info';
 	import BottomNav from '#lib/components/BottomNav.svelte';
 	import InstallSheet from '#lib/components/InstallSheet.svelte';
@@ -86,6 +87,12 @@
 <InstallSheet />
 <Toast />
 <Tour />
+<!-- Hanya pengguna baru yang perlu, jadi kodenya diunduh terpisah. Sudah terpasang di balik splash. -->
+{#if tour.offer && page.url.pathname === '/'}
+	{#await import('#lib/components/Onboarding.svelte') then { default: Onboarding }}
+		<Onboarding />
+	{/await}
+{/if}
 
 <style>
 	.app {

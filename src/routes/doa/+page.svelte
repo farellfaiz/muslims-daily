@@ -85,10 +85,12 @@
 
 <nav class="grid" aria-label={tr('Kategori doa', 'Dua categories')}>
 	{#each data.categories as c, i (c.slug)}
-		<a class="card cat press" class:alt={i % 4 === 1 || i % 4 === 2} href="/doa/{c.slug}" style:animation-delay="{Math.min(i, 12) * 30}ms">
-			<span class="cico"><CatIcon slug={c.slug} /></span>
+		<a class="card cat press" class:alt={i % 4 === 1 || i % 4 === 2} href="/doa/{c.slug}">
+			<span class="ctop">
+				<span class="cico"><CatIcon slug={c.slug} /></span>
+				<span class="cs num">{duas(c.count)}</span>
+			</span>
 			<span class="ct">{c.short}</span>
-			<span class="cs num">{duas(c.count)}</span>
 		</a>
 	{/each}
 </nav>
@@ -121,7 +123,6 @@
 		color: var(--on-navy);
 		text-decoration: none;
 		box-shadow: 0 18px 36px -20px var(--frame-shadow);
-		animation: rise 0.45s var(--ease) both;
 	}
 	.all .label {
 		color: inherit;
@@ -230,7 +231,7 @@
 	}
 	.duo {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 10px;
 		margin-top: 10px;
 	}
@@ -276,18 +277,18 @@
 		align-self: start;
 		margin-top: 1px;
 	}
+	/* Lebar kolom dikunci sama dan semua baris sama tinggi, walau nama kategorinya dua baris. */
 	.grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-rows: 1fr;
 		gap: 10px;
 	}
 	.cat {
 		display: flex;
 		flex-direction: column;
-		min-height: 118px;
 		padding: 14px 14px 13px;
 		text-decoration: none;
-		animation: rise 0.4s var(--ease) both;
 		transition:
 			transform 0.25s var(--ease),
 			border-color 0.25s;
@@ -296,7 +297,14 @@
 		transform: translateY(-2px);
 		border-color: var(--line-strong);
 	}
+	.ctop {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 8px;
+	}
 	.cico {
+		flex: none;
 		width: 40px;
 		height: 40px;
 		border-radius: 14px;
@@ -323,6 +331,6 @@
 		font-size: 11.5px;
 		font-weight: 600;
 		color: var(--ink2);
-		margin-top: 3px;
+		white-space: nowrap;
 	}
 </style>

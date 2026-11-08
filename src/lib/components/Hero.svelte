@@ -156,7 +156,6 @@
 		-webkit-mask: var(--ogee) 0 0/100% 100% no-repeat;
 		mask: var(--ogee) 0 0/100% 100% no-repeat;
 		border-radius: 0 0 26px 26px;
-		view-transition-name: hero;
 	}
 	.win {
 		position: absolute;

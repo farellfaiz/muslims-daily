@@ -3,35 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import Icon from './Icon.svelte';
-	import Sheet from './Sheet.svelte';
 	import { tour } from '#lib/state/tour.svelte.ts';
 	import { cardTop, spotlight, type Box } from '#lib/tour.ts';
 	import { isEn, tr } from '#lib/i18n.svelte.ts';
-
-	// Tawaran: muncul sekali di beranda saat aplikasi pertama dibuka, setelah halaman sempat tampil.
-	let offerOpen = $state(false);
-	// Tunggu splash hilang dulu: lembar <dialog> tampil di lapisan paling atas, bisa menimpa splash.
-	$effect(() => {
-		if (!tour.offer || page.url.pathname !== '/') return;
-		let t = 0;
-		const show = () => (t = window.setTimeout(() => (offerOpen = true), 700));
-		if (window.__splashGone) show();
-		else addEventListener('splash:gone', show, { once: true });
-		return () => {
-			clearTimeout(t);
-			removeEventListener('splash:gone', show);
-		};
-	});
-	let wasOpen = false;
-	$effect(() => {
-		// Lembar ditutup tanpa memilih Mulai (tombol x, Esc, ketuk latar) = nanti saja.
-		if (wasOpen && !offerOpen && !tour.active) tour.decline();
-		wasOpen = offerOpen;
-	});
-	function begin() {
-		tour.start();
-		offerOpen = false;
-	}
 
 	// Sorotan: cari elemen langkah ini (pindah halaman dulu bila perlu), gulir ke tengah, lalu ukur terus.
 	let el = $state<HTMLElement | null>(null);
@@ -151,22 +125,6 @@
 
 <svelte:window onkeydown={onKey} />
 
-<Sheet bind:open={offerOpen} title="Assalamu'alaikum">
-	<div class="offer">
-		<img src="/icons/icon-192.png" alt="" width="64" height="64" />
-		<p class="ot">{tr('Baru pertama buka Muslims Daily?', 'New to Muslims Daily?')}</p>
-		<p class="os">
-			{tr(
-				'Ikut tour singkat yuk, biar langsung kenal fitur-fiturnya. Cuma sekitar satu menit.',
-				'Take a quick tour to get to know the features. It only takes about a minute.'
-			)}
-		</p>
-		<button class="go press" onclick={begin}>{tr('Mulai tour', 'Start tour')}</button>
-		<button class="later press" onclick={() => (offerOpen = false)}>{tr('Nanti aja', 'Maybe later')}</button>
-		<p class="hint">{tr('Tour bisa dibuka lagi kapan saja dari menu Lainnya.', 'You can open the tour again anytime from More.')}</p>
-	</div>
-</Sheet>
-
 {#if tour.active}
 	<div class="tour" role="dialog" aria-modal="true" aria-label={tr('Tour aplikasi', 'App tour')}>
 		{#if spot}
@@ -204,54 +162,6 @@
 {/if}
 
 <style>
-	.offer {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		padding: 4px 4px 8px;
-	}
-	.offer img {
-		border-radius: 18px;
-		margin-bottom: 14px;
-	}
-	.ot {
-		margin: 0;
-		font-family: var(--f-disp);
-		font-size: 21px;
-		font-weight: 600;
-		color: var(--ink);
-	}
-	.os {
-		margin: 8px 0 20px;
-		font-size: 14px;
-		line-height: 1.55;
-		color: var(--ink2);
-		max-width: 300px;
-	}
-	.go,
-	.later {
-		width: 100%;
-		height: 48px;
-		border-radius: 16px;
-		font-size: 15px;
-		font-weight: 700;
-	}
-	.go {
-		background: var(--navy);
-		color: var(--on-navy);
-	}
-	.later {
-		margin-top: 8px;
-		background: var(--sunk);
-		color: var(--ink);
-	}
-	.hint {
-		margin: 12px 0 0;
-		font-size: 12px;
-		color: var(--ink3);
-	}
-
 	.tour {
 		position: fixed;
 		inset: 0;

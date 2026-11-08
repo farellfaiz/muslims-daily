@@ -2,7 +2,7 @@
 	import { addDays, dateKey, formatTime, tzLabel } from '#lib/date.ts';
 	import { PRAYERS, nextPrayer, type DayTimes, type PrayerKey } from '#lib/prayer.ts';
 	import { settings, timesForDay, tracker, toast } from '#lib/state/app.svelte.ts';
-	import { canCheck, isComplete, isUdzur, togglePrayer } from '#lib/tracker.ts';
+	import { canCheck, isComplete, isUdzur, togglePrayer, toggleUdzurDay } from '#lib/tracker.ts';
 	import Icon from './Icon.svelte';
 	import { locale, prayerName, tr } from '#lib/i18n.svelte.ts';
 
@@ -15,6 +15,8 @@
 	const MAX_BACK = 365;
 	let offset = $state(0);
 	let dir = $state<1 | -1>(1);
+	// Geser baris hanya saat hari diganti, bukan tiap beranda dibuka (bikin isi kedip saat pindah halaman).
+	let moved = $state(false);
 
 	const todayKey = $derived(now ? dateKey(now) : '');
 	const day = $derived(now ? addDays(new Date(now.toDateString()), offset) : null);
@@ -47,8 +49,25 @@
 	function go(step: 1 | -1) {
 		const to = offset + step;
 		if (to > 0 || to < -MAX_BACK) return;
+		moved = true;
 		dir = step;
 		offset = to;
+	}
+
+	function backToToday() {
+		moved = true;
+		dir = 1;
+		offset = 0;
+	}
+
+	function tapUdzur() {
+		if (!key || !now) return;
+		tracker.value = toggleUdzurDay(tracker.value, key, now);
+		toast.say(
+			isUdzur(tracker.value, key, todayKey)
+				? tr('Ditandai udzur. Streak kamu aman.', 'Marked as excused. Your streak is safe.')
+				: tr('Tanda udzur dihapus.', 'Excused mark removed.')
+		);
 	}
 
 	let burst = $state<PrayerKey | null>(null);
@@ -106,7 +125,7 @@
 			<div class="dl">{label}</div>
 			<div class="ds">
 				{#if offset !== 0}{sub}{:else}{day ? fmtDay.format(day) : ' '}{/if}
-				<span class="dot"></span><span class="num">{done5}/5</span>
+				<span class="dot"></span><span class="num">{udzur ? tr('Udzur', 'Excused') : `${done5}/5`}</span>
 			</div>
 		</div>
 		<button class="arrow press" aria-label={tr('Hari berikutnya', 'Next day')} onclick={() => go(1)} disabled={offset >= 0}>
@@ -114,12 +133,9 @@
 		</button>
 	</div>
 
-	{#if udzur}
-		<p class="udz">{tr('Hari udzur. Pencatatan dijeda dan streak kamu aman.', 'Excused day. Logging is paused and your streak is safe.')}</p>
-	{/if}
-
 	{#key key}
-		<div class="rows" style:--from="{dir * 24}px">
+		<div class:slide={moved} style:--from="{dir * 24}px">
+			<div class="rows">
 			{#each PRAYERS as p (p.key)}
 				{@const done = !!log[p.key]}
 				{@const lock = now !== null && locked(p.key)}
@@ -136,7 +152,7 @@
 						<span class="nm">{prayerName(p.key)}</span>
 						<span class="tm num">{times ? `${formatTime(times[p.key])} ${now ? tzLabel(now) : ''}` : '--.--'}</span>
 					</span>
-					{#if done}<span class="tag">{tr('Sudah salat', 'Prayed')}</span>{:else if p.key === nextKey}<span class="tag soon">{tr('Berikutnya', 'Next')}</span>{/if}
+					{#if done}<span class="tag" class:pop={burst === p.key}>{tr('Sudah salat', 'Prayed')}</span>{:else if p.key === nextKey}<span class="tag soon">{tr('Berikutnya', 'Next')}</span>{/if}
 					<span class="chk" aria-hidden="true">
 						<Icon name="check" size={16} stroke={2.6} />
 						{#if burst === p.key}
@@ -149,11 +165,21 @@
 					</span>
 				</button>
 			{/each}
+			</div>
+			<!-- Di luar .rows supaya tetap bisa diketuk saat kelima salat diredupkan. -->
+			<div class="uz" class:on={udzur}>
+				<span>
+					{udzur
+						? tr('Hari udzur. Streak kamu aman.', 'Excused day. Your streak is safe.')
+						: tr('Lagi haid atau nifas?', 'On your period or postpartum?')}
+				</span>
+				<button class="press" onclick={tapUdzur}>{udzur ? tr('Batalkan', 'Undo') : tr('Tandai udzur', 'Mark excused')}</button>
+			</div>
 		</div>
 	{/key}
 
 	{#if offset !== 0}
-		<button class="back-today" onclick={() => ((dir = 1), (offset = 0))}>{tr('Kembali ke hari ini', 'Back to today')}</button>
+		<button class="back-today" onclick={backToToday}>{tr('Kembali ke hari ini', 'Back to today')}</button>
 	{/if}
 </div>
 
@@ -215,20 +241,49 @@
 		border-radius: 50%;
 		background: var(--ink3);
 	}
-	.udz {
-		margin: 6px 8px 8px;
-		padding: 10px 12px;
-		border-radius: 12px;
-		background: var(--peach-soft);
-		color: var(--peach-ink);
-		font-size: 12.5px;
-		font-weight: 600;
-	}
 	.udzur .rows {
 		opacity: 0.45;
 		pointer-events: none;
 	}
-	.rows {
+	/* Sengaja beda dari baris salat: udzur keterangan hari itu, bukan salat keenam. */
+	.uz {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		margin-top: 4px;
+		padding: 8px 8px 6px 10px;
+		border-top: 1px solid var(--line);
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--ink2);
+		transition:
+			background 0.25s,
+			color 0.25s;
+	}
+	.uz button {
+		flex: none;
+		height: 32px;
+		padding: 0 13px;
+		border-radius: 999px;
+		background: var(--sunk);
+		color: var(--navy);
+		font-size: 12px;
+		font-weight: 800;
+	}
+	.uz.on {
+		padding-top: 7px;
+		padding-bottom: 7px;
+		border-top-color: transparent;
+		border-radius: 14px;
+		background: var(--peach-soft);
+		color: var(--peach-ink);
+	}
+	.uz.on button {
+		background: var(--card);
+		color: var(--peach-ink);
+	}
+	.slide {
 		animation: slide 0.32s var(--ease) both;
 	}
 	@keyframes slide {
@@ -274,6 +329,8 @@
 		border-radius: 999px;
 		background: var(--navy-soft);
 		color: var(--navy);
+	}
+	.tag.pop {
 		animation: pop 0.3s var(--ease);
 	}
 	.tag.soon {

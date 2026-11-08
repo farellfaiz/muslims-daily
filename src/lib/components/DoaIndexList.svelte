@@ -32,19 +32,20 @@
 	</div>
 {:else}
 	<div class="skel" aria-busy="true" aria-label={tr('Memuat doa', 'Loading duas')}>
-		{#each { length: 4 } as _, i (i)}<div class="card"></div>{/each}
+		{#each { length: 8 } as _, i (i)}<div class="card"></div>{/each}
 	</div>
 {/if}
 
 <style>
+	/* Sama dengan kartu asli (2 kolom, di bawah kolom cari dan toolbar) supaya tidak meloncat saat daftar tampil. */
 	.skel {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		margin-top: 56px;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+		margin-top: 130px;
 	}
 	.skel .card {
-		height: 132px;
+		height: 118px;
 		box-shadow: none;
 		background: var(--sunk);
 		animation: pulse 1.2s ease-in-out infinite alternate;
