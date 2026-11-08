@@ -6,13 +6,14 @@
 //   - bacaan non-Qur'an: teks Arab disalin dari halaman buku; transliterasi dan terjemahan disusun
 //     Muslims Daily (bukan salinan terjemahan buku) dan disebut begitu di keterangan sumbernya
 //   - bacaan Qur'an ditulis sebagai rujukan { quran: "2:201" } atau { quran: "5:114", fromWord, toWord }
-//     dan teksnya diambil dari static/data/quran (teks Utsmani + transliterasi quran.com,
+//     dan teksnya diambil dari static/data/quran (teks Utsmani, transliterasi quran.com yang diubah ke gaya NU lewat src/lib/latinNu.ts,
 //     terjemahan Kemenag), bukan diketik ulang
 //   - doa yang sudah ada di NU Online tidak dimasukkan agar tidak dobel
 // Hasil: src/lib/data/doa-kemenag.json
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { toNuLatin } from '../src/lib/latinNu.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const SRC = join(ROOT, 'scripts', 'data', 'doa-kemenag.src.json');
@@ -63,7 +64,8 @@ function quranPart(p) {
 		// karena tersambung dengan kata sebelumnya; saat dibaca sebagai awal doa dibuang (رَبَّنَا).
 		if (a === a1 && from > 1) words[0][0] = words[0][0].replace(/^(\p{L}[ً-ِْ-ٟ]*)ّ/u, '$1');
 		arabic.push(words.map((w) => w[0]).join(' ') + (to === ayat.w.length ? ` ﴿${arabicNum(a)}﴾` : ''));
-		latin.push(words.map((w) => w[1]).join(' '));
+		// latin per kata quran.com diubah ke gaya NU Online supaya seragam dengan doa lain
+		latin.push(toNuLatin(words.map((w) => [w[0], w[1]]), to === ayat.w.length));
 		tr.push(ayat.t);
 	}
 	if (partial && !p.translation) throw new Error(`${p.quran}: potongan ayat wajib punya translation`);

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import CatIcon from '#lib/components/CatIcon.svelte';
 	import Icon from '#lib/components/Icon.svelte';
-	import { SOURCES } from '#lib/data/doa.ts';
 	import { doaPrefs } from '#lib/state/app.svelte.ts';
 
 	let { data } = $props();
@@ -82,10 +81,6 @@
 	{/each}
 </nav>
 
-<p class="credit">
-	Doa dari <a href={SOURCES.nu.url} target="_blank" rel="noopener">{SOURCES.nu.name}</a> dan buku
-	<i>Kumpulan Doa Sehari-hari</i> terbitan Kemenag RI. Keterangan sumber tiap doa ada di halaman bacaannya.
-</p>
 
 <style>
 	.search {
@@ -317,16 +312,5 @@
 		font-weight: 600;
 		color: var(--ink2);
 		margin-top: 3px;
-	}
-	.credit {
-		margin: 22px 4px 4px;
-		font-size: 12px;
-		line-height: 1.6;
-		color: var(--ink2);
-		text-align: center;
-	}
-	.credit a {
-		color: var(--navy);
-		font-weight: 700;
 	}
 </style>
