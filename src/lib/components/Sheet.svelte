@@ -27,11 +27,12 @@
 	onclose={() => (open = false)}
 	onclick={(e) => e.target === dlg && (open = false)}
 >
+	<!-- Judul di luar area gulir: isi yang digulir tidak pernah tergambar di atasnya. -->
+	<div class="sheet-h">
+		<h2>{title}</h2>
+		<button class="x press" aria-label="Tutup" onclick={() => (open = false)}><Icon name="x" size={18} /></button>
+	</div>
 	<div class="sheet-in">
-		<div class="sheet-h">
-			<h2>{title}</h2>
-			<button class="x press" aria-label="Tutup" onclick={() => (open = false)}><Icon name="x" size={18} /></button>
-		</div>
 		{@render children()}
 	</div>
 </dialog>
@@ -76,21 +77,21 @@
 			animation: none;
 		}
 	}
-	.sheet-in {
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		padding: 18px 18px calc(22px + var(--safe-b));
-	}
 	.sheet-h {
-		position: sticky;
-		top: -18px;
-		z-index: 1;
+		flex: none;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin: -18px -18px 6px;
-		padding: 18px 18px 8px;
-		background: var(--card);
+		padding: 18px 18px 10px;
+		border-bottom: 1px solid var(--line);
+	}
+	.sheet-in {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		/* gulir berhenti di lembar, tidak ikut menggulir halaman di belakangnya */
+		overscroll-behavior: contain;
+		padding: 12px 18px calc(22px + var(--safe-b));
 	}
 	.sheet-h h2 {
 		margin: 0;
