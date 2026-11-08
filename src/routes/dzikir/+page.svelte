@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { slide } from 'svelte/transition';
 	import Icon from '#lib/components/Icon.svelte';
 	import ReadBar from '#lib/components/ReadBar.svelte';
 	import Words from '#lib/components/Words.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { forTime } from '#lib/dzikirTime.ts';
-	import Picker from '#lib/components/Picker.svelte';
-	import { GROUP_LABEL, SALAT_VERSI, type SalatVersi } from '#lib/salatVersi.ts';
+	import Sheet from '#lib/components/Sheet.svelte';
+	import { GROUP_LABEL, SALAT_VERSI, TASBIH_SLUGS, type DzikirPrefs } from '#lib/salatVersi.ts';
 	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
 	import { dateKey } from '#lib/date.ts';
 	import {
@@ -46,7 +45,6 @@
 
 	// Pilihan bawaan mengikuti jam; bisa diganti manual. Tautan ?set=salat atau ?set=pagi-petang juga dihormati.
 	let pickedSet = $state<DzikirSet | null>(null);
-	let pickedPrayer = $state<PrayerKey | null>(null);
 	let pickedTime = $state<'pagi' | 'petang' | null>(null);
 	onMount(() => {
 		const q = new URLSearchParams(location.search).get('set');
@@ -57,21 +55,27 @@
 	const t = $derived(now ? schedule(now).today : null);
 	const set = $derived<DzikirSet>(pickedSet ?? (now && t ? suggestedSet(now, t) : 'salat'));
 	const last = $derived(now && t ? afterPrayer(now, t) : null);
-	const prayer = $derived<PrayerKey>(pickedPrayer ?? last?.prayer ?? 'subuh');
+	// salat terakhir yang sudah masuk; dini hari masih terhitung setelah Isya kemarin
+	const prayer = $derived<PrayerKey>(last?.prayer ?? 'subuh');
 	const time = $derived(pickedTime ?? (now && t ? pagiPetang(now, t) : 'pagi'));
 
 	const session = $derived<Session>(set === 'salat' ? prayer : time);
 	// Sesi setelah Isya yang berlanjut lewat tengah malam tetap memakai tanggal kemarin.
-	const date = $derived(!now ? '' : set === 'salat' && last && prayer === last.prayer ? last.date : dateKey(now));
+	const date = $derived(!now ? '' : set === 'salat' && last ? last.date : dateKey(now));
 
-	// Versi dzikir setelah salat: Al-Azhar (Syifa Budi) atau ringkas. Pilihan diingat.
-	const versi = $derived(dzikirPrefs.value.salat);
-	const setVersi = (v: string) => (dzikirPrefs.value = { ...dzikirPrefs.value, salat: v as SalatVersi });
+	// Pengaturan (versi, jumlah tasbih, getar, geser otomatis) di lembar sendiri. Pilihan diingat.
+	const prefs = $derived(dzikirPrefs.value);
+	const versi = $derived(prefs.salat);
+	const setPref = <K extends keyof DzikirPrefs>(k: K, v: DzikirPrefs[K]) => (dzikirPrefs.value = { ...prefs, [k]: v });
+	let settingsOpen = $state(false);
 	const salatList = $derived(versi === 'ringkas' ? data.salatRingkas : data.salat);
+	/** jumlah bacaan sesudah pengaturan: tasbih 33 atau 11, surah tiga kali setelah Subuh dan Maghrib */
+	const countOf = (d: (typeof salatList)[number]) =>
+		TASBIH_SLUGS.includes(d.slug) && d.count === 33 ? prefs.tasbih : (d.countFor?.[prayer] ?? d.count);
 
 	const items = $derived<Item[]>(
 		set === 'salat'
-			? salatList.map((d) => ({ ...d, count: d.countFor?.[prayer] ?? d.count, key: perKataKey('salat', d.id) }))
+			? salatList.map((d) => ({ ...d, count: countOf(d), key: perKataKey('salat', d.id) }))
 			: forTime(data.dzikir, time).map((d) => ({
 					...d,
 					...d.text,
@@ -83,13 +87,12 @@
 	const done = $derived(doneCount(dzikirProgress.value, session, date, items));
 	const allDone = $derived(items.length > 0 && done === items.length);
 	const pct = $derived(items.length ? (done / items.length) * 100 : 0);
-	const draft = $derived(items.some((d) => d.verified === false));
 	const prayerName = $derived(PRAYERS.find((p) => p.key === prayer)!.name);
 	const heading = $derived(set === 'salat' ? `Setelah ${prayerName}` : time === 'pagi' ? 'Pagi' : 'Petang');
 
 	const opt = $derived(reading.value);
 
-	// Journey: gambaran alur semua bacaan sesi ini. Tertutup bawaannya supaya tidak mendorong kartu bacaan terlalu jauh.
+	// Journey: gambaran alur semua bacaan sesi ini; daftar lengkapnya dibuka di lembar bawah.
 	let journeyOpen = $state(false);
 	const nextId = $derived(items.find((d) => (n[d.id] ?? 0) < d.count)?.id);
 	// kelompok bacaan sesuai urutan kemunculannya, mis. 6 dzikir lalu 16 doa
@@ -111,7 +114,12 @@
 			.join(' lalu ')
 	);
 	const nextItem = $derived(items.find((d) => d.id === nextId));
-	const jump = (id: number) => document.getElementById(`dz-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	const jump = (id: number) => {
+		journeyOpen = false;
+		activeId = id;
+		lockUntil = performance.now() + 1000;
+		document.getElementById(`dz-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	};
 
 	// Arti per kata: file terpisah, baru diunduh saat pertama kali dinyalakan.
 	let perKata = $state<PerKata | null>(null);
@@ -174,14 +182,15 @@
 		// tetap pada bacaan ini sampai pindah sendiri, supaya "Selesai" sempat terlihat
 		activeId = d.id;
 		dzikirProgress.value = tap(dzikirProgress.value, session, date, d.id, d.count);
+		const vibrate = (p: number | number[]) => prefs.haptic && navigator.vibrate?.(p);
 		if ((counts(dzikirProgress.value, session, date)[d.id] ?? 0) < d.count) {
-			navigator.vibrate?.(8);
+			vibrate(8);
 			return;
 		}
-		navigator.vibrate?.([20, 40, 20]);
-		// Bacaan selesai: sebentar tampilkan "Selesai", lalu geser ke bacaan berikutnya yang belum selesai.
+		vibrate([20, 40, 20]);
+		// Bacaan selesai: sebentar tampilkan "Selesai", lalu (bila diaktifkan) geser ke bacaan berikutnya.
 		await tick();
-		setTimeout(() => goNext(i), 450);
+		if (prefs.autoNext) setTimeout(() => goNext(i), 450);
 	}
 
 	function restart() {
@@ -199,8 +208,13 @@
 <ReadBar />
 
 <header class="page-head">
-	<div class="label">Dzikir</div>
-	<h1>{heading}</h1>
+	<div class="grow">
+		<div class="label">Dzikir</div>
+		<h1>{heading}</h1>
+	</div>
+	<button class="gear press" aria-label="Pengaturan dzikir" onclick={() => (settingsOpen = true)}>
+		<Icon name="sliders" size={20} />
+	</button>
 </header>
 
 <div class="seg wide" role="group" aria-label="Jenis dzikir">
@@ -208,31 +222,22 @@
 	<button aria-pressed={set === 'pagi-petang'} onclick={() => (pickedSet = 'pagi-petang')}>Pagi &amp; petang</button>
 </div>
 
-<div class="chips" role="group" aria-label={set === 'salat' ? 'Setelah salat apa' : 'Waktu dzikir'}>
-	{#if set === 'salat'}
-		{#each PRAYERS as p (p.key)}
-			<button class="chip" aria-pressed={prayer === p.key} onclick={() => (pickedPrayer = p.key)}>{p.name}</button>
-		{/each}
-	{:else}
+{#if set === 'pagi-petang'}
+	<div class="chips" role="group" aria-label="Waktu dzikir">
 		<button class="chip" aria-pressed={time === 'pagi'} onclick={() => (pickedTime = 'pagi')}>Pagi</button>
 		<button class="chip" aria-pressed={time === 'petang'} onclick={() => (pickedTime = 'petang')}>Petang</button>
-	{/if}
-</div>
-
-{#if set === 'salat'}
-	<div class="versi">
-		<span class="label">Versi</span>
-		<Picker label="Versi dzikir setelah salat" size="sm" options={SALAT_VERSI} value={versi} onchange={setVersi} />
 	</div>
+{:else}
+	<div class="gap"></div>
 {/if}
 
 <section class="card journey" aria-labelledby="journey-h">
-	<button class="jh" aria-expanded={journeyOpen} aria-controls="journey-list" onclick={() => (journeyOpen = !journeyOpen)}>
+	<button class="jh" aria-haspopup="dialog" onclick={() => (journeyOpen = true)}>
 		<span class="grow">
 			<span class="label" id="journey-h">Journey</span>
 			<span class="jt">{flow}</span>
 		</span>
-		<span class="jtoggle">{journeyOpen ? 'Tutup' : 'Lihat alur'}<span class="chev" class:up={journeyOpen}><Icon name="chevron" size={14} stroke={2.2} /></span></span>
+		<span class="jtoggle">Lihat alur<Icon name="chevron" size={14} stroke={2.2} /></span>
 	</button>
 
 	<div class="strip" aria-hidden="true">
@@ -245,23 +250,7 @@
 		{/each}
 	</div>
 
-	{#if journeyOpen}
-		<ol id="journey-list" class="steps" transition:slide={{ duration: 280 }}>
-			{#each items as d, i (d.id)}
-				{@const ok = (n[d.id] ?? 0) >= d.count}
-				{#if d.group && d.group !== items[i - 1]?.group}
-					<li class="sg">{GROUP_LABEL[d.group][0]}</li>
-				{/if}
-				<li>
-					<button class="step" class:ok class:now={d.id === nextId} onclick={() => jump(d.id)}>
-						<span class="node">{#if ok}<Icon name="check" size={12} stroke={2.8} />{:else}<span class="num">{i + 1}</span>{/if}</span>
-						<span class="sname">{d.title}</span>
-						{#if d.count > 1}<span class="scount num">{d.count}×</span>{/if}
-					</button>
-				</li>
-			{/each}
-		</ol>
-	{:else if nextItem}
+	{#if nextItem}
 		<button class="jnext" onclick={() => jump(nextItem.id)}>
 			<span class="label">{done === 0 ? 'Mulai dari' : 'Berikutnya'}</span>
 			<span class="sname">{nextItem.title}</span>
@@ -269,6 +258,62 @@
 		</button>
 	{/if}
 </section>
+
+<Sheet bind:open={journeyOpen} title="Journey">
+	<p class="sheet-sub">{flow} · <span class="num">{done}</span> dari <span class="num">{items.length}</span> selesai</p>
+	<ol class="steps">
+		{#each items as d, i (d.id)}
+			{@const ok = (n[d.id] ?? 0) >= d.count}
+			{#if d.group && d.group !== items[i - 1]?.group}
+				<li class="sg">{GROUP_LABEL[d.group][0]}</li>
+			{/if}
+			<li>
+				<button class="step" class:ok class:now={d.id === nextId} onclick={() => jump(d.id)}>
+					<span class="node">{#if ok}<Icon name="check" size={12} stroke={2.8} />{:else}<span class="num">{i + 1}</span>{/if}</span>
+					<span class="sname">{d.title}</span>
+					{#if d.count > 1}<span class="scount num">{d.count}×</span>{/if}
+				</button>
+			</li>
+		{/each}
+	</ol>
+</Sheet>
+
+<Sheet bind:open={settingsOpen} title="Pengaturan dzikir">
+	<div class="set-sec">
+		<div class="label">Versi dzikir setelah salat</div>
+		<div class="vopts">
+			{#each SALAT_VERSI as v (v.value)}
+				<button class="vopt" aria-pressed={versi === v.value} onclick={() => setPref('salat', v.value)}>
+					<span class="radio"></span>
+					<span class="grow"><span class="vl">{v.label}</span><span class="vs">{v.sub}</span></span>
+				</button>
+			{/each}
+		</div>
+	</div>
+
+	<div class="set-sec">
+		<div class="label">Tasbih, tahmid, takbir</div>
+		<div class="seg wide" role="group" aria-label="Jumlah tasbih, tahmid, takbir">
+			<button aria-pressed={prefs.tasbih === 33} onclick={() => setPref('tasbih', 33)}><span class="num">33</span>× masing-masing</button>
+			<button aria-pressed={prefs.tasbih === 11} onclick={() => setPref('tasbih', 11)}><span class="num">11</span>× masing-masing</button>
+		</div>
+		<p class="set-hint">
+			33 kali masing-masing (HR. Muslim 597) paling umum. 11 kali masing-masing, totalnya 33, adalah penjelasan
+			Suhail dalam HR. Muslim 595.
+		</p>
+	</div>
+
+	<div class="set-sec">
+		<button class="sw" role="switch" aria-checked={prefs.haptic} onclick={() => setPref('haptic', !prefs.haptic)}>
+			<span class="grow"><span class="vl">Getar tiap ketukan</span><span class="vs">Getar halus saat menghitung, lebih panjang saat selesai</span></span>
+			<span class="knob"></span>
+		</button>
+		<button class="sw" role="switch" aria-checked={prefs.autoNext} onclick={() => setPref('autoNext', !prefs.autoNext)}>
+			<span class="grow"><span class="vl">Geser ke bacaan berikutnya</span><span class="vs">Otomatis setelah satu bacaan selesai</span></span>
+			<span class="knob"></span>
+		</button>
+	</div>
+</Sheet>
 
 <section class="card prog" class:full={allDone}>
 	<span class="orb {set === 'salat' ? 'arch' : time}" aria-hidden="true"></span>
@@ -282,13 +327,10 @@
 		</div>
 	</div>
 	{#if done > 0}
-		<button class="redo press" onclick={restart} aria-label="Mulai ulang hitungan">Ulang</button>
+		<button class="redo press" onclick={restart}>Mulai ulang</button>
 	{/if}
 </section>
 
-{#if draft}
-	<p class="draft"><span class="dot"></span>Konten masih draf, belum diverifikasi. Cek dengan guru atau kitab rujukan.</p>
-{/if}
 
 {#each items as d, i (d.id)}
 	{@const c = n[d.id] ?? 0}
@@ -399,8 +441,138 @@
 
 <style>
 	.page-head {
+		display: flex;
+		align-items: flex-end;
+		gap: 12px;
 		padding-top: 16px;
 		padding-bottom: 12px;
+	}
+	.page-head .grow {
+		flex: 1;
+		min-width: 0;
+	}
+	.gear {
+		width: 42px;
+		height: 42px;
+		flex: none;
+		margin-bottom: 2px;
+		border-radius: 14px;
+		display: grid;
+		place-items: center;
+		color: var(--navy);
+		background: var(--card);
+		box-shadow: var(--shadow);
+		border: 1px solid var(--line);
+	}
+	.gap {
+		height: 12px;
+	}
+	.sheet-sub {
+		margin: 0 0 6px;
+		font-size: 13px;
+		color: var(--ink2);
+	}
+	.set-sec {
+		padding: 14px 0;
+		border-top: 1px solid var(--line);
+	}
+	.set-sec:first-of-type {
+		border-top: 0;
+		padding-top: 6px;
+	}
+	.set-sec .label {
+		margin-bottom: 8px;
+	}
+	.vopts {
+		display: grid;
+		gap: 6px;
+	}
+	.vopt {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 12px;
+		border-radius: 12px;
+		text-align: left;
+		border: 1px solid var(--line);
+		transition: all 0.2s var(--ease);
+	}
+	.vopt[aria-pressed='true'] {
+		border-color: var(--navy);
+		background: var(--navy-soft);
+	}
+	.radio {
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		border: 1.6px solid var(--line-strong);
+		flex: none;
+		display: grid;
+		place-items: center;
+	}
+	.vopt[aria-pressed='true'] .radio {
+		border-color: var(--navy);
+	}
+	.vopt[aria-pressed='true'] .radio::after {
+		content: '';
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--navy);
+	}
+	.vl {
+		display: block;
+		font-weight: 700;
+		font-size: 14px;
+		color: var(--ink);
+	}
+	.vs {
+		display: block;
+		margin-top: 2px;
+		font-size: 12px;
+		line-height: 1.45;
+		color: var(--ink2);
+	}
+	.set-hint {
+		margin: 10px 0 0;
+		font-size: 12px;
+		line-height: 1.5;
+		color: var(--ink3);
+	}
+	.sw {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		width: 100%;
+		padding: 8px 0;
+		text-align: left;
+	}
+	.knob {
+		position: relative;
+		width: 44px;
+		height: 26px;
+		flex: none;
+		border-radius: 999px;
+		background: var(--line-strong);
+		transition: background 0.2s var(--ease);
+	}
+	.knob::after {
+		content: '';
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--knob);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+		transition: transform 0.2s var(--ease);
+	}
+	.sw[aria-checked='true'] .knob {
+		background: var(--navy);
+	}
+	.sw[aria-checked='true'] .knob::after {
+		transform: translateX(18px);
 	}
 	.wide {
 		display: flex;
@@ -462,14 +634,6 @@
 		font-weight: 700;
 		color: var(--navy);
 		flex: none;
-	}
-	.chev {
-		display: inline-flex;
-		transform: rotate(90deg);
-		transition: transform 0.25s var(--ease);
-	}
-	.chev.up {
-		transform: rotate(-90deg);
 	}
 	/* satu ruas per bacaan: biru untuk dzikir, peach untuk doa */
 	.strip {
@@ -668,15 +832,6 @@
 		padding: 6px 10px;
 		border-radius: 10px;
 		background: var(--navy-soft);
-	}
-	.draft {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		margin: 12px 2px 4px;
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--peach-ink);
 	}
 	.dot {
 		width: 7px;
@@ -948,12 +1103,6 @@
 		font-weight: 700;
 		font-size: 13px;
 		color: var(--navy);
-	}
-	.versi {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin: -2px 2px 12px;
 	}
 	.credit {
 		margin: 18px 2px 0;

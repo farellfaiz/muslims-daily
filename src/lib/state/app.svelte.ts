@@ -4,7 +4,7 @@ import { IMSAK_MINUTES, timesFor, type Adjust, type DayTimes, type MadhabKey, ty
 import { emptyTracker, type TrackerData } from '#lib/tracker.ts';
 import { emptyProgress, type DzikirProgress } from '#lib/dzikirProgress.ts';
 import { Persisted } from './persisted.svelte.ts';
-import type { SalatVersi } from '#lib/salatVersi.ts';
+import { DEFAULT_DZIKIR_PREFS, type DzikirPrefs } from '#lib/salatVersi.ts';
 
 export interface Settings {
 	/** id kota dari daftar, atau 'gps' bila memakai lokasi perangkat */
@@ -62,8 +62,8 @@ export const reading = new Persisted<ReadingPrefs>('reading', { lat: true, tr: t
 /** Posisi terakhir membaca Al-Qur'an: surat dan ayat (0 = belum pernah). */
 export const quranLast = new Persisted<{ s: number; a: number }>('quran', { s: 0, a: 0 });
 
-/** Versi dzikir setelah salat yang dipilih pengguna. */
-export const dzikirPrefs = new Persisted<{ salat: SalatVersi }>('dzikirPrefs', { salat: 'azhar' });
+/** Pengaturan dzikir: versi setelah salat (bawaan Ringkas), jumlah tasbih, getar, geser otomatis. */
+export const dzikirPrefs = new Persisted<DzikirPrefs>('dzikirPrefs', DEFAULT_DZIKIR_PREFS);
 
 /** Hitungan dzikir pagi dan petang hari ini. */
 export const dzikirProgress = new Persisted<DzikirProgress>('dzikir', emptyProgress());
