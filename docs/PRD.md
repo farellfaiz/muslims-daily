@@ -161,7 +161,11 @@ Keputusan yang pernah dibahas, termasuk yang ditolak, supaya tidak diulang.
 - SvelteKit 3 + Svelte 5, `adapter-static`, `@vite-pwa/sveltekit`, `adhan`, Fontsource.
 - Data pengguna di `localStorage` dengan kunci `md:settings`, `md:tracker`, `md:doa`, `md:reading`, `md:backup` (waktu cadangan terakhir), `md:theme`, `md:dzikir` (hitungan dzikir hari ini).
 - Logika jadwal, busur hero, tracker, kiblat, hitungan dzikir, dan cadangan berupa fungsi murni yang diuji dengan Vitest.
-- Anggaran performa: JavaScript di bawah 100 KB gzip (saat ini sekitar 90 KB untuk semua halaman; teks dzikir tidak ikut JavaScript, disajikan sebagai `/data/dzikir.json` yang dibuat saat build, disisipkan ke HTML saat prerender, dan di-precache untuk offline), skor Lighthouse 95 ke atas, jalan penuh offline setelah kunjungan pertama.
+- Anggaran performa: JavaScript yang diunduh **per halaman** paling banyak 100 KB gzip (entri aplikasi, layout, kode halaman, dan impornya). Saat ini halaman terberat sekitar 62 KB. Cek dengan `node scripts/js-budget.mjs` setelah `npm run build`; skrip gagal bila ada halaman yang melewati batas.
+  - Yang paling perlu dijaga adalah **bagian bersama** (sekitar 55 KB: kerangka aplikasi, Svelte, pustaka adhan), karena ikut terunduh di semua halaman.
+  - Total JavaScript semua halaman (sekitar 107 KB) hanya dipantau, bukan batas: angkanya pasti naik setiap ada halaman baru, tapi menentukan besar unduhan pertama untuk offline.
+  - Data besar tidak ditaruh di JavaScript: teks dzikir (`/data/dzikir.json`), arti per kata, dan isi Al-Qur'an disajikan sebagai file data.
+- Skor Lighthouse 95 ke atas, dan jalan penuh offline setelah kunjungan pertama.
 
 ## 9. Risiko dan batasan
 
