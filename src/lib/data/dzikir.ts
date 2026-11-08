@@ -351,11 +351,3 @@ export const DZIKIR: Dzikir[] = [
 		translation: "Cukuplah Allah bagiku, tiada tuhan selain Dia. Kepada-Nya aku bertawakal, dan Dia adalah Tuhan pemilik 'Arsy yang agung."
 	}
 ];
-
-/** Bacaan untuk satu waktu, dengan lafaz yang sudah disesuaikan. */
-export function forTime(time: DzikirTime): (Dzikir & { text: DzikirText })[] {
-	return DZIKIR.filter((d) => !d.only || d.only === time).map((d) => ({
-		...d,
-		text: time === 'petang' && d.petang ? d.petang : { arabic: d.arabic, latin: d.latin, translation: d.translation }
-	}));
-}

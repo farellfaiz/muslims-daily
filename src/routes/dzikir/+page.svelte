@@ -4,9 +4,8 @@
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from '#lib/components/Icon.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
-	import { forTime } from '#lib/data/dzikir.ts';
+	import { forTime } from '#lib/dzikirTime.ts';
 	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
-	import { SALAT, SOURCE_NAME, SOURCE_URL } from '#lib/data/salat.ts';
 	import { dateKey } from '#lib/date.ts';
 	import {
 		afterPrayer,
@@ -21,6 +20,8 @@
 	} from '#lib/dzikirProgress.ts';
 	import { PRAYERS, type PrayerKey } from '#lib/prayer.ts';
 	import { clock, dzikirProgress, reading, schedule, toast } from '#lib/state/app.svelte.ts';
+
+	let { data } = $props();
 
 	let cameFromApp = $state(false);
 	afterNavigate(({ from }) => (cameFromApp = !!from));
@@ -66,8 +67,8 @@
 
 	const items = $derived<Item[]>(
 		set === 'salat'
-			? SALAT.map((d) => ({ ...d, key: perKataKey('salat', d.id) }))
-			: forTime(time).map((d) => ({
+			? data.salat.map((d) => ({ ...d, key: perKataKey('salat', d.id) }))
+			: forTime(data.dzikir, time).map((d) => ({
 					...d,
 					...d.text,
 					group: undefined,
@@ -323,7 +324,7 @@
 
 {#if set === 'salat'}
 	<p class="credit">
-		Teks dari <a href={SOURCE_URL} target="_blank" rel="noopener">{SOURCE_NAME}</a>.
+		Teks dari <a href={data.source.url} target="_blank" rel="noopener">{data.source.name}</a>.
 	</p>
 {/if}
 

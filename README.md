@@ -63,6 +63,7 @@ src/
     data/doa.ts         data doa
     data/dzikir.ts      data dzikir pagi dan petang
     data/salat.ts       data dzikir dan doa setelah salat
+    perKata.ts          pemuat arti per kata (data: static/data/per-kata.json)
     state/              state tersimpan di perangkat (pengaturan, tracker, favorit)
     components/         Hero, TodayPrayers, Heatmap, BottomNav, dll.
   routes/
@@ -71,6 +72,7 @@ src/
     doa/                daftar doa dan halaman baca per doa
     dzikir/             dzikir setelah salat dan pagi petang, dengan penghitung
     kiblat/             arah kiblat dan kompas
+    data/dzikir.json/   teks dzikir sebagai file statis saat build (tidak ikut JavaScript)
     lainnya/            daftar pengaturan, tampilan, kredit
       lokasi/ metode/ koreksi/ cadangan/   layar tiap pengaturan
 design/prototype/       prototipe desain awal (HTML statis)

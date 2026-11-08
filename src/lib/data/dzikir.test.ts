@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { DZIKIR, forTime } from './dzikir.ts';
+import { forTime } from '../dzikirTime.ts';
+import { DZIKIR } from './dzikir.ts';
 
 const ARABIC = /[؀-ۿ]/;
 
@@ -30,14 +31,14 @@ describe('data dzikir', () => {
 	});
 
 	it('pagi dan petang sama-sama punya bacaan', () => {
-		expect(forTime('pagi').length).toBeGreaterThan(5);
-		expect(forTime('petang').length).toBeGreaterThan(5);
+		expect(forTime(DZIKIR, 'pagi').length).toBeGreaterThan(5);
+		expect(forTime(DZIKIR, 'petang').length).toBeGreaterThan(5);
 	});
 
 	it('lafaz petang dipakai saat petang', () => {
 		const withVariant = DZIKIR.find((d) => d.petang);
 		if (!withVariant) return;
-		expect(forTime('petang').find((d) => d.id === withVariant.id)!.text.arabic).toBe(withVariant.petang!.arabic);
-		expect(forTime('pagi').find((d) => d.id === withVariant.id)!.text.arabic).toBe(withVariant.arabic);
+		expect(forTime(DZIKIR, 'petang').find((d) => d.id === withVariant.id)!.text.arabic).toBe(withVariant.petang!.arabic);
+		expect(forTime(DZIKIR, 'pagi').find((d) => d.id === withVariant.id)!.text.arabic).toBe(withVariant.arabic);
 	});
 });
