@@ -23,7 +23,7 @@
 	<span>Cari di {data.total} doa</span>
 </a>
 
-<a class="all press" href="/doa/semua">
+<a class="all press" href="/doa/semua" data-tour="doa">
 	<svg class="deco" viewBox="0 0 120 140" aria-hidden="true">
 		<path d="M10 140V62C10 32 32 10 60 10s50 22 50 52v78" />
 		<path d="M26 140V66c0-20 15-38 34-38s34 18 34 38v74" />

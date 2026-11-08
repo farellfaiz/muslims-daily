@@ -6,6 +6,7 @@
 	import { backupMeta, settings, theme, tracker, type ThemeMode } from '#lib/state/app.svelte.ts';
 	import { install } from '#lib/state/install.svelte.ts';
 	import { adzanSummary } from '#lib/state/adzan.svelte.ts';
+	import { tour } from '#lib/state/tour.svelte.ts';
 
 	const INSTALL_SUB = { prompt: 'Sekali ketuk, tanpa toko aplikasi', ios: 'Lewat tombol Bagikan di Safari', inapp: 'Buka di Safari atau Chrome dulu', manual: 'Lewat menu browser' };
 	const installSub = $derived(install.installed ? 'Sudah terpasang. Buka dari layar utama' : INSTALL_SUB[install.platform]);
@@ -79,6 +80,17 @@
 		</button>
 	</div>
 {/if}
+
+<div class="card list">
+	<button class="row press" data-tour="tour" onclick={() => tour.start()}>
+		<span class="ico"><Icon name="flag" size={19} /></span>
+		<span class="grow">
+			<span class="rt">Tour aplikasi</span>
+			<span class="rs">Kenalan lagi sama fitur-fitur utama</span>
+		</span>
+		<span class="go"><Icon name="chevron" size={16} stroke={2.2} /></span>
+	</button>
+</div>
 
 <nav class="card list" aria-label="Pengaturan jadwal dan data">
 	{#each ROWS as r (r.href)}

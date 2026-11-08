@@ -34,7 +34,7 @@
 			<div class="disp date">{greg}</div>
 		</div>
 	</div>
-	<a class="loc press" href="/lainnya/lokasi"><Icon name="pin" size={15} />{settings.value.label}</a>
+	<a class="loc press" href="/lainnya/lokasi" data-tour="lokasi"><Icon name="pin" size={15} />{settings.value.label}</a>
 </header>
 
 <Hero {now} yesterday={times?.yesterday ?? null} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />
@@ -42,12 +42,12 @@
 
 <div class="sec-h">
 	<h2>Catatan salat</h2>
-	<a class="streak press" href="/tracker"><Flame size={15} lit={streak > 0} /><span class="num">{streak}</span> hari istiqamah</a>
+	<a class="streak press" href="/tracker" data-tour="streak"><Flame size={15} lit={streak > 0} /><span class="num">{streak}</span> hari istiqamah</a>
 </div>
 <TodayPrayers {now} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />
 
 <div class="sec-h"><h2>Menu</h2></div>
-<nav class="quick" aria-label="Menu cepat">
+<nav class="quick" aria-label="Menu cepat" data-tour="menu">
 	<a href="/doa" class="press t-navy"><span class="ico"><Icon name="bookmark" size={22} /></span>Doa</a>
 	<a href="/dzikir" class="press t-peach"><span class="ico"><Icon name="beads" size={22} /></span>Dzikir</a>
 	<a href="/quran" class="press t-gold"><span class="ico"><Icon name="book" size={22} /></span>Al-Qur'an</a>

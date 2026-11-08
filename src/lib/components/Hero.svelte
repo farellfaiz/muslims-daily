@@ -67,7 +67,7 @@
 	const inLastThird = $derived(!!(now && arc?.lastThird && now >= arc.lastThird.from && now < arc.lastThird.to));
 </script>
 
-<section class="hero" aria-label="Waktu salat berikutnya">
+<section class="hero" aria-label="Waktu salat berikutnya" data-tour="hero">
 	<div class="arch">
 		<div class="win" style:--sky={sky.g} style:--stars={sky.stars} style:--sky-ink={sky.ink}>
 			<div class="stars" aria-hidden="true">

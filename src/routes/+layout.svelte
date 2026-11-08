@@ -11,9 +11,11 @@
 	import BottomNav from '#lib/components/BottomNav.svelte';
 	import InstallSheet from '#lib/components/InstallSheet.svelte';
 	import Toast from '#lib/components/Toast.svelte';
+	import Tour from '#lib/components/Tour.svelte';
 	import { clock, theme } from '#lib/state/app.svelte.ts';
 	import { install } from '#lib/state/install.svelte.ts';
 	import { adzan } from '#lib/state/adzan.svelte.ts';
+	import { tour } from '#lib/state/tour.svelte.ts';
 	import { quiet } from '#lib/transition.ts';
 
 	let { children } = $props();
@@ -22,6 +24,7 @@
 		const stop = clock.start();
 		const stopInstall = install.start();
 		const stopAdzan = adzan.start();
+		tour.ready = true;
 		// Service worker: aplikasi tersimpan untuk offline dan memperbarui diri diam-diam.
 		import('virtual:pwa-register').then(({ registerSW }) => registerSW({ immediate: true }));
 		return () => {
@@ -76,6 +79,7 @@
 <BottomNav />
 <InstallSheet />
 <Toast />
+<Tour />
 
 <style>
 	.app {

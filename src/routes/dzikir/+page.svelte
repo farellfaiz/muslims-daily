@@ -221,7 +221,7 @@
 	</button>
 </header>
 
-<div class="seg wide" role="group" aria-label="Jenis dzikir">
+<div class="seg wide" role="group" aria-label="Jenis dzikir" data-tour="dzikir">
 	<button aria-pressed={set === 'salat'} onclick={() => (pickedSet = 'salat')}>Setelah salat</button>
 	<button aria-pressed={set === 'pagi-petang'} onclick={() => (pickedSet = 'pagi-petang')}>Pagi &amp; petang</button>
 </div>

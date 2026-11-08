@@ -20,7 +20,7 @@
 	jadi lima tab tetap lega. Label tab nonaktif disembunyikan secara visual saja
 	(lebar 0), sehingga pembaca layar tetap membacanya sebagai nama tautan.
 -->
-<nav aria-label="Navigasi utama">
+<nav aria-label="Navigasi utama" data-tour="nav">
 	{#each items as it (it.href)}
 		<a href={it.href} aria-current={active(it.href) ? 'page' : undefined}>
 			<Icon name={it.icon} />

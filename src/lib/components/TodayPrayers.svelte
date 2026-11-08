@@ -84,7 +84,7 @@
 	};
 </script>
 
-<div class="card list" class:udzur role="group" aria-label="Catatan salat per hari" ontouchstart={onStart} ontouchend={onEnd}>
+<div class="card list" class:udzur data-tour="catatan" role="group" aria-label="Catatan salat per hari" ontouchstart={onStart} ontouchend={onEnd}>
 	<div class="days">
 		<button class="arrow press" aria-label="Hari sebelumnya" onclick={() => go(-1)} disabled={offset <= -MAX_BACK}>
 			<Icon name="back" size={18} />
