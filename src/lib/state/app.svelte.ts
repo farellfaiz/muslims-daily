@@ -58,6 +58,9 @@ export const doaPrefs = new Persisted<DoaPrefs>('doa', {
 
 export const reading = new Persisted<ReadingPrefs>('reading', { lat: true, tr: true, wbw: false, size: 30 });
 
+/** Posisi terakhir membaca Al-Qur'an: surat dan ayat (0 = belum pernah). */
+export const quranLast = new Persisted<{ s: number; a: number }>('quran', { s: 0, a: 0 });
+
 /** Hitungan dzikir pagi dan petang hari ini. */
 export const dzikirProgress = new Persisted<DzikirProgress>('dzikir', emptyProgress());
 

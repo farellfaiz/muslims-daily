@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from '#lib/components/Icon.svelte';
+	import ReadBar from '#lib/components/ReadBar.svelte';
+	import Words from '#lib/components/Words.svelte';
 	import StarNum from '#lib/components/StarNum.svelte';
 	import { forTime } from '#lib/dzikirTime.ts';
 	import { loadPerKata, perKataKey, type PerKata } from '#lib/perKata.ts';
@@ -22,10 +23,6 @@
 	import { clock, dzikirProgress, reading, schedule, toast } from '#lib/state/app.svelte.ts';
 
 	let { data } = $props();
-
-	let cameFromApp = $state(false);
-	afterNavigate(({ from }) => (cameFromApp = !!from));
-	const back = () => (cameFromApp ? history.back() : goto('/'));
 
 	/** Bentuk bersama untuk kartu bacaan, dari data setelah salat maupun pagi petang. */
 	interface Item {
@@ -84,8 +81,6 @@
 	const heading = $derived(set === 'salat' ? `Setelah ${prayerName}` : time === 'pagi' ? 'Pagi' : 'Petang');
 
 	const opt = $derived(reading.value);
-	const toggle = (k: 'lat' | 'tr' | 'wbw') => (reading.value = { ...opt, [k]: !opt[k] });
-	const resize = (delta: number) => (reading.value = { ...opt, size: Math.min(46, Math.max(22, opt.size + delta)) });
 
 	// Journey: gambaran alur semua bacaan sesi ini. Tertutup bawaannya supaya tidak mendorong kartu bacaan terlalu jauh.
 	let journeyOpen = $state(false);
@@ -143,18 +138,7 @@
 	<meta name="description" content="Dzikir dan doa setelah salat, serta dzikir pagi dan petang, dengan penghitung." />
 </svelte:head>
 
-<div class="bar">
-	<button class="back press" aria-label="Kembali" onclick={back}><Icon name="back" /></button>
-	<div class="opts" role="group" aria-label="Pilihan tampilan bacaan">
-		<button class="opt" aria-pressed={opt.lat} onclick={() => toggle('lat')}>Latin</button>
-		<button class="opt" aria-pressed={opt.tr} onclick={() => toggle('tr')}>Terjemahan</button>
-		<button class="opt" aria-pressed={opt.wbw} onclick={() => toggle('wbw')}>Per kata</button>
-		<span class="fs">
-			<button aria-label="Perkecil huruf Arab" onclick={() => resize(-3)}>A−</button>
-			<button aria-label="Perbesar huruf Arab" onclick={() => resize(3)} class="big">A+</button>
-		</span>
-	</div>
-</div>
+<ReadBar />
 
 <header class="page-head">
 	<div class="label">Dzikir</div>
@@ -256,15 +240,7 @@
 		</div>
 
 		{#if pk}
-			<div class="words" lang="ar" style:--arsize="{opt.size}px">
-				{#each pk.w as w, k (k)}
-					<span class="w">
-						<span class="wa">{w[0]}</span>
-						{#if opt.lat}<span class="wl" lang="id">{w[1]}</span>{/if}
-						<span class="wt" lang="id">{w[2]}</span>
-					</span>
-				{/each}
-			</div>
+			<Words words={pk.w} lat={opt.lat} size={opt.size} />
 			<p class="wsrc">
 				{#if pk.src === 'quran'}Arti per kata dari quran.com{:else}<span class="dot"></span>Arti per kata masih draf, belum diverifikasi{/if}
 			</p>
@@ -329,65 +305,6 @@
 {/if}
 
 <style>
-	.bar {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding-top: 18px;
-	}
-	.back {
-		width: 40px;
-		height: 40px;
-		flex: none;
-		border-radius: 14px;
-		display: grid;
-		place-items: center;
-		background: var(--card);
-		box-shadow: var(--shadow);
-		border: 1px solid var(--line);
-	}
-	.opts {
-		display: flex;
-		align-items: center;
-		gap: 5px;
-		flex: 1;
-		min-width: 0;
-		/* layar sangat sempit (320px): tombol bisa digeser, tidak merusak tata letak */
-		overflow-x: auto;
-		scrollbar-width: none;
-	}
-	.opt {
-		height: 30px;
-		padding: 0 9px;
-		white-space: nowrap;
-		border-radius: 999px;
-		font-size: 12px;
-		font-weight: 700;
-		color: var(--ink2);
-		border: 1px solid var(--line-strong);
-		transition: all 0.25s var(--ease);
-	}
-	.opt[aria-pressed='true'] {
-		background: var(--navy);
-		border-color: var(--navy);
-		color: var(--on-navy);
-	}
-	.fs {
-		margin-left: auto;
-		display: inline-flex;
-		gap: 2px;
-	}
-	.fs button {
-		width: 27px;
-		height: 30px;
-		border-radius: 10px;
-		font-weight: 800;
-		font-size: 12px;
-		color: var(--ink2);
-	}
-	.fs .big {
-		font-size: 14px;
-	}
 	.page-head {
 		padding-top: 16px;
 		padding-bottom: 12px;
@@ -668,46 +585,6 @@
 		border-radius: 50%;
 		background: var(--peach);
 		flex: none;
-	}
-	.words {
-		display: flex;
-		flex-wrap: wrap;
-		direction: rtl;
-		gap: 6px;
-		margin-top: 12px;
-	}
-	.w {
-		direction: ltr;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		padding: 8px 9px 7px;
-		border-radius: 12px;
-		background: var(--paper);
-		border: 1px solid var(--line);
-		min-width: 64px;
-		flex: 1 1 auto;
-		max-width: 100%;
-	}
-	.wa {
-		font-family: var(--f-ar);
-		font-size: calc(var(--arsize) * 0.78);
-		line-height: 1.6;
-		direction: rtl;
-	}
-	.wl {
-		font-size: 11px;
-		font-style: italic;
-		color: var(--navy);
-		margin-top: 1px;
-	}
-	.wt {
-		font-size: 11px;
-		color: var(--ink2);
-		margin-top: 3px;
-		font-weight: 600;
-		line-height: 1.35;
 	}
 	.wsrc {
 		display: flex;

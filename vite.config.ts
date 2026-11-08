@@ -45,7 +45,15 @@ export default defineConfig({
 					// semuanya jalan tanpa internet.
 					globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,json}'],
 					// Subset Vietnam hanya diunduh browser bila memang dibutuhkan, tidak perlu disimpan offline.
-					globIgnores: ['**/*vietnamese*'],
+					// Isi surat Al-Qur'an (1,3 MB) tidak di-precache; disimpan saat surat dibuka (runtimeCaching).
+					globIgnores: ['**/*vietnamese*', '**/data/quran/**'],
+					runtimeCaching: [
+						{
+							urlPattern: ({ url }) => url.pathname.startsWith('/data/quran/'),
+							handler: 'CacheFirst',
+							options: { cacheName: 'quran-surat', expiration: { maxEntries: 120 } }
+						}
+					],
 					navigateFallback: '/',
 					cleanupOutdatedCaches: true
 				}

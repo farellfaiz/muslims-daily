@@ -46,11 +46,12 @@
 	let creditsDlg: HTMLDialogElement | undefined = $state();
 	const CREDITS = [
 		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
-		['adhan', 'Pustaka perhitungan', 'Menghitung jadwal salat dan arah kiblat.']
+		['adhan', 'Pustaka perhitungan', 'Menghitung jadwal salat dan arah kiblat.'],
+		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.'],
+		['Kementerian Agama RI', 'Terjemahan', "Terjemahan ayat Al-Qur'an."]
 	];
 
 	const SOON = [
-		["Al-Qur'an", 'Mushaf lengkap dengan terjemahan per kata'],
 		['Notifikasi adzan', 'Pengingat waktu salat']
 	];
 </script>
