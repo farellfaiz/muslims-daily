@@ -1,0 +1,68 @@
+{
+	"$comment": "Daftar screenshot app. Dipakai halaman (alt, jam di status bar) dan scripts/screenshots.mjs (rute, jam, tema). Jam dalam WIB, lokasi Jakarta.",
+	"screens": [
+		{
+			"id": "beranda-subuh",
+			"path": "/",
+			"at": "2026-11-08T04:20:00+07:00",
+			"theme": "light",
+			"alt": "Beranda Muslims Daily saat Subuh: langit fajar di pintu lengkung, hitung mundur ke Dzuhur, dan catatan salat hari ini."
+		},
+		{
+			"id": "dzikir-pagi",
+			"path": "/dzikir?set=pagi-petang",
+			"at": "2026-11-08T06:35:00+07:00",
+			"theme": "light",
+			"alt": "Halaman dzikir pagi dengan penghitung ketuk dan progres bacaan."
+		},
+		{
+			"id": "tracker",
+			"path": "/tracker",
+			"at": "2026-11-08T12:35:00+07:00",
+			"theme": "light",
+			"alt": "Tracker salat: streak 23 hari, rekor terbaik, dan jejak enam bulan."
+		},
+		{
+			"id": "doa",
+			"path": "/doa/doa-keseharian/doa-saat-turun-hujan",
+			"at": "2026-11-08T15:40:00+07:00",
+			"theme": "light",
+			"alt": "Halaman baca doa: teks Arab, transliterasi, terjemahan, dan keterangan sumber."
+		},
+		{
+			"id": "quran",
+			"path": "/quran/67",
+			"at": "2026-11-08T18:25:00+07:00",
+			"theme": "light",
+			"alt": "Membaca surat Al-Mulk dengan transliterasi dan terjemahan."
+		},
+		{
+			"id": "beranda-malam",
+			"path": "/",
+			"at": "2026-11-09T03:05:00+07:00",
+			"theme": "dark",
+			"alt": "Beranda dalam dark mode saat sepertiga malam terakhir: bulan di busur malam dan jam imsak."
+		},
+		{
+			"id": "kiblat",
+			"path": "/kiblat",
+			"at": "2026-11-08T13:10:00+07:00",
+			"theme": "light",
+			"alt": "Kompas kiblat: arah 295 derajat dari utara dan jarak ke Ka'bah."
+		},
+		{
+			"id": "koreksi",
+			"path": "/lainnya/koreksi",
+			"at": "2026-11-08T13:15:00+07:00",
+			"theme": "light",
+			"alt": "Layar koreksi jadwal: tiap salat bisa digeser per menit, Maghrib digeser 2 menit."
+		},
+		{
+			"id": "doa-kategori",
+			"path": "/doa",
+			"at": "2026-11-08T15:45:00+07:00",
+			"theme": "light",
+			"alt": "Kumpulan doa per kategori dengan pencarian."
+		}
+	]
+}

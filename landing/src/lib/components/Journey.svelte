@@ -1,0 +1,875 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { APP_URL, REPO_URL } from '#lib/config.ts';
+	import { clamp, lerp, motionOn, onFrame, range, smooth } from '#lib/scroll.ts';
+	import data from '#lib/screens.json';
+	import { PHASES, SKY, skyGradient, type Phase } from '#lib/sky.ts';
+	import Door from './Door.svelte';
+	import Icon from './Icon.svelte';
+	import Phone, { type Shot } from './Phone.svelte';
+
+	/*
+		Satu adegan gulir panjang:
+		1. Hero: pintu lengkung dengan langit sungguhan saat ini.
+		2. Gulir: pintu membesar sampai kita "masuk", langit bergeser ke Subuh.
+		3. Satu hari: langit berganti Subuh, Pagi, Dzuhur, Ashar, Maghrib, Malam; matahari berjalan
+		   di busur, dan HP menampilkan fitur yang cocok dengan waktunya.
+		Tanpa JavaScript atau dengan "kurangi gerakan", semuanya tampil sebagai daftar biasa.
+	*/
+
+	const shot = (id: string) => data.screens.find((s) => s.id === id) as Shot;
+
+	const CHAPTERS: { shot: Shot; phase: Phase; name: string; dot: string; title: string; text: string }[] = [
+		{
+			shot: shot('beranda-subuh'),
+			phase: 'subuh',
+			name: 'Subuh',
+			dot: 'Subuh',
+			title: 'Sekali buka, langsung tahu waktu salat berikutnya',
+			text: 'Hitung mundurnya ada di halaman depan. Warna langit dan posisi matahari juga ikut jam, jadi tanpa baca angka pun kelihatan ini waktu apa.'
+		},
+		{
+			shot: shot('dzikir-pagi'),
+			phase: 'dhuha',
+			name: 'Pagi',
+			dot: 'Pagi',
+			title: 'Dzikir pagi dengan counter',
+			text: 'Tap sekali tiap selesai baca, hitungannya tersimpan. Sumber tiap bacaan ditulis, termasuk catatan kalau hadisnya dinilai lemah. Lafaz pagi dan petang ganti otomatis.'
+		},
+		{
+			shot: shot('tracker'),
+			phase: 'dzuhur',
+			name: 'Dzuhur',
+			dot: 'Dzuhur',
+			title: 'Tracker salat, cukup sekali tap',
+			text: 'Centang dari beranda, streak dan riwayat 6 bulan langsung ter-update. Lagi haid? Nyalakan mode udzur, streak-nya nggak putus.'
+		},
+		{
+			shot: shot('doa'),
+			phase: 'ashar',
+			name: 'Ashar',
+			dot: 'Ashar',
+			title: 'Doa harian lengkap dengan sumbernya',
+			text: 'Selain teks Arab dan terjemahannya, tiap doa ada keterangan sumbernya. Search-nya juga nggak rewel soal ejaan: ketik dhuha atau duha, tetap ketemu.'
+		},
+		{
+			shot: shot('quran'),
+			phase: 'maghrib',
+			name: 'Maghrib',
+			dot: 'Maghrib',
+			title: "Al-Qur'an, lanjut dari terakhir baca",
+			text: '114 surat dengan latin dan terjemahan Kemenag. Posisi terakhir tersimpan otomatis, besok tinggal lanjut.'
+		},
+		{
+			shot: shot('beranda-malam'),
+			phase: 'isya',
+			name: 'Malam',
+			dot: 'Isya',
+			title: 'Sepertiga malam terakhir kelihatan jelas',
+			text: 'Lewat Isya, busur di beranda berganti ke mode malam dan menandai kapan sepertiga malam terakhir dimulai. Jam imsak buat sahur juga ada. Buka tengah malam? Pakai dark mode biar nggak silau.'
+		}
+	];
+	const N = CHAPTERS.length;
+	const clockOf = (at: string) => at.slice(11, 16).replace(':', '.');
+
+	// Panjang adegan dalam satuan layar (tinggi viewport).
+	const ZOOM_A = 0.08; // pintu mulai membesar
+	const ZOOM_B = 1.1; // jendela pintu sudah menutupi layar
+	const START = 1.4; // bab pertama tampil penuh
+	const CH = 0.95; // panjang tiap bab
+	const LEN = START + (N - 1) * CH + 0.75;
+	// Posisi matahari di busur untuk tiap bab (0 = ujung kiri, 1 = ujung kanan, >1 = tenggelam).
+	const SUN_AT = [0.03, 0.25, 0.5, 0.72, 0.92, 1.14];
+	const DOT_AT = [0.03, 0.25, 0.5, 0.72, 0.92, 0.985];
+
+	// Bintang adegan: deterministik, hanya di dua pertiga atas langit.
+	const STAR_FIELD = Array.from({ length: 64 }, (_, i) => ({
+		x: (i * 61 + 7) % 100,
+		y: ((i * 37) % 64) + 2,
+		s: i % 5 === 0 ? 3 : 2,
+		d: (i % 9) * 0.35
+	}));
+
+	let section = $state<HTMLElement>();
+	let stage = $state<HTMLElement>();
+	let heroCopy = $state<HTMLElement>();
+	let cue = $state<HTMLElement>();
+	let doorWrap = $state<HTMLElement>();
+	let doorEl = $state<HTMLElement>();
+	let skybox = $state<HTMLElement>();
+	let starsEl = $state<HTMLElement>();
+	let arcEl = $state<HTMLElement>();
+	let sunEl = $state<HTMLElement>();
+	let moonEl = $state<HTMLElement>();
+	let hillEl = $state<HTMLElement>();
+	let hillDusk = $state<SVGPathElement>();
+	let hillNight = $state<SVGPathElement>();
+	// Bukit naik ke kanan seperti ikon aplikasinya.
+	const HILL = 'M0 240V200C230 96 610 36 990 32C1190 30 1340 56 1440 82V240Z';
+	let phoneLayer = $state<HTMLElement>();
+	let chaptersEl = $state<HTMLElement>();
+	const layers: HTMLElement[] = [];
+
+	let active = $state(0);
+	let lightInk = $state(true);
+	let W = $state(1280);
+	let H = $state(800);
+	const narrow = $derived(W < 900);
+
+	// Busur besar di adegan, dalam piksel layar.
+	const arc = $derived(
+		narrow
+			? { x0: 0.04 * W, y0: 0.6 * H, cx: 0.5 * W, cy: -0.02 * H, x1: 0.96 * W, y1: 0.6 * H }
+			: { x0: 0.04 * W, y0: 0.8 * H, cx: 0.5 * W, cy: -0.16 * H, x1: 0.96 * W, y1: 0.8 * H }
+	);
+	function at(t: number): [number, number] {
+		const u = 1 - t;
+		const a = arc;
+		return [u * u * a.x0 + 2 * u * t * a.cx + t * t * a.x1, u * u * a.y0 + 2 * u * t * a.cy + t * t * a.y1];
+	}
+	const dots = $derived(CHAPTERS.map((c, i) => ({ label: c.dot, pt: at(DOT_AT[i]) })));
+
+	let geo: { S: number; tx: number; ty: number } | null = null;
+
+	function measure() {
+		if (!stage || !doorWrap || !doorEl) return;
+		W = stage.clientWidth;
+		H = stage.clientHeight;
+		const prev = doorWrap.style.transform;
+		doorWrap.style.transform = 'none';
+		const sr = stage.getBoundingClientRect();
+		const wr = doorWrap.getBoundingClientRect();
+		const dr = doorEl.getBoundingClientRect();
+		doorWrap.style.transform = prev;
+		// Jendela pintu: inset 8.5% atas, 7% kiri-kanan (lihat Door.svelte).
+		const wl = dr.left - sr.left + dr.width * 0.07;
+		const ww = dr.width * 0.86;
+		const wt = dr.top - sr.top + dr.height * 0.085;
+		const wh = dr.height * 0.915;
+		// Titik pusat bagian persegi jendela (di bawah lengkungan): ke sinilah kita "masuk".
+		const ox = wl + ww / 2;
+		const oy = wt + wh * 0.76;
+		doorWrap.style.transformOrigin = `${ox - (wr.left - sr.left)}px ${oy - (wr.top - sr.top)}px`;
+		geo = { S: Math.max(W / ww, H / (wh * 0.48)) * 1.12, tx: W / 2 - ox, ty: H / 2 - oy };
+	}
+
+	function frame() {
+		if (!section || !stage) return;
+		const r = section.getBoundingClientRect();
+		const h = stage.clientHeight;
+		if (r.bottom < -h || r.top > h * 1.5) return;
+		const s = clamp(-r.top / h, 0, LEN);
+
+		// 1. Hero: teks naik dan memudar, pintu membesar.
+		const out = range(s, 0.03, 0.3);
+		heroCopy!.style.opacity = String(1 - out);
+		heroCopy!.style.transform = `translate3d(0, ${-out * 0.08 * h}px, 0)`;
+		cue!.style.opacity = String(1 - range(s, 0, 0.08));
+		const z = smooth(range(s, ZOOM_A, ZOOM_B));
+		if (geo) {
+			// Skala eksponensial terasa seperti maju dengan kecepatan tetap. Geseran ke tengah sengaja
+			// tertinggal (z kuadrat) supaya tepi bawah jendela tidak sempat naik dan memperlihatkan latar.
+			const k = Math.exp(Math.log(geo.S) * z);
+			const m = z * z;
+			doorWrap!.style.transform = `translate3d(${geo.tx * m}px, ${geo.ty * m}px, 0) scale(${k})`;
+		}
+		doorEl!.style.setProperty('--inner', String(1 - range(s, 0.1, 0.48)));
+		doorEl!.style.setProperty('--dawn', String(smooth(range(s, 0.28, 0.85))));
+		doorWrap!.style.visibility = s > ZOOM_B + 0.1 ? 'hidden' : 'visible';
+
+		// 2. Langit adegan menggantikan jendela pintu.
+		skybox!.style.opacity = String(range(s, 0.86, 1.08));
+
+		// 3. Satu hari. phi = posisi bab (pecahan); langit bertahan di tengah bab dan berganti di perbatasan.
+		const phi = (s - START) / CH;
+		const base = clamp(Math.floor(phi), 0, N - 1);
+		const sigma = phi <= 0 ? 0 : Math.min(N - 1, base + smooth(range(phi - base, 0.3, 0.7)));
+		const lo = Math.floor(sigma);
+		const f = sigma - lo;
+		layers.forEach((el, k) => {
+			el.style.opacity = k === lo ? '1' : k === lo + 1 ? String(f) : '0';
+		});
+		const hi = Math.min(lo + 1, N - 1);
+		starsEl!.style.opacity = String(lerp(SKY[PHASES[lo]].stars, SKY[PHASES[hi]].stars, f));
+		const ink = SKY[PHASES[Math.round(sigma)]].light;
+		if (ink !== lightInk) lightInk = ink;
+		const idx = clamp(Math.round(phi), 0, N - 1);
+		if (idx !== active) active = idx;
+
+		// 4. Masuknya busur, bukit, HP, dan teks bab.
+		const ent = smooth(range(s, 0.95, START));
+		arcEl!.style.clipPath = `inset(-20% ${(1 - ent) * 100}% -20% 0)`;
+		hillEl!.style.transform = `translate3d(0, ${(1 - ent) * 100}%, 0)`;
+		phoneLayer!.style.transform = `translate3d(0, ${(1 - ent) * 0.5 * h}px, 0)`;
+		phoneLayer!.style.opacity = String(range(s, 0.95, 1.2));
+		chaptersEl!.style.opacity = String(range(s, 1.08, START));
+		// Bukit: krem di siang hari, siluet ungu tua saat Maghrib, navy saat malam.
+		hillDusk!.style.opacity = String(range(sigma, 3.45, 3.95));
+		hillNight!.style.opacity = String(range(sigma, 4.3, 4.9));
+
+		// 5. Matahari berjalan terus mengikuti gulir; bulan terbit setelah Maghrib.
+		const sp = clamp(phi, 0, N - 1);
+		const a = Math.floor(sp);
+		const b = Math.min(a + 1, N - 1);
+		const [sx, sy] = at(lerp(SUN_AT[a], SUN_AT[b], sp - a));
+		sunEl!.style.transform = `translate3d(${sx}px, ${sy}px, 0)`;
+		sunEl!.style.opacity = String(ent * (1 - range(sp, 4.3, 4.75)));
+		const [mx, my] = at(lerp(0.3, 0.6, range(sp, 4.35, 5)));
+		moonEl!.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+		moonEl!.style.opacity = String(range(sp, 4.4, 4.85));
+	}
+
+	let motion = $state(false);
+	onMount(() => {
+		motion = motionOn();
+		if (!motion) return;
+		measure();
+		const ro = new ResizeObserver(() => {
+			measure();
+			frame();
+		});
+		ro.observe(stage!);
+		const stop = onFrame(frame);
+		return () => {
+			ro.disconnect();
+			stop();
+		};
+	});
+</script>
+
+<section class="journey" bind:this={section} style:--len={LEN + 1} style:--start={START} aria-label="Muslims Daily">
+	<span id="fitur" class="anchor" aria-hidden="true"></span>
+	<div class="stage pattern on-sky" bind:this={stage} class:ink-light={lightInk}>
+		<header class="hero">
+			<div class="copy" bind:this={heroCopy}>
+				<p class="eyebrow"><span class="sun-dot"></span>Pendamping ibadah harian</p>
+				<h1 class="disp">Teman ibadah dari Subuh sampai Isya</h1>
+				<p class="lead">
+					Jadwal salat, catatan salat, doa, dzikir, Al-Qur'an, dan kiblat dalam satu aplikasi. Ringan, tanpa akun, dan tetap
+					jalan tanpa internet.
+				</p>
+				<div class="cta">
+					<a class="btn primary" href={APP_URL}>Buka aplikasi <Icon name="arrow" size={18} /></a>
+					<a class="btn ghost" href={REPO_URL}><Icon name="github" size={18} /> Lihat kodenya</a>
+				</div>
+				<p class="note">Gratis dan open source. Bisa di-install ke home screen HP.</p>
+			</div>
+			<div class="door-slot">
+				<div class="door-wrap" bind:this={doorWrap}>
+					<Door bind:el={doorEl} />
+				</div>
+			</div>
+			<div class="cue" bind:this={cue} aria-hidden="true"><span></span>Gulir untuk masuk</div>
+		</header>
+
+		<!-- Lapisan adegan (hanya mode animasi) -->
+		<div class="fx skybox" bind:this={skybox} aria-hidden="true">
+			{#each PHASES as p, i (p)}
+				<div class="layer" bind:this={layers[i]} style:background={skyGradient(p)}></div>
+			{/each}
+			<div class="field" bind:this={starsEl}>
+				{#each STAR_FIELD as st, i (i)}
+					<i style:left="{st.x}%" style:top="{st.y}%" style:width="{st.s}px" style:height="{st.s}px" style:animation-delay="{st.d}s"
+					></i>
+				{/each}
+			</div>
+		</div>
+		<div class="fx arc" bind:this={arcEl} aria-hidden="true">
+			<svg viewBox="0 0 {W} {H}" preserveAspectRatio="none">
+				<path d="M{arc.x0} {arc.y0} Q{arc.cx} {arc.cy} {arc.x1} {arc.y1}" />
+			</svg>
+			{#each dots as d, i (d.label)}
+				<span class="dot" class:on={i === active} style:transform="translate3d({d.pt[0]}px, {d.pt[1]}px, 0)">
+					<i></i><b>{d.label}</b>
+				</span>
+			{/each}
+		</div>
+		<div class="fx sun" bind:this={sunEl} aria-hidden="true"></div>
+		<div class="fx moon" bind:this={moonEl} aria-hidden="true"></div>
+		<div class="fx hill" bind:this={hillEl} aria-hidden="true">
+			<svg viewBox="0 0 1440 240" preserveAspectRatio="none">
+				<path class="day" d={HILL} />
+				<path class="dusk" bind:this={hillDusk} d={HILL} />
+				<path class="night" bind:this={hillNight} d={HILL} />
+			</svg>
+		</div>
+		<div class="fx phone-layer" bind:this={phoneLayer}>
+			<div class="phone-pos">
+				<Phone shots={CHAPTERS.map((c) => c.shot)} {active} />
+			</div>
+		</div>
+
+		<div class="chapters-wrap" bind:this={chaptersEl}>
+			<h2 class="story-h sr-only">Sehari pakai Muslims Daily</h2>
+			<ol class="chapters">
+				{#each CHAPTERS as c, i (c.name)}
+					<li class="chapter" class:on={i === active} class:light={SKY[c.phase].light} style:--bg={skyGradient(c.phase)}>
+						<div class="ch-copy">
+							<p class="when"><span>{c.name}</span><span class="num">{clockOf(c.shot.at)}</span></p>
+							<h3 class="disp">{c.title}</h3>
+							<p class="txt">{c.text}</p>
+							<ol class="steps" aria-label="{i + 1} dari {N}">
+								{#each CHAPTERS as _, k (k)}
+									<li class:done={k < i} class:now={k === i}></li>
+								{/each}
+							</ol>
+						</div>
+						{#if !motion}
+							<div class="own-phone">
+								<Phone shots={[c.shot]} />
+							</div>
+						{/if}
+					</li>
+				{/each}
+			</ol>
+		</div>
+	</div>
+</section>
+
+<style>
+	.journey {
+		position: relative;
+	}
+	.anchor {
+		position: absolute;
+		top: 100svh;
+		left: 0;
+	}
+	:global(.motion) .journey {
+		height: calc(var(--len) * 100vh);
+	}
+	:global(.motion) .anchor {
+		top: calc(var(--start) * 100vh);
+	}
+	.stage {
+		position: relative;
+	}
+	:global(.motion) .stage {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		overflow: hidden;
+	}
+
+	/* ---------- hero ---------- */
+	.hero {
+		position: relative;
+		z-index: 1;
+		min-height: 100svh;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		padding: calc(var(--nav-h) + 18px) var(--gutter) 0;
+	}
+	:global(.motion) .hero {
+		position: absolute;
+		inset: 0;
+		min-height: 0;
+	}
+	.copy {
+		max-width: 560px;
+		will-change: transform, opacity;
+	}
+	.eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 9px;
+		margin: 0 0 16px;
+		padding: 7px 14px 7px 9px;
+		border-radius: 999px;
+		background: var(--card);
+		box-shadow: var(--shadow);
+		font-size: 12.5px;
+		font-weight: 700;
+		color: var(--ink2);
+	}
+	.sun-dot {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--peach-sun);
+		box-shadow: 0 0 0 4px rgba(237, 160, 125, 0.22);
+	}
+	h1 {
+		margin: 0;
+		font-size: clamp(38px, 6.4vw, 84px);
+		line-height: 1;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
+	}
+	.copy .lead {
+		margin-top: 18px;
+		max-width: 500px;
+	}
+	.cta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 26px;
+	}
+	.note {
+		margin: 16px 0 0;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--ink2);
+	}
+	.door-slot {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		min-height: 230px;
+		margin-top: 22px;
+	}
+	.door-wrap {
+		height: min(100%, 440px, calc((100vw - 2 * var(--gutter)) / 0.88));
+		will-change: transform;
+	}
+	:global(.motion) .door-slot {
+		min-height: 0;
+	}
+	.cue {
+		display: none;
+	}
+	:global(html:not(.motion)) .cue {
+		display: none !important;
+	}
+
+	@media (max-width: 899px) and (max-height: 700px) {
+		.note {
+			display: none;
+		}
+		.copy .lead {
+			font-size: 15px;
+			margin-top: 12px;
+		}
+		.cta {
+			margin-top: 18px;
+		}
+	}
+	@media (min-width: 900px) {
+		.hero {
+			grid-template-rows: none;
+			grid-template-columns: minmax(0, 1fr) auto;
+			column-gap: 4vw;
+			padding: 0 max(var(--gutter), calc(50vw - 600px));
+		}
+		.copy {
+			align-self: center;
+			padding-top: var(--nav-h);
+		}
+		.door-slot {
+			margin: 0;
+			height: 100svh;
+		}
+		:global(.motion) .door-slot {
+			height: 100%;
+		}
+		.door-wrap {
+			height: min(84%, 800px, calc(46vw / 0.88));
+		}
+		.cue {
+			position: absolute;
+			left: max(var(--gutter), calc(50vw - 600px));
+			bottom: 30px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			font-size: 12px;
+			font-weight: 800;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			color: var(--ink2);
+		}
+		.cue span {
+			position: relative;
+			width: 2px;
+			height: 34px;
+			border-radius: 2px;
+			background: var(--line-strong);
+			overflow: hidden;
+		}
+		.cue span::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: -40%;
+			height: 40%;
+			background: var(--navy);
+			animation: drip 1.8s var(--ease) infinite;
+		}
+	}
+	@keyframes drip {
+		to {
+			top: 110%;
+		}
+	}
+
+	/* ---------- lapisan adegan ---------- */
+	.fx {
+		display: none;
+	}
+	:global(.motion) .fx {
+		display: block;
+		position: absolute;
+		pointer-events: none;
+	}
+	.skybox {
+		inset: 0;
+		z-index: 2;
+		opacity: 0;
+	}
+	.layer {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+	}
+	.field {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+	}
+	.field i {
+		position: absolute;
+		border-radius: 50%;
+		background: #fff;
+		animation: tw 3.2s ease-in-out infinite;
+	}
+	@keyframes tw {
+		50% {
+			opacity: 0.25;
+		}
+	}
+	.arc {
+		inset: 0;
+		z-index: 3;
+		color: #33506f;
+		transition: color 0.6s;
+	}
+	.stage.ink-light .arc {
+		color: #fff;
+	}
+	.arc svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+	.arc path {
+		fill: none;
+		stroke: currentColor;
+		stroke-opacity: 0.42;
+		stroke-width: 1.4;
+		stroke-dasharray: 3 7;
+		vector-effect: non-scaling-stroke;
+	}
+	.dot {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+	.dot i {
+		position: absolute;
+		width: 8px;
+		height: 8px;
+		margin: -4px 0 0 -4px;
+		border-radius: 50%;
+		background: currentColor;
+		opacity: 0.85;
+		transition: transform 0.4s var(--ease);
+	}
+	.dot b {
+		position: absolute;
+		left: 0;
+		bottom: 12px;
+		transform: translateX(-50%);
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+		opacity: 0.75;
+		transition: opacity 0.4s;
+	}
+	.dot.on i {
+		transform: scale(1.6);
+		opacity: 1;
+	}
+	.dot.on b {
+		opacity: 1;
+	}
+	.sun,
+	.moon {
+		left: 0;
+		top: 0;
+		z-index: 3;
+		width: 0;
+		height: 0;
+		opacity: 0;
+		will-change: transform;
+	}
+	.sun::before,
+	.moon::before {
+		content: '';
+		position: absolute;
+		border-radius: 50%;
+	}
+	.sun::before {
+		width: 80px;
+		height: 80px;
+		margin: -40px 0 0 -40px;
+		background: #eda07d;
+		box-shadow:
+			0 0 0 22px rgba(237, 160, 125, 0.18),
+			0 0 120px 40px rgba(237, 160, 125, 0.28);
+	}
+	.moon::before {
+		width: 54px;
+		height: 54px;
+		margin: -27px 0 0 -27px;
+		background: #f1eee6;
+		box-shadow:
+			0 0 0 16px rgba(241, 238, 230, 0.1),
+			0 0 90px 20px rgba(241, 238, 230, 0.12),
+			inset -12px -6px 0 #d9d4c6;
+	}
+	.hill {
+		left: 0;
+		right: 0;
+		bottom: -1px;
+		height: 24vh;
+		z-index: 4;
+		will-change: transform;
+	}
+	.hill svg {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+	.hill .day {
+		fill: #fdf3ea;
+	}
+	.hill .dusk {
+		fill: #3d3150;
+		opacity: 0;
+	}
+	.hill .night {
+		fill: #0f1a26;
+		opacity: 0;
+	}
+	.phone-layer {
+		inset: 0;
+		z-index: 5;
+		opacity: 0;
+		will-change: transform, opacity;
+	}
+	.phone-pos {
+		position: absolute;
+		left: 62%;
+		top: 50%;
+		width: min(37vh, 360px);
+		transform: translateY(-48%);
+		filter: drop-shadow(0 30px 40px rgba(15, 26, 38, 0.25));
+	}
+
+	/* ---------- bab ---------- */
+	.chapters {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.chapter {
+		position: relative;
+		display: grid;
+		gap: 36px;
+		align-items: center;
+		padding: 88px var(--gutter);
+		background: var(--bg);
+		color: #22384f;
+	}
+	.chapter.light {
+		color: #fff;
+	}
+	.when {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0 0 12px;
+		font-size: 12px;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+	.when .num {
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		opacity: 0.7;
+	}
+	.when span:first-child {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.when span:first-child::before {
+		content: '';
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: #eda07d;
+	}
+	h3 {
+		margin: 0;
+		font-size: clamp(28px, 3.1vw, 42px);
+		line-height: 1.06;
+		letter-spacing: -0.03em;
+		text-wrap: balance;
+	}
+	.txt {
+		margin: 14px 0 0;
+		font-size: clamp(15.5px, 1.25vw, 17.5px);
+		line-height: 1.62;
+		opacity: 0.86;
+		text-wrap: pretty;
+	}
+	.steps {
+		list-style: none;
+		display: flex;
+		gap: 5px;
+		margin: 22px 0 0;
+		padding: 0;
+	}
+	.steps li {
+		width: 8px;
+		height: 5px;
+		border-radius: 3px;
+		background: currentColor;
+		opacity: 0.2;
+	}
+	.steps li.done {
+		opacity: 0.5;
+	}
+	.steps li.now {
+		width: 26px;
+		opacity: 1;
+		background: #eda07d;
+	}
+	.own-phone {
+		width: min(300px, 72vw);
+		margin: 0 auto;
+	}
+	/* Sebelum hidrasi di mode animasi: jangan sampai screenshot per bab ikut diunduh. */
+	:global(.motion) .own-phone {
+		display: none;
+	}
+	@media (min-width: 900px) {
+		.chapter {
+			grid-template-columns: minmax(0, 480px) 320px;
+			justify-content: center;
+			column-gap: 8vw;
+			padding: 110px var(--gutter);
+		}
+	}
+
+	/* Mode animasi: bab ditumpuk di atas adegan, berganti mengikuti gulir. */
+	:global(.motion) .chapters-wrap {
+		position: absolute;
+		inset: 0;
+		z-index: 6;
+		opacity: 0;
+		pointer-events: none;
+	}
+	:global(.motion) .chapters,
+	:global(.motion) .chapter {
+		position: absolute;
+		inset: 0;
+		padding: 0;
+		background: none;
+	}
+	:global(.motion) .ch-copy {
+		position: absolute;
+		left: max(var(--gutter), calc(50vw - 600px));
+		top: 50%;
+		width: min(460px, 38vw);
+		padding: 30px 32px 32px;
+		border-radius: var(--r-lg);
+		background: rgba(250, 246, 241, 0.58);
+		border: 1px solid rgba(255, 255, 255, 0.55);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.6),
+			0 30px 60px -36px rgba(15, 26, 38, 0.45);
+		-webkit-backdrop-filter: blur(18px) saturate(160%);
+		backdrop-filter: blur(18px) saturate(160%);
+		opacity: 0;
+		transform: translate3d(0, calc(-50% + 30px), 0);
+		transition:
+			opacity 0.25s var(--ease),
+			transform 0s linear 0.25s;
+	}
+	:global(.motion) .chapter.light .ch-copy {
+		background: rgba(15, 26, 38, 0.34);
+		border-color: rgba(255, 255, 255, 0.14);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.1),
+			0 30px 60px -36px rgba(0, 0, 0, 0.6);
+	}
+	:global(.motion) .chapter.on .ch-copy {
+		opacity: 1;
+		transform: translate3d(0, -50%, 0);
+		transition:
+			opacity 0.5s var(--ease) 0.12s,
+			transform 0.75s var(--ease) 0.12s;
+	}
+
+	@media (max-width: 899px) {
+		/* Di HP label busur tertutup kartu dan HP; cukup titiknya. */
+		.arc .dot b {
+			display: none;
+		}
+		.sun::before {
+			width: 58px;
+			height: 58px;
+			margin: -29px 0 0 -29px;
+		}
+		.moon::before {
+			width: 40px;
+			height: 40px;
+			margin: -20px 0 0 -20px;
+		}
+		.hill {
+			height: 17vh;
+		}
+		.phone-pos {
+			left: 50%;
+			top: max(41vh, 300px);
+			width: min(33vh, 74vw, 300px);
+			transform: translateX(-50%);
+		}
+		:global(.motion) .ch-copy {
+			left: var(--gutter);
+			right: var(--gutter);
+			top: calc(var(--nav-h) + 10px);
+			width: auto;
+			padding: 20px 20px 22px;
+			transform: translate3d(0, 24px, 0);
+		}
+		:global(.motion) .chapter.on .ch-copy {
+			transform: none;
+		}
+		:global(.motion) .ch-copy h3 {
+			font-size: clamp(24px, 6.6vw, 30px);
+		}
+		:global(.motion) .ch-copy .txt {
+			font-size: 14.5px;
+			line-height: 1.55;
+			margin-top: 8px;
+		}
+		:global(.motion) .ch-copy .when {
+			margin-bottom: 8px;
+		}
+	}
+	@media (max-width: 899px) and (max-height: 720px) {
+		:global(.motion) .ch-copy .txt {
+			display: none;
+		}
+	}
+</style>

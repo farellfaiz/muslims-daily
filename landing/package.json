@@ -1,0 +1,35 @@
+{
+  "name": "muslims-daily-landing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Landing page Muslims Daily (muslimsdaily.id). Situs statis, terpisah dari aplikasinya.",
+  "author": "Farell Faiz Firmansyah",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "screens": "node scripts/screenshots.mjs",
+    "og": "node scripts/og.mjs"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^4.0.1",
+    "@sveltejs/kit": "^3.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "puppeteer-core": "^25.16.0",
+    "svelte": "^5.57.3",
+    "svelte-check": "^4.7.8",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.6"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "adhan": "^4.4.6"
+  },
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  }
+}
