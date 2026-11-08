@@ -9,7 +9,8 @@
 			// Pasang tema sebelum halaman digambar supaya tidak berkedip terang saat mode gelap.
 			try {
 				var m = JSON.parse(localStorage.getItem('md:theme') || '{}').mode;
-				if (m === 'light' || m === 'dark') document.documentElement.dataset.theme = m;
+				// bawaan terang; hanya 'system' yang mengikuti pengaturan device
+				if (m !== 'system') document.documentElement.dataset.theme = m === 'dark' ? 'dark' : 'light';
 			} catch (e) {}
 		</script>
 		<meta name="apple-mobile-web-app-capable" content="yes" />

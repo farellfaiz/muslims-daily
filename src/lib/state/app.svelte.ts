@@ -63,7 +63,7 @@ export const dzikirProgress = new Persisted<DzikirProgress>('dzikir', emptyProgr
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 /** Tema tampilan. 'system' mengikuti pengaturan HP. Dibaca juga oleh skrip kecil di app.html. */
-export const theme = new Persisted<{ mode: ThemeMode }>('theme', { mode: 'system' });
+export const theme = new Persisted<{ mode: ThemeMode }>('theme', { mode: 'light' });
 
 /** Kapan terakhir pengguna menyimpan file cadangan (ISO). Kosong = belum pernah. */
 export const backupMeta = new Persisted<{ lastAt: string }>('backup', { lastAt: '' });

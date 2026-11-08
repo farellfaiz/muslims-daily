@@ -23,7 +23,7 @@
 - **Ceklis salat**: salat yang belum masuk waktunya dikunci, yang sudah lewat tetap bisa dicentang kapan saja.
 - **Kiblat**: arah dan jarak ke Ka'bah dari lokasimu, dengan kompas di HP yang menyala saat sudah sejajar.
 - **Koreksi jadwal** per salat (per menit) supaya cocok dengan masjid setempat, dan pilihan imsak 5, 10, atau 15 menit.
-- **Mode gelap** yang mengikuti HP atau dipilih manual.
+- **Mode gelap**: bawaannya terang, bisa dipilih Gelap atau ikut pengaturan device.
 - **Cadangan data**: simpan semua catatan ke satu file JSON dan pulihkan di HP lain (digabung, tidak menimpa).
 - **Privasi**: tanpa akun, tanpa iklan, tanpa pelacakan. Semua catatan tersimpan di `localStorage` perangkat pengguna.
 

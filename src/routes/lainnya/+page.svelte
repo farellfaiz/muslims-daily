@@ -40,10 +40,10 @@
 	const setMethod = (m: MethodKey) => (settings.value = { ...s, method: m });
 	const setMadhab = (m: MadhabKey) => (settings.value = { ...s, madhab: m });
 
-	const THEMES: [ThemeMode, string][] = [
-		['system', 'Ikuti HP'],
-		['light', 'Terang'],
-		['dark', 'Gelap']
+	const THEMES: [ThemeMode, string, 'device' | 'sun' | 'moon'][] = [
+		['system', 'Device', 'device'],
+		['light', 'Terang', 'sun'],
+		['dark', 'Gelap', 'moon']
 	];
 
 	let creditsDlg: HTMLDialogElement | undefined = $state();
@@ -110,8 +110,8 @@
 <section class="card group">
 	<div class="label">Tampilan</div>
 	<div class="seg wide" role="group" aria-label="Tema tampilan">
-		{#each THEMES as [m, name] (m)}
-			<button aria-pressed={theme.value.mode === m} onclick={() => (theme.value = { mode: m })}>{name}</button>
+		{#each THEMES as [m, name, icon] (m)}
+			<button class="ti" aria-pressed={theme.value.mode === m} onclick={() => (theme.value = { mode: m })}><Icon name={icon} size={16} />{name}</button>
 		{/each}
 	</div>
 	<p class="hint">Mode gelap nyaman untuk tahajud dan membaca doa di malam hari.</p>
@@ -278,6 +278,12 @@
 	}
 	.wide button {
 		flex: 1;
+	}
+	.ti {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
 	}
 	.soon {
 		padding: 6px 16px;

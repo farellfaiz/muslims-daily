@@ -81,7 +81,7 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 - Pengaturan lokasi, metode hitung, dan mazhab.
 - **Koreksi jadwal** (bisa dibuka-tutup, tertutup bawaan): geser tiap salat per menit, maksimal 30 menit ke depan atau ke belakang, dengan jam hari ini yang langsung terlihat untuk dicocokkan dengan jadwal masjid. Ringkasan di judul kartu ("Tanpa koreksi" atau "Maghrib +2"). Koreksi dipakai di semua tempat: hero, catatan salat, hari-hari lalu.
 - **Imsak**: 5, 10 (bawaan), atau 15 menit sebelum Subuh.
-- **Tampilan**: Ikuti HP, Terang, atau Gelap.
+- **Tampilan**: Device (ikut pengaturan HP), Terang, atau Gelap. Bawaannya Terang.
 - **Cadangan data**: ringkasan (hari tercatat, jumlah salat, doa favorit) dan kapan terakhir dicadangkan; penanda peach bila sudah ada catatan tapi belum pernah dicadangkan.
   - *Simpan* mengunduh `muslims-daily-cadangan-YYYY-MM-DD.json` berisi pengaturan, catatan salat, favorit, dan preferensi baca. Tidak ada server.
   - *Pulihkan* membaca file itu, menampilkan ringkasan isinya, lalu menunggu konfirmasi. Catatan salat, hari udzur, dan favorit **digabung** (tidak ada centang yang hilang); lokasi, metode, dan preferensi baca diganti isi cadangan.
@@ -107,7 +107,7 @@ Legenda: **Selesai** = sudah ada di `main`. **Draf** = jalan, tetapi isinya belu
 
 ### 4.9 Mode gelap (Selesai)
 - Palet malam diturunkan dari ikon: latar navy pekat, aksen biru muda, peach tetap sebagai matahari. Bukit hero menjadi siluet gelap di bawah langit.
-- Mengikuti pengaturan HP, atau dipaksa Terang/Gelap dari Lainnya. Tema dipasang sebelum halaman digambar (tidak berkedip), dan warna bilah status ikut latar.
+- Bawaannya Terang. Bisa dipilih Gelap, atau Device untuk mengikuti pengaturan HP. Tema dipasang sebelum halaman digambar (tidak berkedip), dan warna bilah status ikut latar.
 
 ### 4.10 PWA (Selesai)
 - Bisa dipasang ke layar utama, seluruh aplikasi termasuk font di-precache (Workbox), memperbarui diri otomatis.
