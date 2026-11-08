@@ -3,48 +3,30 @@
 	import { reveal } from '#lib/scroll.ts';
 	import Icon from './Icon.svelte';
 
-	// Aturan konten dari README repo (bagian "Kontribusi konten doa dan dzikir").
-	const RULES = [
-		{ title: 'Wajib ada sumber', text: 'Ayat: nama surah dan nomor ayat. Hadis: siapa perawinya.' },
-		{ title: 'Cek dari rujukan', text: 'Mushaf Kemenag, kitab hadis, atau Hisnul Muslim. Bukan dari ingatan.' },
-		{ title: 'Jujur soal derajat', text: "Doa yang bukan dari Al-Qur'an atau hadis boleh masuk, asal keterangannya jujur." }
-	];
+	const CLONE = `git clone ${REPO_URL}`;
 </script>
 
 <section id="kode" class="sec oss" aria-labelledby="oss-h">
 	<div class="wrap grid">
 		<div class="text rv" use:reveal>
 			<span class="label">Open source</span>
-			<h2 class="h2" id="oss-h">Kodenya terbuka, sumber doanya jelas</h2>
-			<p class="lead">
-				Semua kodenya ada di GitHub dengan lisensi MIT. Untuk konten ibadah aturannya ketat: teks Arab diambil dari
-				rujukan, bukan dari ingatan, dan tiap bacaan wajib ada sumbernya.
-			</p>
-			<p class="lead">Mau bantu cek bacaan atau benerin bug? Pull request-nya ditunggu.</p>
+			<h2 class="h2" id="oss-h">Kodenya terbuka</h2>
+			<p class="lead">Semua kodenya ada di GitHub dengan lisensi MIT. Bisa dibaca, dijalankan sendiri, atau dipakai untuk proyekmu.</p>
+			<p class="lead">Mau bantu cek bacaan atau benerin bug? <span class="nw">Pull request-nya</span> ditunggu.</p>
 			<div class="cta">
 				<a class="btn primary" href={REPO_URL}><Icon name="github" size={18} /> Lihat di GitHub</a>
 			</div>
 		</div>
 
-		<figure class="doc rv" use:reveal style:--d="120ms">
+		<figure class="term rv" use:reveal style:--d="120ms">
 			<figcaption>
 				<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-				<span class="file num">README.md</span>
+				<span class="file">Terminal</span>
 			</figcaption>
-			<div class="body">
-				<p class="label">Aturan konten doa & dzikir</p>
-				<ol>
-					{#each RULES as r, i (r.title)}
-						<li>
-							<span class="n num">{i + 1}</span>
-							<div>
-								<b>{r.title}</b>
-								<span>{r.text}</span>
-							</div>
-						</li>
-					{/each}
-				</ol>
-			</div>
+			<pre><code><span class="p">$</span> {CLONE}
+<span class="p">$</span> cd muslims-daily
+<span class="p">$</span> npm install
+<span class="p">$</span> npm run dev</code></pre>
 		</figure>
 	</div>
 </section>
@@ -55,6 +37,7 @@
 	}
 	.grid {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 48px;
 		align-items: center;
 	}
@@ -68,11 +51,12 @@
 	.cta {
 		margin-top: 28px;
 	}
-	.doc {
+	.term {
+		min-width: 0;
 		margin: 0;
 		border-radius: var(--r-lg);
-		background: var(--card);
-		border: 1px solid var(--line);
+		background: #17253f;
+		color: #e9eef4;
 		box-shadow: var(--shadow-lg);
 		overflow: hidden;
 	}
@@ -81,8 +65,7 @@
 		align-items: center;
 		gap: 14px;
 		padding: 14px 18px;
-		border-bottom: 1px solid var(--line);
-		background: var(--sunk);
+		border-bottom: 1px solid rgba(190, 212, 236, 0.12);
 	}
 	.dots {
 		display: flex;
@@ -92,54 +75,25 @@
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;
-		background: var(--line-strong);
+		background: rgba(190, 212, 236, 0.25);
 	}
 	.file {
 		font-size: 13px;
 		font-weight: 700;
-		color: var(--ink2);
+		color: #a9b8c8;
 	}
-	.body {
-		padding: 24px 24px 10px;
-	}
-	.body .label {
-		margin: 0 0 8px;
-	}
-	ol {
-		list-style: none;
+	pre {
 		margin: 0;
-		padding: 0;
+		padding: 22px 24px 26px;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+		font-size: clamp(13px, 1.15vw, 15px);
+		line-height: 2;
 	}
-	li {
-		display: flex;
-		gap: 16px;
-		padding: 16px 0;
-	}
-	li + li {
-		border-top: 1px dashed var(--line-strong);
-	}
-	.n {
-		flex: none;
-		display: grid;
-		place-items: center;
-		width: 30px;
-		height: 30px;
-		border-radius: 50%;
-		background: var(--peach-soft);
-		color: var(--peach-ink);
-		font-size: 13px;
-		font-weight: 800;
-	}
-	li b {
-		display: block;
-		font-size: 16px;
-	}
-	li span {
-		display: block;
-		margin-top: 3px;
-		font-size: 14.5px;
-		line-height: 1.55;
-		color: var(--ink2);
+	.p {
+		color: #f1b493;
+		user-select: none;
 	}
 	@media (min-width: 960px) {
 		.grid {

@@ -110,11 +110,13 @@
 	const narrow = $derived(W < 900);
 
 	// Busur besar di adegan, dalam piksel layar.
-	const arc = $derived(
-		narrow
-			? { x0: 0.04 * W, y0: 0.6 * H, cx: 0.5 * W, cy: -0.02 * H, x1: 0.96 * W, y1: 0.6 * H }
-			: { x0: 0.04 * W, y0: 0.8 * H, cx: 0.5 * W, cy: -0.16 * H, x1: 0.96 * W, y1: 0.8 * H }
-	);
+	const arc = $derived.by(() => {
+		if (!narrow) return { x0: 0.04 * W, y0: 0.8 * H, cx: 0.5 * W, cy: -0.16 * H, x1: 0.96 * W, y1: 0.8 * H };
+		// Di HP busurnya landai: puncaknya di celah antara kartu teks dan HP.
+		const peak = Math.max(0.41 * H, 320) - 14;
+		const y0 = peak + 0.09 * H;
+		return { x0: 0.02 * W, y0, cx: 0.5 * W, cy: 2 * peak - y0, x1: 0.98 * W, y1: y0 };
+	});
 	function at(t: number): [number, number] {
 		const u = 1 - t;
 		const a = arc;
@@ -259,14 +261,14 @@
 				<p class="eyebrow"><span class="sun-dot"></span>Pendamping ibadah harian</p>
 				<h1 class="disp">Teman ibadah dari Subuh sampai Isya</h1>
 				<p class="lead">
-					Jadwal salat, catatan salat, doa, dzikir, Al-Qur'an, dan kiblat dalam satu aplikasi. Ringan, tanpa akun, dan tetap
+					Jadwal salat, catatan salat, doa, dzikir, <span class="nw">Al-Qur'an,</span> dan kiblat dalam satu aplikasi. Ringan, tanpa akun, dan tetap
 					jalan tanpa internet.
 				</p>
 				<div class="cta">
 					<a class="btn primary" href={APP_URL}>Buka aplikasi <Icon name="arrow" size={18} /></a>
 					<a class="btn ghost" href={REPO_URL}><Icon name="github" size={18} /> Lihat kodenya</a>
 				</div>
-				<p class="note">Gratis dan open source. Bisa di-install ke home screen HP.</p>
+				<p class="note">Gratis dan open source. Bisa <span class="nw">di-install</span> ke home screen HP.</p>
 			</div>
 			<div class="door-slot">
 				<div class="door-wrap" bind:this={doorWrap}>
@@ -449,7 +451,46 @@
 		display: none !important;
 	}
 
-	@media (max-width: 899px) and (max-height: 700px) {
+	/* HP: semuanya di tengah, dan tinggi hero mengikuti layar saat bilah alamat masih tampil. */
+	@media (max-width: 899px) {
+		:global(.motion) .hero {
+			bottom: auto;
+			height: 100svh;
+		}
+		.hero {
+			padding-top: calc(var(--nav-h) + 10px);
+		}
+		.copy {
+			margin-inline: auto;
+			max-width: 460px;
+			text-align: center;
+		}
+		.copy .lead {
+			margin-inline: auto;
+			max-width: 36ch;
+			text-wrap: balance;
+		}
+		.cta {
+			justify-content: center;
+		}
+		.cta .btn {
+			height: 48px;
+			padding: 0 18px;
+			font-size: 14.5px;
+		}
+		.note {
+			text-wrap: balance;
+		}
+		.door-slot {
+			margin-top: 16px;
+		}
+	}
+	@media (max-width: 899px) and (max-height: 680px) {
+		.eyebrow {
+			display: none;
+		}
+	}
+	@media (max-width: 899px) and (max-height: 780px) {
 		.note {
 			display: none;
 		}
@@ -866,7 +907,7 @@
 		}
 		.phone-pos {
 			left: 50%;
-			top: max(41vh, 300px);
+			top: max(41vh, 320px);
 			width: min(33vh, 74vw, 300px);
 			transform: translateX(-50%);
 		}
@@ -892,11 +933,6 @@
 		}
 		:global(.motion) .ch-copy .when {
 			margin-bottom: 8px;
-		}
-	}
-	@media (max-width: 899px) and (max-height: 720px) {
-		:global(.motion) .ch-copy .txt {
-			display: none;
 		}
 	}
 </style>

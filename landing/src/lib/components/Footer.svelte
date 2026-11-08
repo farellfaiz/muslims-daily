@@ -104,6 +104,20 @@
 		color: var(--ink);
 	}
 
+	@media (max-width: 899px) {
+		.row {
+			flex-direction: column;
+			text-align: center;
+		}
+		.brand {
+			flex-direction: column;
+			gap: 10px;
+		}
+		nav {
+			justify-content: center;
+		}
+	}
+
 	dialog {
 		width: min(460px, calc(100vw - 32px));
 		max-height: min(640px, calc(100dvh - 48px));

@@ -10,7 +10,7 @@
 	<div class="wrap inner rv" use:reveal>
 		<img src="/icons/icon-192.png" alt="" width="84" height="84" />
 		<h2 class="h2" id="close-h">Mulai dari salat berikutnya</h2>
-		<p class="sub">Cocok juga buat yang baru mulai memperbaiki ibadah.</p>
+		<p class="sub">Buat kamu yang sedang belajar istiqamah.</p>
 		<p class="live" aria-live="off">
 			{#if live.next && live.now}
 				<span class="pulse" aria-hidden="true"></span>
