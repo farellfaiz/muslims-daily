@@ -25,48 +25,48 @@
 			phase: 'subuh',
 			name: 'Subuh',
 			dot: 'Subuh',
-			title: 'Sekali buka, langsung tahu waktu salat berikutnya',
-			text: 'Hitung mundurnya ada di halaman depan. Warna langit dan posisi matahari juga ikut jam, jadi tanpa baca angka pun kelihatan ini waktu apa.'
+			title: 'Jadwal salat',
+			text: 'Hitung mundur ke salat berikutnya langsung di beranda. Warna langit dan posisi matahari ikut jam.'
 		},
 		{
 			shot: shot('dzikir-pagi'),
 			phase: 'dhuha',
 			name: 'Pagi',
 			dot: 'Pagi',
-			title: 'Dzikir pagi dengan counter',
-			text: 'Tap sekali tiap selesai baca, hitungannya tersimpan. Sumber tiap bacaan ditulis, termasuk catatan kalau hadisnya dinilai lemah. Lafaz pagi dan petang ganti otomatis.'
+			title: 'Dzikir pagi & petang',
+			text: 'Counter di tiap bacaan, hitungannya tersimpan. Setiap bacaan ada sumbernya.'
 		},
 		{
 			shot: shot('tracker'),
 			phase: 'dzuhur',
 			name: 'Dzuhur',
 			dot: 'Dzuhur',
-			title: 'Tracker salat, cukup sekali tap',
-			text: 'Centang dari beranda, streak dan riwayat 6 bulan langsung ter-update. Lagi haid? Nyalakan mode udzur, streak-nya nggak putus.'
+			title: 'Tracker salat',
+			text: 'Centang dari beranda, streak dan riwayat 6 bulan langsung ter-update. Ada mode udzur untuk haid.'
 		},
 		{
 			shot: shot('doa'),
 			phase: 'ashar',
 			name: 'Ashar',
 			dot: 'Ashar',
-			title: 'Doa harian lengkap dengan sumbernya',
-			text: 'Selain teks Arab dan terjemahannya, tiap doa ada keterangan sumbernya. Search-nya juga nggak rewel soal ejaan: ketik dhuha atau duha, tetap ketemu.'
+			title: 'Kumpulan doa',
+			text: 'Teks Arab, latin, dan terjemahan, lengkap dengan sumbernya. Search toleran ejaan: dhuha atau duha tetap ketemu.'
 		},
 		{
 			shot: shot('quran'),
 			phase: 'maghrib',
 			name: 'Maghrib',
 			dot: 'Maghrib',
-			title: "Al-Qur'an, lanjut dari terakhir baca",
-			text: '114 surat dengan latin dan terjemahan Kemenag. Posisi terakhir tersimpan otomatis, besok tinggal lanjut.'
+			title: "Al-Qur'an",
+			text: '114 surat dengan latin dan terjemahan Kemenag. Lanjut dari ayat terakhir yang dibaca.'
 		},
 		{
 			shot: shot('beranda-malam'),
 			phase: 'isya',
 			name: 'Malam',
 			dot: 'Isya',
-			title: 'Sepertiga malam terakhir kelihatan jelas',
-			text: 'Lewat Isya, busur di beranda berganti ke mode malam dan menandai kapan sepertiga malam terakhir dimulai. Jam imsak buat sahur juga ada. Buka tengah malam? Pakai dark mode biar nggak silau.'
+			title: 'Sepertiga malam terakhir',
+			text: 'Lewat Isya, beranda menandai sepertiga malam terakhir dan jam imsak. Ada dark mode juga.'
 		}
 	];
 	const N = CHAPTERS.length;

@@ -2,6 +2,7 @@
 	import Flame from '#lib/components/Flame.svelte';
 	import Hero from '#lib/components/Hero.svelte';
 	import Icon from '#lib/components/Icon.svelte';
+	import InstallCard from '#lib/components/InstallCard.svelte';
 	import TodayPrayers from '#lib/components/TodayPrayers.svelte';
 	import { doaOfTheDay } from '#lib/data/doa.ts';
 	import { formatHijri, formatLong } from '#lib/date.ts';
@@ -37,6 +38,7 @@
 </header>
 
 <Hero {now} yesterday={times?.yesterday ?? null} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />
+<InstallCard />
 
 <div class="sec-h">
 	<h2>Catatan salat</h2>

@@ -12,6 +12,11 @@
 				// bawaan terang; hanya 'system' yang mengikuti pengaturan device
 				if (m !== 'system') document.documentElement.dataset.theme = m === 'dark' ? 'dark' : 'light';
 			} catch (e) {}
+			// Chrome bisa mengirim tawaran pasang sebelum aplikasi selesai dimuat; simpan dulu di sini.
+			addEventListener('beforeinstallprompt', function (e) {
+				e.preventDefault();
+				window.__installPrompt = e;
+			});
 		</script>
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />

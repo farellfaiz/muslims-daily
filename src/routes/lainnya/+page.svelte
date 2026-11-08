@@ -1,10 +1,14 @@
 <script lang="ts">
 	import Icon, { type IconName } from '#lib/components/Icon.svelte';
-	import StarNum from '#lib/components/StarNum.svelte';
 	import { trackerSummary } from '#lib/backup.ts';
 	import { formatLong } from '#lib/date.ts';
 	import { METHODS, PRAYERS } from '#lib/prayer.ts';
 	import { backupMeta, settings, theme, tracker, type ThemeMode } from '#lib/state/app.svelte.ts';
+	import { install } from '#lib/state/install.svelte.ts';
+	import { adzanSummary } from '#lib/state/adzan.svelte.ts';
+
+	const INSTALL_SUB = { prompt: 'Sekali ketuk, tanpa toko aplikasi', ios: 'Lewat tombol Bagikan di Safari', inapp: 'Buka di Safari atau Chrome dulu', manual: 'Lewat menu browser' };
+	const installSub = $derived(install.installed ? 'Sudah terpasang. Buka dari layar utama' : INSTALL_SUB[install.platform]);
 
 	const s = $derived(settings.value);
 
@@ -27,6 +31,7 @@
 			title: 'Metode perhitungan',
 			sub: `${method} · Ashar ${s.madhab === 'hanafi' ? 'Hanafi' : "Syafi'i"}`
 		},
+		{ href: '/lainnya/adzan', icon: 'bell', title: 'Notifikasi adzan', sub: adzanSummary() || ' ' },
 		{ href: '/lainnya/koreksi', icon: 'sliders', title: 'Koreksi jadwal', sub: `${adjustSum} · imsak ${s.imsak} menit` },
 		{
 			href: '/lainnya/cadangan',
@@ -47,13 +52,11 @@
 	const CREDITS = [
 		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
 		['NU Online', 'quran.nu.or.id/doa', 'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangan sumbernya.'],
+		['Hisnul Muslim', 'Edisi Indonesia', "Terjemahan dzikir pagi petang (alih bahasa H. Mahrus Ali). Teks Arab dari hisnmuslim.com."],
+		['NU Online · Wirdul Lathif', 'quran.nu.or.id/wirid', 'Versi kedua dzikir pagi petang: teks Arab, transliterasi, dan terjemahan.'],
 		['adhan', 'Pustaka perhitungan', 'Menghitung jadwal salat dan arah kiblat.'],
 		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.'],
-		['Kementerian Agama RI', 'Terjemahan', "Terjemahan ayat Al-Qur'an."]
-	];
-
-	const SOON = [
-		['Notifikasi adzan', 'Pengingat waktu salat']
+		['Kementerian Agama RI', "Terjemahan & doa", "Terjemahan ayat Al-Qur'an, dan doa tambahan dari buku Kumpulan Doa Sehari-hari (2013). Teks Arab doa disalin dari buku; transliterasi dan terjemahannya disusun ulang."]
 	];
 </script>
 
@@ -63,6 +66,19 @@
 	<div class="label">Pengaturan</div>
 	<h1>Lainnya</h1>
 </header>
+
+{#if install.ready && !install.standalone}
+	<div class="card list">
+		<button class="row press" onclick={() => install.ask()}>
+			<span class="ico"><Icon name="device" size={19} /></span>
+			<span class="grow">
+				<span class="rt">Pasang di layar utama</span>
+				<span class="rs">{installSub}</span>
+			</span>
+			<span class="go"><Icon name="chevron" size={16} stroke={2.2} /></span>
+		</button>
+	</div>
+{/if}
 
 <nav class="card list" aria-label="Pengaturan jadwal dan data">
 	{#each ROWS as r (r.href)}
@@ -85,13 +101,6 @@
 		{/each}
 	</div>
 	<p class="hint">Mode gelap nyaman untuk tahajud dan membaca doa di malam hari.</p>
-</section>
-
-<div class="sec-h"><h2>Segera hadir</h2></div>
-<section class="card soon">
-	{#each SOON as [t, d], i (t)}
-		<div class="srow"><StarNum n={i + 1} /><div><div class="v">{t}</div><div class="sub">{d}</div></div></div>
-	{/each}
 </section>
 
 <div class="sec-h"><h2>Tentang</h2></div>
@@ -137,6 +146,8 @@
 	}
 	.row {
 		display: flex;
+		width: 100%;
+		text-align: left;
 		align-items: center;
 		gap: 14px;
 		padding: 12px 14px 12px 16px;
@@ -228,19 +239,6 @@
 		align-items: center;
 		justify-content: center;
 		gap: 6px;
-	}
-	.soon {
-		padding: 6px 16px;
-	}
-	.srow {
-		display: flex;
-		gap: 12px;
-		align-items: center;
-		padding: 12px 0;
-		border-bottom: 1px solid var(--line);
-	}
-	.srow:last-child {
-		border-bottom: 0;
 	}
 	.about {
 		display: flex;

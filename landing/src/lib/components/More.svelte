@@ -10,17 +10,17 @@
 		{
 			shot: shot('kiblat'),
 			title: 'Kompas kiblat',
-			text: 'Piringannya ikut berputar waktu HP digerakkan. Begitu pas menghadap kiblat, bingkainya menyala dan HP bergetar sebentar.'
+			text: 'Piringan ikut arah HP. Bingkai menyala dan HP bergetar saat sudah menghadap kiblat.'
 		},
 		{
 			shot: shot('koreksi'),
-			title: 'Samakan dengan jadwal masjid',
-			text: 'Kalau beda sedikit dengan masjid dekat rumah, geser tiap waktu salat per menit. Jarak imsak sebelum Subuh juga bisa diatur.'
+			title: 'Koreksi jadwal',
+			text: 'Geser tiap waktu salat per menit supaya sama dengan masjid terdekat. Imsak juga bisa diatur.'
 		},
 		{
 			shot: shot('doa-kategori'),
 			title: 'Doa per kategori',
-			text: 'Dikelompokkan dari doa sehari-hari sampai doa para nabi. Yang sering dibaca bisa disimpan ke favorit.'
+			text: 'Dari doa sehari-hari sampai doa para nabi. Bisa disimpan ke favorit.'
 		}
 	];
 	const METHODS = ['Kemenag RI', 'MUIS Singapura', 'Muslim World League', 'Umm al-Qura'];
@@ -29,12 +29,7 @@
 <section class="sec more" aria-labelledby="more-h">
 	<div class="wrap">
 		<div class="sec-head rv" use:reveal>
-			<span class="label">Fitur lain</span>
-			<h2 class="h2" id="more-h">Fitur kecil yang kepakai tiap hari</h2>
-			<p class="lead">
-				App ini biasanya dibuka sebentar-sebentar, sering sambil pegang HP satu tangan. Jadi info pentingnya ditaruh paling
-				depan.
-			</p>
+			<h2 class="h2" id="more-h">Fitur lainnya</h2>
 		</div>
 
 		<div class="grid">
@@ -58,7 +53,7 @@
 			</article>
 			<article class="card small rv" use:reveal style:--d="90ms">
 				<span class="ico"><Icon name="wifiOff" size={22} /></span>
-				<h3>Tetap jalan pas offline</h3>
+				<h3>Bisa offline</h3>
 				<p>
 					Jadwal dihitung langsung di HP, nggak butuh server. Setelah sekali dibuka, jadwal dan doanya tetap bisa dipakai
 					tanpa internet.
@@ -66,7 +61,7 @@
 			</article>
 			<article class="card small rv" use:reveal style:--d="180ms">
 				<span class="ico"><Icon name="bolt" size={22} /></span>
-				<h3>Ringan di HP mana pun</h3>
+				<h3>Ringan</h3>
 				<p class="stat disp num">&lt;100 KB</p>
 				<p>Total JavaScript satu app. Kebuka cepat, termasuk di HP spek standar.</p>
 			</article>

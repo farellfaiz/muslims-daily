@@ -13,7 +13,9 @@ export default defineConfig({
 				adapter: adapter({ fallback: '404.html' })
 			},
 			{
-				strategies: 'generateSW',
+				// Service worker ditulis sendiri (src/service-worker/sw.ts) supaya bisa menangani
+				// ketukan notifikasi adzan; daftar file precache disuntikkan saat build.
+				strategies: 'buildSW',
 				base: '/',
 				scope: '/',
 				registerType: 'autoUpdate',
@@ -40,22 +42,14 @@ export default defineConfig({
 						{ name: 'Kumpulan doa', url: '/doa', icons: [{ src: '/icons/icon-192.png', sizes: '192x192' }] }
 					]
 				},
-				generateSW: {
+				buildSW: {
+					swSrc: 'src/service-worker/sw.ts',
 					// Seluruh aplikasi (termasuk font dan semua doa) di-precache: setelah sekali dibuka,
 					// semuanya jalan tanpa internet.
 					globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,json}'],
 					// Subset Vietnam hanya diunduh browser bila memang dibutuhkan, tidak perlu disimpan offline.
-					// Isi surat Al-Qur'an (1,3 MB) tidak di-precache; disimpan saat surat dibuka (runtimeCaching).
-					globIgnores: ['**/*vietnamese*', '**/data/quran/**'],
-					runtimeCaching: [
-						{
-							urlPattern: ({ url }) => url.pathname.startsWith('/data/quran/'),
-							handler: 'CacheFirst',
-							options: { cacheName: 'quran-surat', expiration: { maxEntries: 120 } }
-						}
-					],
-					navigateFallback: '/',
-					cleanupOutdatedCaches: true
+					// Isi surat Al-Qur'an (1,3 MB) tidak di-precache; disimpan saat surat dibuka (lihat sw.ts).
+					globIgnores: ['**/*vietnamese*', '**/data/quran/**']
 				}
 			}
 		)

@@ -7,8 +7,7 @@
 	const RULES = [
 		{ title: 'Wajib ada sumber', text: 'Ayat: nama surah dan nomor ayat. Hadis: siapa perawinya.' },
 		{ title: 'Cek dari rujukan', text: 'Mushaf Kemenag, kitab hadis, atau Hisnul Muslim. Bukan dari ingatan.' },
-		{ title: 'Jujur soal derajat', text: "Doa yang bukan dari Al-Qur'an atau hadis boleh masuk, asal keterangannya jujur." },
-		{ title: 'Dicek orang yang paham', text: 'Status verified baru dikasih setelah dicek.' }
+		{ title: 'Jujur soal derajat', text: "Doa yang bukan dari Al-Qur'an atau hadis boleh masuk, asal keterangannya jujur." }
 	];
 </script>
 

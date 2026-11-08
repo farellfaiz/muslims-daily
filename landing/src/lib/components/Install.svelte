@@ -31,7 +31,7 @@
 	<div class="wrap">
 		<div class="sec-head rv" use:reveal>
 			<span class="label">Install</span>
-			<h2 class="h2" id="install-h">Install ke home screen, nggak perlu Play Store</h2>
+			<h2 class="h2" id="install-h">Install ke home screen</h2>
 			<p class="lead">
 				Muslims Daily itu PWA, app berbasis web yang bisa di-install tanpa Play Store atau App Store. Ukurannya kecil dan
 				update-nya jalan sendiri.

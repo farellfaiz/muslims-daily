@@ -1,5 +1,17 @@
 <script lang="ts">
 	import { APP_URL, REPO_URL } from '#lib/config.ts';
+	import Icon from './Icon.svelte';
+
+	// Kredit tampil di pop up, sama seperti halaman Lainnya di aplikasinya.
+	const CREDITS: [string, string, string, string?][] = [
+		['Pillars', 'Prayer Times & Qibla', 'Desain aplikasi ini terinspirasi darinya.'],
+		['NU Online', 'quran.nu.or.id/doa', 'Sumber kumpulan doa: teks Arab, transliterasi, terjemahan, dan keterangannya.', 'https://quran.nu.or.id/doa'],
+		['adhan', 'Library perhitungan', 'Menghitung jadwal salat dan arah kiblat.', 'https://github.com/batoulapps/adhan-js'],
+		['quran.com', "Teks Al-Qur'an", 'Teks Utsmani, transliterasi, dan arti per kata.', 'https://quran.com'],
+		['Kementerian Agama RI', 'Terjemahan', "Terjemahan ayat Al-Qur'an."]
+	];
+
+	let dlg = $state<HTMLDialogElement>();
 </script>
 
 <footer>
@@ -8,7 +20,7 @@
 			<img src="/icons/icon-192.png" alt="" width="36" height="36" />
 			<div>
 				<b class="disp">Muslims Daily</b>
-				<p>Dibuat oleh Farell Faiz Firmansyah. Open source, lisensi MIT.</p>
+				<p>Open source, lisensi MIT.</p>
 			</div>
 		</div>
 		<nav aria-label="Tautan footer">
@@ -16,20 +28,37 @@
 			<a href="#privasi">Privasi</a>
 			<a href="#install">Install</a>
 			<a href={REPO_URL}>GitHub</a>
+			<button type="button" onclick={() => dlg?.showModal()}>Kredit</button>
 		</nav>
-	</div>
-	<div class="wrap credit">
-		<p>
-			Desain terinspirasi dari Pillars. Jadwal salat dan arah kiblat dihitung pakai
-			<a href="https://github.com/batoulapps/adhan-js">adhan</a>. Doa dari
-			<a href="https://quran.nu.or.id/doa">NU Online</a>, teks Al-Qur'an dari quran.com dengan terjemahan Kemenag RI.
-		</p>
 	</div>
 </footer>
 
+<dialog bind:this={dlg} aria-labelledby="credits-h" onclick={(e) => e.target === dlg && dlg?.close()}>
+	<div class="sheet">
+		<header>
+			<h2 id="credits-h" class="disp">Kredit</h2>
+			<button type="button" class="x" aria-label="Tutup" onclick={() => dlg?.close()}>
+				<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+			</button>
+		</header>
+		<ul>
+			{#each CREDITS as [name, sub, text, href] (name)}
+				<li>
+					<div class="top">
+						{#if href}<a {href} target="_blank" rel="noopener">{name}</a>{:else}<b>{name}</b>{/if}
+						<span>{sub}</span>
+					</div>
+					<p>{text}</p>
+				</li>
+			{/each}
+		</ul>
+		<a class="repo" href={REPO_URL}><Icon name="github" size={16} /> Lihat repo di GitHub</a>
+	</div>
+</dialog>
+
 <style>
 	footer {
-		padding: 44px 0 40px;
+		padding: 40px 0;
 		background: var(--paper);
 		border-top: 1px solid var(--line);
 	}
@@ -61,28 +90,108 @@
 		flex-wrap: wrap;
 		gap: 6px 22px;
 	}
-	nav a {
+	nav a,
+	nav button {
 		font-size: 14px;
 		font-weight: 700;
 		text-decoration: none;
 		color: var(--ink2);
 	}
-	nav a:hover {
+	nav a:hover,
+	nav button:hover {
 		color: var(--ink);
 	}
-	.credit {
-		margin-top: 28px;
-		padding-top: 22px;
+
+	dialog {
+		width: min(460px, calc(100vw - 32px));
+		max-height: min(640px, calc(100dvh - 48px));
+		padding: 0;
+		border: 0;
+		border-radius: var(--r-lg);
+		background: var(--card);
+		color: var(--ink);
+		box-shadow: var(--shadow-lg);
+	}
+	dialog::backdrop {
+		background: rgba(15, 26, 38, 0.45);
+		backdrop-filter: blur(4px);
+	}
+	dialog[open] {
+		animation: pop 0.3s var(--ease);
+	}
+	@keyframes pop {
+		from {
+			opacity: 0;
+			transform: translateY(12px) scale(0.98);
+		}
+	}
+	.sheet {
+		padding: 22px 24px 24px;
+	}
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 6px;
+	}
+	h2 {
+		margin: 0;
+		font-size: 26px;
+	}
+	.x {
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--sunk);
+	}
+	.x svg {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	li {
+		padding: 14px 0;
+	}
+	li + li {
 		border-top: 1px dashed var(--line-strong);
 	}
-	.credit p {
-		margin: 0;
-		max-width: 760px;
-		font-size: 13px;
-		line-height: 1.65;
+	.top {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+	}
+	.top a,
+	.top b {
+		font-size: 15.5px;
+		font-weight: 700;
+		color: var(--ink);
+	}
+	.top span {
+		font-size: 12.5px;
 		color: var(--ink2);
 	}
-	.credit a {
+	li p {
+		margin: 4px 0 0;
+		font-size: 14px;
+		line-height: 1.55;
 		color: var(--ink2);
+	}
+	.repo {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 10px;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--navy);
 	}
 </style>
