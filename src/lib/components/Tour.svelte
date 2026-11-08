@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import Icon from './Icon.svelte';
@@ -38,6 +39,33 @@
 	let view = $state({ w: 0, h: 0, inset: 0 });
 	let cardH = $state(0);
 	let nextBtn = $state<HTMLButtonElement>();
+	let tip = $state<HTMLDivElement>();
+
+	// Fokus sebelum tour dimulai, dikembalikan saat tour selesai atau dilewati.
+	let returnFocus: HTMLElement | null = null;
+	$effect(() => {
+		if (!tour.active) return;
+		returnFocus = untrack(() => document.activeElement as HTMLElement | null);
+		return () => {
+			const back = returnFocus;
+			returnFocus = null;
+			if (back?.isConnected) back.focus({ preventScroll: true });
+		};
+	});
+
+	// Pindah halaman oleh tour sendiri ditandai; pindah halaman lain selama tour (tombol Back browser
+	// atau Android) berarti pengguna ingin keluar, jadi tour dihentikan, bukan ditarik balik.
+	let tourNav = false;
+	let lastPath = '';
+	$effect(() => {
+		const path = page.url.pathname;
+		if (!untrack(() => tour.active)) {
+			lastPath = path;
+			return;
+		}
+		if (path !== lastPath && !tourNav) tour.stop();
+		lastPath = path;
+	});
 
 	$effect(() => {
 		if (!tour.active) {
@@ -49,7 +77,16 @@
 		let cancelled = false;
 		el = null;
 		(async () => {
-			if (step.route && page.url.pathname !== step.route) await goto(step.route);
+			// pathname dibaca tanpa dilacak: efek ini hanya berjalan ulang saat langkah berganti
+			const here = untrack(() => page.url.pathname);
+			if (step.route && here !== step.route) {
+				tourNav = true;
+				try {
+					await goto(step.route);
+				} finally {
+					tourNav = false;
+				}
+			}
 			const started = performance.now();
 			let found: HTMLElement | null = null;
 			while (!cancelled && !found && performance.now() - started < 3000) {
@@ -97,6 +134,15 @@
 
 	function onKey(e: KeyboardEvent) {
 		if (!tour.active) return;
+		// Tab dikurung di kartu tour: tombol halaman di balik lapisan gelap tidak bisa dijangkau.
+		if (e.key === 'Tab' && tip) {
+			const btns = [...tip.querySelectorAll<HTMLButtonElement>('button')];
+			if (!btns.length) return;
+			const i = btns.indexOf(document.activeElement as HTMLButtonElement);
+			e.preventDefault();
+			btns[(i + (e.shiftKey ? -1 : 1) + btns.length) % btns.length].focus();
+			return;
+		}
 		if (e.key === 'Escape') tour.stop();
 		else if (e.key === 'ArrowRight') last ? done() : tour.next();
 		else if (e.key === 'ArrowLeft') tour.back();
@@ -135,7 +181,7 @@
 			<div class="dim"></div>
 		{/if}
 
-		<div class="card tip" class:shown={top !== null} bind:clientHeight={cardH} style:top="{top ?? view.h}px" aria-live="polite">
+		<div class="card tip" bind:this={tip} class:shown={top !== null} bind:clientHeight={cardH} style:top="{top ?? view.h}px" aria-live="polite">
 			<div class="th">
 				<span class="label num">{tour.step + 1} / {tour.total}</span>
 				<button class="skip" onclick={() => tour.stop()}>{tr('Lewati', 'Skip')}</button>

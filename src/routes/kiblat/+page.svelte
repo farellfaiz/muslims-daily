@@ -4,7 +4,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import { ALIGN_DEG, angleDiff, distanceKm, headingFrom, qiblaBearing, smoothAngle, windName } from '#lib/qibla.ts';
 	import { settings } from '#lib/state/app.svelte.ts';
-	import { locale, tr } from '#lib/i18n.svelte.ts';
+	import { locale, tr, placeLabel } from '#lib/i18n.svelte.ts';
 
 	let cameFromApp = $state(false);
 	afterNavigate(({ from }) => (cameFromApp = !!from));
@@ -125,7 +125,7 @@
 
 <div class="bar">
 	<button class="back press" aria-label={tr('Kembali', 'Back')} onclick={back}><Icon name="back" /></button>
-	<a class="loc press" href="/lainnya/lokasi"><Icon name="pin" size={15} />{s.label}</a>
+	<a class="loc press" href="/lainnya/lokasi"><Icon name="pin" size={15} />{placeLabel(s)}</a>
 </div>
 
 <header class="page-head">
@@ -208,7 +208,7 @@
 	</div>
 	<div class="fact">
 		<span class="label">{tr('Dihitung dari', 'Calculated from')}</span>
-		<span class="v">{s.label}</span>
+		<span class="v">{placeLabel(s)}</span>
 	</div>
 </section>
 

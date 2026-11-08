@@ -108,3 +108,36 @@ describe('koleksi di cadangan', () => {
 		expect(parseBackup(JSON.stringify(raw)).doa?.koleksi).toEqual([]);
 	});
 });
+
+describe('pengaturan tambahan di cadangan', () => {
+	const prefs = {
+		quran: { s: 2, a: 255 },
+		dzikir: { salat: 'ringkas' as const, pagi: 'wirdul' as const, tasbih: 11 as const, haptic: false, autoNext: true },
+		adzan: { enabled: true, on: { subuh: true, dzuhur: false, ashar: true, maghrib: true, isya: true }, before: 10 },
+		lang: 'en' as const,
+		theme: 'dark' as const
+	};
+
+	it('ikut tersimpan dan terbaca kembali', () => {
+		const text = JSON.stringify(makeBackup({ settings, tracker, doa, reading, prefs }, now));
+		expect(parseBackup(text).prefs).toEqual(prefs);
+	});
+
+	it('cadangan lama tanpa pengaturan tambahan tetap bisa dipulihkan', () => {
+		expect(parseBackup(roundTrip()).prefs).toEqual({});
+	});
+
+	it('bagian yang rusak dibuang tanpa menggagalkan yang lain', () => {
+		const raw = JSON.parse(JSON.stringify(makeBackup({ settings, tracker, doa, reading, prefs }, now)));
+		raw.prefs.dzikir.tasbih = 99;
+		raw.prefs.adzan.before = 7;
+		raw.prefs.lang = 'fr';
+		const p = parseBackup(JSON.stringify(raw)).prefs;
+		expect(p.dzikir).toBeUndefined();
+		expect(p.adzan).toBeUndefined();
+		expect(p.lang).toBeUndefined();
+		expect(p.quran).toEqual(prefs.quran);
+		expect(p.theme).toBe('dark');
+	});
+});
+

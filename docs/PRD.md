@@ -89,7 +89,7 @@ Legenda: **Selesai** = sudah ada di `main`. **Nanti** = belum dikerjakan.
 - **Tour aplikasi** dan **install ke home screen** (bila belum terpasang) di bagian atas.
 - **Koreksi jadwal**: geser tiap salat per menit, maksimal 30 menit, dipakai di semua tempat. **Imsak**: 5, 10 (bawaan), atau 15 menit sebelum Subuh.
 - **Tampilan**: tema Device, Terang (bawaan), atau Gelap; dan **bahasa** Indonesia atau English.
-- **Cadangan data**: simpan ke `muslims-daily-cadangan-YYYY-MM-DD.json` (pengaturan, catatan salat, favorit, koleksi, preferensi baca) dan pulihkan dengan konfirmasi. Catatan salat, hari udzur, favorit, dan koleksi **digabung**; pengaturan diganti isi cadangan. File rusak ditolak dengan pesan jelas.
+- **Cadangan data**: simpan ke `muslims-daily-cadangan-YYYY-MM-DD.json` (pengaturan, catatan salat, favorit, koleksi, preferensi baca, posisi baca Al-Qur'an, pengaturan dzikir dan adzan, bahasa, tema) dan pulihkan dengan konfirmasi. Catatan salat, hari udzur, favorit, dan koleksi **digabung**; pengaturan diganti isi cadangan. File rusak ditolak dengan pesan jelas.
 - **Kredit**: Pillars (inspirasi desain), NU Online, Hisnul Muslim edisi Indonesia, Wirdul Lathif NU Online, adhan, quran.com, dan Kementerian Agama RI.
 
 ### 4.7 Dzikir (Selesai)

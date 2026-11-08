@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { tr } from '#lib/i18n.svelte.ts';
 	import Icon from './Icon.svelte';
 	import Sheet from './Sheet.svelte';
@@ -13,9 +14,10 @@
 	let adding = $state(false);
 	let input = $state<HTMLInputElement>();
 
-	// Belum punya koleksi: langsung tampilkan kolom nama.
+	// Belum punya koleksi: langsung tampilkan kolom nama. Hanya saat lembar dibuka (untrack), supaya
+	// mencentang koleksi lain tidak menutup kolom nama yang sedang diisi.
 	$effect(() => {
-		if (open) adding = list.length === 0;
+		if (open) adding = untrack(() => list.length === 0);
 	});
 	$effect(() => {
 		if (adding && open) input?.focus();

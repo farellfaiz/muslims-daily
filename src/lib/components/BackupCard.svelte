@@ -10,9 +10,10 @@
 		type ParsedBackup
 	} from '#lib/backup.ts';
 	import { formatFull, fromKey } from '#lib/date.ts';
-	import { isEn, locale, tr } from '#lib/i18n.svelte.ts';
+	import { isEn, lang, locale, tr } from '#lib/i18n.svelte.ts';
+	import { adzanPrefs } from '#lib/state/adzan.svelte.ts';
 	import { merge as mergeKoleksi } from '#lib/koleksi.ts';
-	import { backupMeta, doaPrefs, reading, settings, toast, tracker } from '#lib/state/app.svelte.ts';
+	import { backupMeta, doaPrefs, dzikirPrefs, quranLast, reading, settings, theme, toast, tracker } from '#lib/state/app.svelte.ts';
 
 	const sum = $derived(trackerSummary(tracker.value));
 	const favs = $derived(doaPrefs.value.favs.length);
@@ -25,7 +26,19 @@
 	function save() {
 		const now = new Date();
 		const data = makeBackup(
-			{ settings: settings.value, tracker: tracker.value, doa: doaPrefs.value, reading: reading.value },
+			{
+				settings: settings.value,
+				tracker: tracker.value,
+				doa: doaPrefs.value,
+				reading: reading.value,
+				prefs: {
+					quran: quranLast.value,
+					dzikir: dzikirPrefs.value,
+					adzan: adzanPrefs.value,
+					lang: lang.value.code,
+					theme: theme.value.mode
+				}
+			},
 			now
 		);
 		const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
@@ -62,6 +75,12 @@
 			const cur = doaPrefs.value;
 			doaPrefs.value = { ...cur, view: p.doa.view, sort: p.doa.sort, favs: [...new Set([...cur.favs, ...p.doa.favs])], koleksi: mergeKoleksi(cur.koleksi, p.doa.koleksi) };
 		}
+		const x = p.prefs;
+		if (x.quran) quranLast.value = x.quran;
+		if (x.dzikir) dzikirPrefs.value = x.dzikir;
+		if (x.adzan) adzanPrefs.value = x.adzan;
+		if (x.lang) lang.value = { code: x.lang };
+		if (x.theme) theme.value = { mode: x.theme };
 		pending = null;
 		toast.say(tr('Data dipulihkan', 'Data restored'));
 	}
@@ -105,6 +124,14 @@
 						'Prayer logs are merged, so no check marks are lost'
 					)}
 				</li>
+				{#if Object.keys(pending.prefs).length}
+					<li>
+						<Icon name="check" size={15} />{tr(
+							"Posisi baca Al-Qur'an, pengaturan dzikir dan adzan, bahasa, serta tema ikut dipulihkan",
+							'Quran reading position, dhikr and adhan settings, language, and theme are restored too'
+						)}
+					</li>
+				{/if}
 				{#if pending.settings}
 					<li><Icon name="pin" size={15} />{tr('Lokasi diganti ke', 'Location changes to')} {pending.settings.place === 'gps' ? tr('Lokasi saya', 'My location') : pending.settings.label}</li>
 				{/if}

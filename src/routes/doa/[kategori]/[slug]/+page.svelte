@@ -40,16 +40,19 @@
 	const resize = (delta: number) => (reading.value = { ...opt, size: Math.min(46, Math.max(22, opt.size + delta)) });
 
 	function fav() {
+		// simpan status lama dulu: isFav ($derived) langsung berisi nilai baru setelah doaPrefs ditulis
+		const was = isFav;
 		const p = doaPrefs.value;
-		doaPrefs.value = { ...p, favs: isFav ? p.favs.filter((x) => x !== doa.id) : [...p.favs, doa.id] };
-		toast.say(isFav ? tr('Dihapus dari favorit', 'Removed from favorites') : tr('Disimpan ke favorit', 'Saved to favorites'));
+		doaPrefs.value = { ...p, favs: was ? p.favs.filter((x) => x !== doa.id) : [...p.favs, doa.id] };
+		toast.say(was ? tr('Dihapus dari favorit', 'Removed from favorites') : tr('Disimpan ke favorit', 'Saved to favorites'));
 	}
 
 	function markRead() {
+		const was = isRead;
 		const p = doaPrefs.value;
 		const read = p.readOn === todayKey ? p.read : [];
-		doaPrefs.value = { ...p, readOn: todayKey, read: isRead ? read.filter((x) => x !== doa.id) : [...read, doa.id] };
-		if (!isRead) toast.say(tr('Alhamdulillah, tercatat', 'Alhamdulillah, marked as read'));
+		doaPrefs.value = { ...p, readOn: todayKey, read: was ? read.filter((x) => x !== doa.id) : [...read, doa.id] };
+		if (!was) toast.say(tr('Alhamdulillah, tercatat', 'Alhamdulillah, marked as read'));
 	}
 
 	const shareText = $derived(

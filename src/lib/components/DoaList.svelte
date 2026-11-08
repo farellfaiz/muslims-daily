@@ -95,7 +95,7 @@
 	<label class="search">
 		<Icon name="search" />
 		<span class="sr-only">{tr('Cari doa', 'Search duas')}</span>
-		<input bind:this={input} bind:value={q} placeholder={tr('Cari doa: hujan, rezeki, tidur', 'Search duas: rain, sustenance, sleep')} autocomplete="off" type="search" />
+		<input bind:this={input} bind:value={q} placeholder={tr('Cari doa: hujan, rezeki, tidur', 'Search in Indonesian: hujan, rezeki, tidur')} autocomplete="off" type="search" />
 	</label>
 {/if}
 

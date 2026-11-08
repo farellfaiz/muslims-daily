@@ -41,6 +41,10 @@ const PRAYER_ID: Record<PrayerKey, string> = {
 /** Nama salat sesuai bahasa: Subuh / Fajr. */
 export const prayerName = (key: PrayerKey) => (lang.value.code === 'en' ? PRAYER_EN : PRAYER_ID)[key];
 
+/** Nama tempat untuk ditampilkan: lokasi GPS ("Lokasi saya") ikut bahasa aktif, kota tetap namanya. */
+export const placeLabel = (s: { place: string; label: string }) =>
+	s.place === 'gps' ? tr('Lokasi saya', 'My location') : s.label;
+
 export const LANGS: { code: Lang; label: string }[] = [
 	{ code: 'id', label: 'Indonesia' },
 	{ code: 'en', label: 'English' }

@@ -1,6 +1,8 @@
 import { ADJUST_LIMIT, IMSAK_MINUTES, METHODS, PRAYERS, type Adjust, type MadhabKey, type MethodKey, type PrayerKey } from './prayer.ts';
 import type { DayLog, TrackerData } from './tracker.ts';
 import { clean as cleanKoleksi, type Koleksi } from './koleksi.ts';
+import { BEFORE_OPTIONS, type AdzanPrefs } from './adzan.ts';
+import type { DzikirPrefs } from './salatVersi.ts';
 
 /**
  * Cadangan data pengguna ke satu file JSON.
@@ -43,6 +45,19 @@ export interface BackupDoa {
 	koleksi: Koleksi[];
 }
 
+/**
+ * Pengaturan tambahan (ditambahkan setelah format versi 1 dipakai). Semuanya opsional:
+ * cadangan lama tanpa bagian ini tetap bisa dipulihkan, bagian yang tidak ada dibiarkan.
+ */
+export interface BackupPrefs {
+	/** posisi terakhir membaca Al-Qur'an */
+	quran?: { s: number; a: number };
+	dzikir?: DzikirPrefs;
+	adzan?: AdzanPrefs;
+	lang?: 'id' | 'en';
+	theme?: 'system' | 'light' | 'dark';
+}
+
 export interface Backup {
 	app: typeof BACKUP_APP;
 	version: number;
@@ -51,10 +66,11 @@ export interface Backup {
 	tracker: TrackerData;
 	doa: BackupDoa;
 	reading: BackupReading;
+	prefs?: BackupPrefs;
 }
 
 export function makeBackup(
-	data: { settings: BackupSettings; tracker: TrackerData; doa: BackupDoa; reading: BackupReading },
+	data: { settings: BackupSettings; tracker: TrackerData; doa: BackupDoa; reading: BackupReading; prefs?: BackupPrefs },
 	now: Date
 ): Backup {
 	return {
@@ -65,7 +81,8 @@ export function makeBackup(
 		tracker: data.tracker,
 		// status "sudah dibaca hari ini" sengaja tidak ikut: hanya berlaku untuk hari itu
 		doa: { view: data.doa.view, sort: data.doa.sort, favs: data.doa.favs, koleksi: data.doa.koleksi },
-		reading: data.reading
+		reading: data.reading,
+		...(data.prefs ? { prefs: data.prefs } : {})
 	};
 }
 
@@ -145,6 +162,37 @@ function cleanReading(raw: unknown): BackupReading | null {
 	return { lat, tr, wbw, size: Math.min(46, Math.max(22, Math.round(size))) };
 }
 
+const PRAYER_LIST = PRAYERS.map((p) => p.key);
+
+/** Pengaturan tambahan: tiap bagian divalidasi sendiri; yang rusak dibuang tanpa menggagalkan yang lain. */
+function cleanPrefs(raw: unknown): BackupPrefs {
+	if (!isObj(raw)) return {};
+	const out: BackupPrefs = {};
+	const q = raw.quran;
+	if (isObj(q) && Number.isInteger(q.s) && Number.isInteger(q.a) && (q.s as number) >= 0 && (q.s as number) <= 114 && (q.a as number) >= 0) {
+		out.quran = { s: q.s as number, a: q.a as number };
+	}
+	const d = raw.dzikir;
+	if (
+		isObj(d) &&
+		(d.salat === 'azhar' || d.salat === 'ringkas') &&
+		(d.pagi === 'hisn' || d.pagi === 'wirdul') &&
+		(d.tasbih === 33 || d.tasbih === 11) &&
+		typeof d.haptic === 'boolean' &&
+		typeof d.autoNext === 'boolean'
+	) {
+		out.dzikir = { salat: d.salat, pagi: d.pagi, tasbih: d.tasbih, haptic: d.haptic, autoNext: d.autoNext };
+	}
+	const a = raw.adzan;
+	if (isObj(a) && typeof a.enabled === 'boolean' && isObj(a.on) && (BEFORE_OPTIONS as readonly unknown[]).includes(a.before)) {
+		const on = Object.fromEntries(PRAYER_LIST.map((k) => [k, (a.on as Record<string, unknown>)[k] !== false])) as AdzanPrefs['on'];
+		out.adzan = { enabled: a.enabled, on, before: a.before as number };
+	}
+	if (raw.lang === 'id' || raw.lang === 'en') out.lang = raw.lang;
+	if (raw.theme === 'system' || raw.theme === 'light' || raw.theme === 'dark') out.theme = raw.theme;
+	return out;
+}
+
 /** Bagian yang gagal divalidasi bernilai null dan dilewati saat dipulihkan, bukan membatalkan semuanya. */
 export interface ParsedBackup {
 	exportedAt: Date | null;
@@ -152,6 +200,8 @@ export interface ParsedBackup {
 	settings: BackupSettings | null;
 	doa: BackupDoa | null;
 	reading: BackupReading | null;
+	/** pengaturan tambahan; kosong untuk cadangan lama */
+	prefs: BackupPrefs;
 }
 
 export function parseBackup(text: string): ParsedBackup {
@@ -174,7 +224,8 @@ export function parseBackup(text: string): ParsedBackup {
 		tracker: cleanTracker(raw.tracker),
 		settings: cleanSettings(raw.settings),
 		doa: cleanDoa(raw.doa),
-		reading: cleanReading(raw.reading)
+		reading: cleanReading(raw.reading),
+		prefs: cleanPrefs(raw.prefs)
 	};
 }
 

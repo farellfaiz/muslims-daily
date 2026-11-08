@@ -10,7 +10,7 @@
 	import { formatHijri, formatLong } from '#lib/date.ts';
 	import { clock, schedule, settings, tracker } from '#lib/state/app.svelte.ts';
 	import { currentStreak } from '#lib/tracker.ts';
-	import { locale, tr } from '#lib/i18n.svelte.ts';
+	import { locale, tr, placeLabel } from '#lib/i18n.svelte.ts';
 
 	// Pool doa pilihan diunduh terpisah (/data/daily.json, disimpan service worker), bukan ditanam di HTML
 	// beranda; pilihannya bergantung tanggal di perangkat, jadi baru bisa ditentukan di browser.
@@ -48,7 +48,7 @@
 			<div class="disp date">{greg}</div>
 		</div>
 	</div>
-	<a class="loc press" href="/lainnya/lokasi" data-tour="lokasi"><Icon name="pin" size={15} />{settings.value.label}</a>
+	<a class="loc press" href="/lainnya/lokasi" data-tour="lokasi"><Icon name="pin" size={15} />{placeLabel(settings.value)}</a>
 </header>
 
 <Hero {now} yesterday={times?.yesterday ?? null} today={times?.today ?? null} tomorrow={times?.tomorrow ?? null} />

@@ -1,7 +1,7 @@
 import { formatTime } from '#lib/date.ts';
 import { alertTag, alertText, alertsFor, defaultAdzanPrefs, dueAlerts, notifSupport, type AdzanPrefs, type Alert, type NotifSupport } from '#lib/adzan.ts';
 import { detectPlatform } from '#lib/install.ts';
-import { lang, prayerName, tr } from '#lib/i18n.svelte.ts';
+import { lang, prayerName, tr, placeLabel as placeOf } from '#lib/i18n.svelte.ts';
 import type { PrayerKey } from '#lib/prayer.ts';
 import { Persisted } from './persisted.svelte.ts';
 import { schedule, settings, toast } from './app.svelte.ts';
@@ -118,8 +118,7 @@ class Adzan {
 
 /** Nama tempat untuk teks notifikasi; lokasi GPS ikut bahasa aktif. */
 function placeLabel(): string {
-	const s = settings.value;
-	return s.place === 'gps' ? tr('Lokasi saya', 'My location') : s.label;
+	return placeOf(settings.value);
 }
 
 /** Lewat service worker bila ada (wajib di Android), selain itu langsung dari halaman. */
