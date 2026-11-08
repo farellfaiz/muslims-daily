@@ -10,6 +10,7 @@
 		type ParsedBackup
 	} from '#lib/backup.ts';
 	import { formatFull, fromKey } from '#lib/date.ts';
+	import { merge as mergeKoleksi } from '#lib/koleksi.ts';
 	import { backupMeta, doaPrefs, reading, settings, toast, tracker } from '#lib/state/app.svelte.ts';
 
 	const sum = $derived(trackerSummary(tracker.value));
@@ -58,7 +59,7 @@
 		if (p.reading) reading.value = p.reading;
 		if (p.doa) {
 			const cur = doaPrefs.value;
-			doaPrefs.value = { ...cur, view: p.doa.view, sort: p.doa.sort, favs: [...new Set([...cur.favs, ...p.doa.favs])] };
+			doaPrefs.value = { ...cur, view: p.doa.view, sort: p.doa.sort, favs: [...new Set([...cur.favs, ...p.doa.favs])], koleksi: mergeKoleksi(cur.koleksi, p.doa.koleksi) };
 		}
 		pending = null;
 		toast.say('Data dipulihkan');

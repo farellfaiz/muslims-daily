@@ -1,5 +1,6 @@
 import { ADJUST_LIMIT, IMSAK_MINUTES, METHODS, PRAYERS, type Adjust, type MadhabKey, type MethodKey, type PrayerKey } from './prayer.ts';
 import type { DayLog, TrackerData } from './tracker.ts';
+import { clean as cleanKoleksi, type Koleksi } from './koleksi.ts';
 
 /**
  * Cadangan data pengguna ke satu file JSON.
@@ -9,7 +10,7 @@ import type { DayLog, TrackerData } from './tracker.ts';
  *
  * Saat dipulihkan:
  * - catatan salat dan hari udzur DIGABUNG dengan yang sudah ada (tidak ada centang yang hilang),
- * - favorit doa digabung,
+ * - favorit doa dan koleksi doa digabung,
  * - pengaturan lokasi, metode, dan tampilan baca diganti dengan isi cadangan.
  */
 
@@ -38,6 +39,8 @@ export interface BackupDoa {
 	view: 'card' | 'list';
 	sort: 'kat' | 'az' | 'short' | 'long';
 	favs: number[];
+	/** koleksi doa pribadi; cadangan lama belum punya, dianggap kosong */
+	koleksi: Koleksi[];
 }
 
 export interface Backup {
@@ -61,7 +64,7 @@ export function makeBackup(
 		settings: data.settings,
 		tracker: data.tracker,
 		// status "sudah dibaca hari ini" sengaja tidak ikut: hanya berlaku untuk hari itu
-		doa: { view: data.doa.view, sort: data.doa.sort, favs: data.doa.favs },
+		doa: { view: data.doa.view, sort: data.doa.sort, favs: data.doa.favs, koleksi: data.doa.koleksi },
 		reading: data.reading
 	};
 }
@@ -124,7 +127,7 @@ function cleanDoa(raw: unknown): BackupDoa | null {
 	const view = raw.view === 'list' ? 'list' : 'card';
 	const sort = raw.sort === 'az' || raw.sort === 'short' || raw.sort === 'long' ? raw.sort : 'kat';
 	const favs = Array.isArray(raw.favs) ? [...new Set(raw.favs.filter((n): n is number => Number.isInteger(n)))] : [];
-	return { view, sort, favs };
+	return { view, sort, favs, koleksi: cleanKoleksi(raw.koleksi) };
 }
 
 function cleanReading(raw: unknown): BackupReading | null {

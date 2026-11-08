@@ -10,7 +10,7 @@
 
 	/**
 	 * Daftar doa dengan pencarian, urutan, dan pilihan tampilan kartu/daftar.
-	 * Dipakai halaman Semua doa, Favorit, dan halaman tiap kategori.
+	 * Dipakai halaman Semua doa, Favorit, Koleksi, dan halaman tiap kategori.
 	 */
 	let {
 		items,
@@ -18,6 +18,7 @@
 		showCategory = true,
 		searchable = true,
 		onlyFavs = false,
+		only = null,
 		empty = 'Belum ada doa yang cocok. Coba kata lain.'
 	}: {
 		items: DoaItem[];
@@ -25,6 +26,8 @@
 		showCategory?: boolean;
 		searchable?: boolean;
 		onlyFavs?: boolean;
+		/** hanya doa dengan id ini (isi koleksi) */
+		only?: number[] | null;
 		empty?: string;
 	} = $props();
 
@@ -61,7 +64,10 @@
 
 	const results = $derived.by(() => {
 		const nq = normalize(q.trim());
-		return items.filter((d) => (!onlyFavs || favs.has(d.id)) && (!nq || d.search.includes(nq))).toSorted(SORTS[prefs.sort]);
+		const pick = only ? new Set(only) : null;
+		return items
+			.filter((d) => (!onlyFavs || favs.has(d.id)) && (!pick || pick.has(d.id)) && (!nq || d.search.includes(nq)))
+			.toSorted(SORTS[prefs.sort]);
 	});
 
 	function setPrefs(p: Partial<DoaPrefs>) {

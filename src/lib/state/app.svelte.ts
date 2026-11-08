@@ -5,6 +5,7 @@ import { emptyTracker, type TrackerData } from '#lib/tracker.ts';
 import { emptyProgress, type DzikirProgress } from '#lib/dzikirProgress.ts';
 import { Persisted } from './persisted.svelte.ts';
 import { DEFAULT_DZIKIR_PREFS, type DzikirPrefs } from '#lib/salatVersi.ts';
+import type { Koleksi } from '#lib/koleksi.ts';
 
 export interface Settings {
 	/** id kota dari daftar, atau 'gps' bila memakai lokasi perangkat */
@@ -27,6 +28,8 @@ export interface DoaPrefs {
 	/** doa yang ditandai sudah dibaca, per tanggal (hanya hari ini yang dipakai) */
 	readOn: string;
 	read: number[];
+	/** koleksi doa pribadi */
+	koleksi: Koleksi[];
 }
 
 export interface ReadingPrefs {
@@ -54,7 +57,8 @@ export const doaPrefs = new Persisted<DoaPrefs>('doa', {
 	sort: 'kat',
 	favs: [],
 	readOn: '',
-	read: []
+	read: [],
+	koleksi: []
 });
 
 export const reading = new Persisted<ReadingPrefs>('reading', { lat: true, tr: true, wbw: false, size: 30 });

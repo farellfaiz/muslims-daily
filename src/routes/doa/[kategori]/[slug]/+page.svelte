@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import Icon from '#lib/components/Icon.svelte';
+	import KoleksiSheet from '#lib/components/KoleksiSheet.svelte';
+	import { containing } from '#lib/koleksi.ts';
 	import { withTransition as vt } from '#lib/transition.ts';
 	import { dateKey } from '#lib/date.ts';
 	import { isReading, SOURCES } from '#lib/data/doa.ts';
@@ -22,6 +24,8 @@
 
 	const opt = $derived(reading.value);
 	const isFav = $derived(doaPrefs.value.favs.includes(doa.id));
+	const inKoleksi = $derived(containing(doaPrefs.value.koleksi, doa.id).length > 0);
+	let koleksiOpen = $state(false);
 	const todayKey = $derived(clock.now ? dateKey(clock.now) : '');
 	const isRead = $derived(doaPrefs.value.readOn === todayKey && doaPrefs.value.read.includes(doa.id));
 
@@ -140,12 +144,16 @@
 <div class="actions">
 	<button class="press" onclick={copy}><Icon name="copy" />Salin</button>
 	<button class="press" onclick={share}><Icon name="share" />Bagikan</button>
-	<button class="press" onclick={() => toast.say('Koleksi pribadi segera hadir')}><Icon name="plus" />Koleksi</button>
+	<button class="press" class:on={inKoleksi} onclick={() => (koleksiOpen = true)}>
+		<Icon name={inKoleksi ? 'check' : 'plus'} />{inKoleksi ? 'Di koleksi' : 'Koleksi'}
+	</button>
 </div>
 <button class="done press" class:ok={isRead} onclick={markRead}>
 	<Icon name="check" stroke={2.4} />
 	{isRead ? 'Sudah dibaca hari ini' : 'Tandai sudah dibaca'}
 </button>
+
+<KoleksiSheet bind:open={koleksiOpen} doaId={doa.id} />
 
 <style>
 	.dhead {
@@ -375,6 +383,11 @@
 		justify-content: center;
 		gap: 3px;
 		color: var(--ink2);
+	}
+	.actions button.on {
+		background: var(--navy-soft);
+		border-color: transparent;
+		color: var(--navy);
 	}
 	.done {
 		width: 100%;

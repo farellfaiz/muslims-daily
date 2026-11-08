@@ -5,7 +5,7 @@ import { emptyTracker, type TrackerData } from './tracker.ts';
 const now = new Date(2026, 10, 8, 9, 30);
 const settings = { place: 'jakarta', label: 'Jakarta', lat: -6.2, lng: 106.8, method: 'kemenag' as const, madhab: 'syafii' as const, adjust: { maghrib: 2 }, imsak: 10 };
 const reading = { lat: true, tr: true, wbw: false, size: 30 };
-const doa = { view: 'card' as const, sort: 'kat' as const, favs: [1, 3] };
+const doa = { view: 'card' as const, sort: 'kat' as const, favs: [1, 3], koleksi: [{ id: 'a1', name: 'Harian', ids: [3, 9] }] };
 const tracker: TrackerData = {
 	logs: { '2026-11-07': { subuh: true, isya: true }, '2026-11-08': { subuh: true } },
 	udzurDays: ['2026-10-01'],
@@ -98,5 +98,13 @@ describe('gabung catatan', () => {
 	it('ringkasan menghitung hari dan salat', () => {
 		expect(trackerSummary(tracker)).toEqual({ days: 2, prayers: 3, first: '2026-11-07' });
 		expect(trackerSummary(emptyTracker())).toEqual({ days: 0, prayers: 0, first: null });
+	});
+});
+
+describe('koleksi di cadangan', () => {
+	it('cadangan lama tanpa koleksi dianggap kosong', () => {
+		const raw = JSON.parse(roundTrip());
+		delete raw.doa.koleksi;
+		expect(parseBackup(JSON.stringify(raw)).doa?.koleksi).toEqual([]);
 	});
 });

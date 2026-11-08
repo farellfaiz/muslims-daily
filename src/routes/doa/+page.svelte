@@ -6,6 +6,7 @@
 
 	let { data } = $props();
 	const favCount = $derived(doaPrefs.value.favs.length);
+	const koleksi = $derived(doaPrefs.value.koleksi);
 </script>
 
 <svelte:head>
@@ -48,6 +49,23 @@
 		<span class="ms">Dzikir &amp; doa</span>
 	</a>
 </div>
+
+<div class="sec-h"><h2>Koleksi kamu</h2>{#if koleksi.length}<a href="/doa/koleksi" class="label more">Semua</a>{/if}</div>
+{#if koleksi.length}
+	<div class="kol">
+		{#each koleksi as k (k.id)}
+			<a class="card kc press" href="/doa/koleksi?id={k.id}">
+				<span class="kt">{k.name}</span>
+				<span class="ks num">{k.ids.length} doa</span>
+			</a>
+		{/each}
+	</div>
+{:else}
+	<p class="card ktip">
+		<Icon name="plus" size={18} />
+		<span>Kelompokkan doa sendiri, mis. doa harian anak atau doa safar. Buka doa mana pun lalu tap <b>Koleksi</b>.</span>
+	</p>
+{/if}
 
 <div class="sec-h">
 	<h2>Kategori</h2>
@@ -146,6 +164,62 @@
 		display: grid;
 		place-items: center;
 		background: color-mix(in srgb, currentColor 14%, transparent);
+	}
+	.more {
+		color: var(--navy);
+		text-decoration: none;
+	}
+	.kol {
+		display: flex;
+		gap: 10px;
+		overflow-x: auto;
+		scrollbar-width: none;
+		margin: 0 -18px;
+		padding: 2px 18px 6px;
+		scroll-snap-type: x mandatory;
+	}
+	.kc {
+		flex: none;
+		width: 148px;
+		padding: 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		scroll-snap-align: start;
+	}
+	.kt {
+		font-weight: 700;
+		font-size: 14px;
+		color: var(--ink);
+		line-height: 1.3;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.ks {
+		font-size: 12px;
+		color: var(--ink3);
+		font-weight: 600;
+	}
+	.ktip {
+		display: flex;
+		gap: 10px;
+		align-items: flex-start;
+		margin: 0;
+		padding: 14px;
+		font-size: 13px;
+		line-height: 1.5;
+		color: var(--ink2);
+		box-shadow: none;
+		background: var(--sunk);
+		border-color: transparent;
+	}
+	.ktip :global(svg) {
+		flex: none;
+		color: var(--navy);
+		margin-top: 1px;
 	}
 	.duo {
 		display: grid;
